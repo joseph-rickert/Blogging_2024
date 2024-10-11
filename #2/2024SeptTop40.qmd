@@ -1,0 +1,21 @@
+
+---
+title: "2024_September_T40"
+format: html
+editor: source
+---
+
+### Data
+
+[clintrialx](https://cran.r-project.org/package=clintrialx) v0.1.0: Provides functions to fetch clinical trial data from sources like [ClinicalTrials.gov](https://clinicaltrials.gov/} and the Clinical Trials [Access to Aggregate Content](https://aact.ctti-clinicaltrials.org/) database that supports pagination and bulk downloads. See the [vignette](https://cran.r-project.org/web/packages/clintrialx/vignettes/usecase-doc.html).
+
+![](../#2/clintrialsx.png){fig-alt="Histogram of the number of studies in each status category"}
+
+[ColOpenData](https://cran.r-project.org/package=ColOpenData) v0.3.0: Provides tools to download and wrangle Colombian socioeconomic, geospatial,population and climate data from [DANE](https://www.dane.gov.co/) at the National Administrative Department of Statistics and [IDEAM](https://ideam.gov.co) at the Institute of Hydrology, Meteorology and Environmental Studies. It solves the problem of Colombian data being issued in different web pages and sources by using functions that allow the user to select the desired database and download it without having to do the exhausting acquisition process. There are six vignettes including [How to download climate data](https://cran.r-project.org/web/packages/ColOpenData/vignettes/climate_data.html) and [Population Projections](https://cran.r-project.org/web/packages/ColOpenData/vignettes/population_projections.html).
+
+
+![](../#2/ColOpenData.png){fig-alt="Map of Columbia showing Internet Coverage."}
+
+[modgo](https://cran.r-project.org/package=modgo) v1.0.1: Provides functions to generate synthetic data from a real dataset using the combination of rank normal inverse transformation with the calculation of correlation matrix and completely artificial data may be generated through the use of [Generalized Lambda Distribution](https://www.taylorfrancis.com/books/mono/10.1201/9781420038040/fitting-statistical-distributions-zaven-karian-edward-dudewicz) and Generalized Poisson Distribution. See the [vignette](https://cran.r-project.org/web/packages/modgo/vignettes/modgo_vignette.html).
+
+![](../#2/modgo.png){fig-alt="Correlation matrices for simulated and real data"}
