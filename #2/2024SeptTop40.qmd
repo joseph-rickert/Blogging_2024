@@ -4,6 +4,15 @@ format: html
 editor: source
 ---
 
+### AI
+
+[groqR](https://cran.r-project.org/package=groqR) v0.0.1: Provides a suite of functions and `RStudio` Add-ins leveraging the capabilities of open-source Large Language Models (LLMs) to support R developers. Features include text rewriting, translation, and general query capabilities. Programming-focused functions provide assistance with debugging, translating, commenting, documenting, and unit testing code, as well as suggesting variable and function names. Look [here](https://github.com/GabrielKaiserQFin/groqR) for examples.
+
+### Computational Methods
+
+
+
+
 ### Data
 
 [clintrialx](https://cran.r-project.org/package=clintrialx) v0.1.0: Provides functions to fetch clinical trial data from sources like \[ClinicalTrials.gov\](https://clinicaltrials.gov/} and the Clinical Trials [Access to Aggregate Content](https://aact.ctti-clinicaltrials.org/) database that supports pagination and bulk downloads. See the [vignette](https://cran.r-project.org/web/packages/clintrialx/vignettes/usecase-doc.html).
@@ -28,6 +37,8 @@ editor: source
 
 ![](../#2/sdtm.jpeg){fig-alt="Schematic of algorithms"}
 
+
+
 ### Statistics
 
 [dpasurv](https://cran.r-project.org/package=dpasurv) v0.1.0: Provides functions to implement dynamic path analysis for survival data via Aalen's additive hazards model. See [Fosen et al., (2006)](https://link.springer.com/article/10.1007/s10985-006-9004-2) for details. There is an [oveview](https://cran.r-project.org/web/packages/dpasurv/vignettes/dpa.Rmd) and a [vignette](https://cran.r-project.org/web/packages/dpasurv/vignettes/ggplot_demo.html) on plotting with `ggplot2`.
@@ -49,3 +60,18 @@ editor: source
 [ggalign](https://cran.r-project.org/package=ggalign) v0.0.4: Implements an extension to `ggplot2` that offers various tools for organizing and arranging plots including the ability to consistently align a specific axis across multiple `ggplot` objects. There are seven vignettes including [Examples](https://cran.r-project.org/web/packages/ggalign/vignettes/complete-examples.html) and [Heatmap Layout](https://cran.r-project.org/web/packages/ggalign/vignettes/heatmap-layout.html).
 
 ![](../#2/ggalign.png){fig-alt="Heatmap with bar chart"}
+
+
+
+[sfcurv](https://CRAN.R-project.org/package=sfcurve) v1.0: Implements  all possible forms of 2x2 and 3x3 space-filling curves, i.e., the generalized forms of the [Hilbert curve](https://en.wikipedia.org/wiki/Hilbert_curve), the [Peano curve](https://en.wikipedia.org/wiki/Peano_curve) and the Peano curve in the [meander type](https://eudml.org/doc/141086). Look [here](https://jokergoo.github.io/sfcurve/) for ec=xamples.
+
+![](../#2/sfcurve.png){fig-alt="Plot of 8 space filling curves"}
+
+
+[surreal](https://cran.r-project.org/package=surreal) v0.0.1: Implements the *Residual (Sur)Realism* algorithm described by [Stefanski (2007)]() to generate datasets that reveal hidden images or messages in their residual plots. See [README](https://cran.r-project.org/web/packages/surreal/readme/README.html) for examples.
+
+![](../#2/surreal.png){fig-alt="R logohiddenina residual plot"}
+[survSAKK](https://cran.r-project.org/package=survSAKK) v1.3.1: Provides functions to incorporate various statistics and layout customization options to enhance the efficiency and adaptability of the Kaplan-Meier plots. See the [vignette](https://cran.r-project.org/web/packages/survSAKK/vignettes/surv.plot.html).
+
+![](../#2/survSAKK.png){fig-alt="Kaplan-Meier curve with risk table"}
+
