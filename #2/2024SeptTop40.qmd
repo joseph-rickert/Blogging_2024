@@ -8,10 +8,26 @@ editor: source
 
 [groqR](https://cran.r-project.org/package=groqR) v0.0.1: Provides a suite of functions and `RStudio` Add-ins leveraging the capabilities of open-source Large Language Models (LLMs) to support R developers. Features include text rewriting, translation, and general query capabilities. Programming-focused functions provide assistance with debugging, translating, commenting, documenting, and unit testing code, as well as suggesting variable and function names. Look [here](https://github.com/GabrielKaiserQFin/groqR) for examples.
 
+### Archaeology
+
+[eratosthenes](https://cran.r-project.org/package=eratosthenes) v0.0.2: Estimates unknown historical or archaeological dates subject to relationships with other dates and absolute constraints, derived as marginal densities from the full joint conditional distribution. Includes rule-based estimation of the production dates of artifact types. See [Collins-Elliott (2024)](https://volweb.utk.edu/~scolli46/sceGUTChronology.pdf) for background and the vignettes on [aligning relative sequences](https://cran.r-project.org/web/packages/eratosthenes/vignettes/aligning-relative-sequences.html) and [gibbs sampling for archaeology dates](https://cran.r-project.org/web/packages/eratosthenes/vignettes/gibbs-sampling-for-archaeological-dates.html).
+
+### Biology
+
+[pcvr](https://cran.r-project.org/package=pcvr) v1.0.0: Provides functions to analyse common types of plant phenotyping data and asimplified interface to longitudinal growth modeling and select Bayesian statistics. See [Kruschke (2018)](https://journals.sagepub.com/doi/10.1177/2515245918771304), [Kruschke (2013)](https://psycnet.apa.org/doiLanding?doi=10.1037%2Fa0029146) and [Kruschke (2021)](https://www.nature.com/articles/s41562-021-01177-7) for background on the Bayesian methods. There are four vignettes including [Bellwether workflow](https://cran.r-project.org/web/packages/pcvr/vignettes/bellwether.Rmd) and [Longitudinal Growth Modeling](https://cran.r-project.org/web/packages/pcvr/vignettes/longitudinal.html).
+
+![](../#2/pcvr.png){fig-alt="Plot of water use efficiency by genotype"}
+
+[orthGS](https://cran.r-project.org/package=orthGS) v0.1.5: Provides tools to analyze and infer orthology and paralogy relationships between glutamine synthetase proteins in seed plants. See the vignettes [Searching for Orthologous](https://cran.r-project.org/web/packages/orthGS/vignettes/Searching_for_Orthologous.html) and [Unraveling the Hiden Paralogous](https://cran.r-project.org/web/packages/orthGS/vignettes/Unraveling_the_hiden_paralogous.html).
+
+![](../#2/orthGS.png){fig-alt="Plot of species and protein tree"}
+
+
 ### Computational Methods
 
+[XDNUTS](https://cran.r-project.org/package=XDNUTS) v1.2: Implements Hamiltonian Monte Carlo for both continuous and discontinuous posterior distributions with customisable trajectory length termination criterion. See [Nishimura et al. (2020)](https://academic.oup.com/biomet/article/107/2/365/5799014?login=false) for the original Discontinuous Hamiltonian Monte Carlo; and [Hoffman et al. (2014)](https://arxiv.org/abs/1111.4246) and [Betancourt (2016)](https://arxiv.org/abs/1601.00225) possible Hamiltonian Monte Carlo termination criteria. The [vignette](https://cran.r-project.org/web/packages/XDNUTS/vignettes/Intro_to_XDNUTS.html) offers examples.
 
-
+![](../#2/XDNUTS.png){fig-alt="Plots examining marginal densities"}
 
 ### Data
 
@@ -26,10 +42,49 @@ editor: source
 [modgo](https://cran.r-project.org/package=modgo) v1.0.1: Provides functions to generate synthetic data from a real dataset using the combination of rank normal inverse transformation with the calculation of correlation matrix and completely artificial data may be generated through the use of [Generalized Lambda Distribution](https://www.taylorfrancis.com/books/mono/10.1201/9781420038040/fitting-statistical-distributions-zaven-karian-edward-dudewicz) and Generalized Poisson Distribution. See the [vignette](https://cran.r-project.org/web/packages/modgo/vignettes/modgo_vignette.html).
 
 ![](../#2/modgo.png){fig-alt="Correlation matrices for simulated and real data"}
+### Ecology
+
+[douconca](https://cran.r-project.org/package=douconca) v1.2.1: Implements the two step double constrained correspondence analysis (dc-CA) for analyzing multi-trait multi-environment ecological data described in[ter Braak et al. (2018)](https://link.springer.com/article/10.1007/s10651-017-0395-x). This algorithm combines and extends community or sample and species-level analyses. 
+
+![](../#2/douconca.png ){fig-alt="Plots showing impact of environmental variables"}
+
+[GeoThinneR](https://cran.r-project.org/web/packages/GeoThinneR/index.html#:~:text=https%3A//CRAN.R%2Dproject.org/package%3DGeoThinneR) v1.1.0: Provides efficient geospatial thinning algorithms to reduce the density of coordinate data while maintaining spatial relationships. Implements K-D Tree and brute-force distance-based thinning, as well as grid-based and precision-based thinning methods. See [Elseberg et al. (2012)](https://hdl.handle.net/10446/86202) for background and the [vignette](https://cran.r-project.org/web/packages/GeoThinneR/vignettes/GeoThinneR.html) for examples.
+
+![](../#2/GeoThinneR.png ){fig-alt="Simulated species data by longitude and lattitude"}
+
+
+### Genomics
+
+[easybio](https://cran.r-project.org/package=easybio) v1.1.0: Provides a toolkit for single-cell annotation with the [CellMarker2.0](https://pmc.ncbi.nlm.nih.gov/articles/PMC9825416/) database and streamlines biological label assignment in single-cell RNA-seq data and facilitates transcriptomic analysis, including preparation of [TCGA](https://portal.gdc.cancer.gov/) and [GEO](https://www.ncbi.nlm.nih.gov/geo/) datasets, differential expression analysis and visualization of enrichment analysis results. See [Wei Cui (2024)](https://www.biorxiv.org/content/10.1101/2024.09.14.609619v1) for details and the two vignettes [bulk RNAsewuence workflow](https://cran.r-project.org/web/packages/easybio/vignettes/example-bulk-rna-seq-workflow.html) and [Single Cell Annotation](https://cran.r-project.org/web/packages/easybio/vignettes/example-single-cell-annotation.html) for examples.
+
+![](../#2/easybio.png){fig-alt="Plots showing criteria for differential expression"}
+
+
+[GenoPop](https://cran.r-project.org/package=GenoPop) v0.9.3: Implements tools for efficient processing of large, whole genome genotype data sets in variant call format including several functions to calculate commonly used population genomic metrics and a method for reference panel free genotype imputation. See [Gurke & Mayer (2024)](https://www.authorea.com/users/825581/articles/1221193-genopop-impute-efficient-and-accurate-whole-genome-genotype-imputation-in-non-model-species-for-evolutionary-genomic-research) for background and the [vignette](https://cran.r-project.org/web/packages/GenoPop/GenoPop.pdf) to get started. 
+![](../#2/GenoPop.png){fig-alt="Plots of gene populations"}
+
+[SuperCell](https://cran.r-project.org/package=SuperCell) v1.0: Provides tools to aggregate large single-cell data into metacell dataset by merging together gene expression of very similar cells See the vignettes [Example of SuperCell pipeline](https://cran.r-project.org/web/packages/SuperCell/vignettes/a_SuperCell.html) and [SuperCell runs for different samples](https://cran.r-project.org/web/packages/SuperCell/vignettes/b_Combined_vs_independent_sample_processing.html).
+
+![](../#2/SuperCell.png){fig-alt="Plots of metacells clusters"}
+
 
 ### Lingusitics
 
 [maxent.ot](https://cran.r-project.org/package=maxent.ot) v1.0.0: Provides tools to fit Maximum Entropy models to phnology data. See [Mayer, Tan & Zuraw](https://sites.socsci.uci.edu/~cjmayer/papers/cmayer_et_al_maxent_ot_accepted.pdf) and the [vignette](https://cran.r-project.org/web/packages/maxent.ot/vignettes/maxent-ot_vignette.html) for an overview.
+
+### Machine Learning
+
+[dsld](https://cran.r-project.org/package=dsld) v0.2.2: Provides statistical and graphical tools for detecting and measuring discrimination and bias, be it racial, gender, age or other. Detection and remediation of bias in machine learning algorithms. See the [Quick Start Guide](https://cran.r-project.org/web/packages/dsld/vignettes/Quick_Start.html).
+
+
+### Medicine
+
+[SurvMA](https://cran.r-project.org/package=SurvMA) v1.6.8: Implements a model averaging approach to predict personalized survival probabilities by using a weighted average of multiple candidate models to  approximate the conditional survival function.Two scenarios of candidate models are allowed: the partial linear Cox model and the time-varying coefficient Cox model. See [Wang (2023)](https://www.sciencedirect.com/science/article/abs/pii/S0167947323000701?via%3Dihub) for details and look [here](https://github.com/Stat-WangXG/SurvMA) for an example.
+
+![](../#2/SurvMA.png){fig-alt="Schmatic of model fitting process"}
+
+[wintime](https://cran.r-project.org/package=wintime) v0.2.0: Provides methods to perform an analysis of time-to-event clinical trial data using various methods that calculate and compare treatment effects on ordered composite endpoints. See [Troendle et al. (2024)](https://pubmed.ncbi.nlm.nih.gov/38417455/) for the details of the methods and the [vignette](https://cran.r-project.org/web/packages/wintime/vignettes/wintime_vignette.html) for examples.
+
 
 ### Pharma
 
@@ -45,7 +100,16 @@ editor: source
 
 ![](../#2/dpasurv.png){fig-alt="Plot showing mediator variable over time by dose response."}
 
+[LearnVizLLM](https://cran.r-project.org/package=LearnVizLMM) v1.0.0: Implements tools to summarize the characteristics of linear fixed models without data or a fitted model by converting code code for fitting `nlme::lme()` and `lme4::lmer()` models into tables, equations, and visuals. See the [vignette](https://cran.r-project.org/web/packages/LearnVizLMM/vignettes/LearnVizLMM.html) for details.
+
+![](../#2/LearnVizLLM.png){fig-alt="Schematic of mutilevel, nested model"}
+
+
+[lnmixsurv](https://cran.r-project.org/package=lnmixsurv) v3.1.6: Combines the mixture distributions of [Fruhwirth-Schnatter(2006)](https://link.springer.com/article/10.1007/s11336-009-9121-4) and the data augmentation techniques of [Tanner and Wong (1987)](https://www.tandfonline.com/doi/abs/10.1080/01621459.1987.10478458) to implement Bayesian Survival models that accommodate different behaviour over time and consider higher censored survival times. There are five vignettes including a [Get started guide}
+
 ### Utility
+
+[fctutils](https://CRAN.R-project.org/package=fctutils) v0.0.7: Provides a collection of utility functions for manipulating and analyzing factor vectors in R. It offers tools for filtering, splitting, combining, and reordering factor levels based on various criteria. See the [vignette](https://cran.r-project.org/web/packages/fctutils/vignettes/fctutils.html).
 
 [pikchr]()V0.97 : Provides an interface to [pikchr](https://pikchr.org) q markup language for creating diagrams within technical documentation. See the [vignette](https://cran.r-project.org/web/packages/pikchr/vignettes/Examples.html) for examples.
 
