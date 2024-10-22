@@ -1,8 +1,11 @@
 ---
-title: "2024_September_T40"
+title: "2024 September T40"
 format: html
 editor: source
 ---
+
+Two hundred thirty new packages made it to CRAN in September, many of them were interesting, and selecting only forty made for some difficult decisions. When there a difficult choice, I opted in favor of the sciences. Here are my picks for the Top 40 new packages in fifteen categories: AI, Archaeology, Biology, Computational Methods, Data, Genomics, Linguistics, Machine Learning, Medicine, Networks, Pharma, Physics, Statistics, Utilities, and Visualization.
+
 
 ### AI
 
@@ -14,14 +17,20 @@ editor: source
 
 ### Biology
 
-[pcvr](https://cran.r-project.org/package=pcvr) v1.0.0: Provides functions to analyse common types of plant phenotyping data and asimplified interface to longitudinal growth modeling and select Bayesian statistics. See [Kruschke (2018)](https://journals.sagepub.com/doi/10.1177/2515245918771304), [Kruschke (2013)](https://psycnet.apa.org/doiLanding?doi=10.1037%2Fa0029146) and [Kruschke (2021)](https://www.nature.com/articles/s41562-021-01177-7) for background on the Bayesian methods. There are four vignettes including [Bellwether workflow](https://cran.r-project.org/web/packages/pcvr/vignettes/bellwether.Rmd) and [Longitudinal Growth Modeling](https://cran.r-project.org/web/packages/pcvr/vignettes/longitudinal.html).
+[pcvr](https://cran.r-project.org/package=pcvr) v1.0.0: Provides functions to analyse common types of plant phenotyping data and a simplified interface to longitudinal growth modeling and select Bayesian statistics. See [Kruschke (2018)](https://journals.sagepub.com/doi/10.1177/2515245918771304), [Kruschke (2013)](https://psycnet.apa.org/doiLanding?doi=10.1037%2Fa0029146) and [Kruschke (2021)](https://www.nature.com/articles/s41562-021-01177-7) for background on the Bayesian methods. There are four vignettes including [Bellwether workflow](https://cran.r-project.org/web/packages/pcvr/vignettes/bellwether.Rmd) and [Longitudinal Growth Modeling](https://cran.r-project.org/web/packages/pcvr/vignettes/longitudinal.html).
 
 ![](../#2/pcvr.png){fig-alt="Plot of water use efficiency by genotype"}
 
 [orthGS](https://cran.r-project.org/package=orthGS) v0.1.5: Provides tools to analyze and infer orthology and paralogy relationships between glutamine synthetase proteins in seed plants. See the vignettes [Searching for Orthologous](https://cran.r-project.org/web/packages/orthGS/vignettes/Searching_for_Orthologous.html) and [Unraveling the Hiden Paralogous](https://cran.r-project.org/web/packages/orthGS/vignettes/Unraveling_the_hiden_paralogous.html).
 
 ![](../#2/orthGS.png){fig-alt="Plot of species and protein tree"}
+### Chemistry
 
+[MethodOpt](https://cran.r-project.org/package=MethodOpt) v1.0.0: Implements a GUI to apply an advanced method optimization algorithm to various sampling and analysis instruments. Functions include generating experimental designs, uploading and viewing data, and performing various analyses to determine the optimal method. See [Granger & Mannion (2024)](https://pubs.acs.org/doi/10.1021/acs.analchem.3c05763) for details and the [vignette](https://cran.r-project.org/web/packages/MethodOpt/vignettes/MethodOpt-vignette.html) for examples.
+
+[SCFMonitor](https://cran.r-project.org/package=SCFMonitor) v0.3.5: Self-Consistent Field(SCF) calculation method is one of the most important steps in the calculation methods of quantum chemistry. See [Ehrenreich & Cohen (1959)](https://journals.aps.org/pr/abstract/10.1103/PhysRev.115.786) . This package enables Gaussian quantum chemistry calculation software users to easily read the Gaussian .log files and monitor the SCF convergence and geometry optimization process. Look [here](https://github.com/AzuleneG/SCFMonitor) for examples.
+
+![](../#2/SCF.png){fig-alt="Plots of SCF process by data type"}
 
 ### Computational Methods
 
@@ -42,6 +51,9 @@ editor: source
 [modgo](https://cran.r-project.org/package=modgo) v1.0.1: Provides functions to generate synthetic data from a real dataset using the combination of rank normal inverse transformation with the calculation of correlation matrix and completely artificial data may be generated through the use of [Generalized Lambda Distribution](https://www.taylorfrancis.com/books/mono/10.1201/9781420038040/fitting-statistical-distributions-zaven-karian-edward-dudewicz) and Generalized Poisson Distribution. See the [vignette](https://cran.r-project.org/web/packages/modgo/vignettes/modgo_vignette.html).
 
 ![](../#2/modgo.png){fig-alt="Correlation matrices for simulated and real data"}
+[dtmapi](https://cran.r-project.org/package=dtmapi) v0.0.2: Provides functions to allow humanitarian community, academia, media, government, and non-governmental organizations to utilize the data collected by the [Displacement Tracking Matrix](https://dtm.iom.int), a unit in the International Organization for Migration. See the [vignette](https://cran.r-project.org/web/packages/dtmapi/vignettes/introduction.html) to get started.
+
+
 ### Ecology
 
 [douconca](https://cran.r-project.org/package=douconca) v1.2.1: Implements the two step double constrained correspondence analysis (dc-CA) for analyzing multi-trait multi-environment ecological data described in[ter Braak et al. (2018)](https://link.springer.com/article/10.1007/s10651-017-0395-x). This algorithm combines and extends community or sample and species-level analyses. 
@@ -70,9 +82,12 @@ editor: source
 
 ### Lingusitics
 
-[maxent.ot](https://cran.r-project.org/package=maxent.ot) v1.0.0: Provides tools to fit Maximum Entropy models to phnology data. See [Mayer, Tan & Zuraw](https://sites.socsci.uci.edu/~cjmayer/papers/cmayer_et_al_maxent_ot_accepted.pdf) and the [vignette](https://cran.r-project.org/web/packages/maxent.ot/vignettes/maxent-ot_vignette.html) for an overview.
+[maxent.ot](https://cran.r-project.org/package=maxent.ot) v1.0.0: Provides tools to fit Maximum Entropy models to phonology data. See [Mayer, Tan & Zuraw](https://sites.socsci.uci.edu/~cjmayer/papers/cmayer_et_al_maxent_ot_accepted.pdf) and the [vignette](https://cran.r-project.org/web/packages/maxent.ot/vignettes/maxent-ot_vignette.html) for an overview.
 
 ### Machine Learning
+
+[conversim](https://cran.r-project.org/package=conversim) v0.1.0: Provides tools to analyze and compare conversations using various similarity measures including topic, lexical, semantic, structural, stylistic, sentiment, participant, and timing similarities. Methods are based on established research: For example see [Landauer et al. (1998)](https://www.tandfonline.com/doi/abs/10.1080/01638539809545028)  [Jaccard (1912)](https://nph.onlinelibrary.wiley.com/doi/10.1111/j.1469-8137.1912.tb05611.x) and [Salton & Buckley (1988)](https://www.sciencedirect.com/science/article/abs/pii/0306457388900210?via%3Dihub). Thee are four vignettes including analyzing similarities [between two long speaches](https://cran.r-project.org/web/packages/conversim/vignettes/Analyzing_Similarities_between_Two_Long_Speeches.html) and analyzing similarities in conversational sequence [in one Dyad](https://cran.r-project.org/web/packages/conversim/vignettes/Analyzing_Similarities_in_Conversational_Sequence_in_One_Dyad.html) and [across multiple Dyads](https://cran.r-project.org/web/packages/conversim/vignettes/Analyzing_Similarities_in_Conversational_Sequences_across_Multiple_Dyads.html).
+
 
 [dsld](https://cran.r-project.org/package=dsld) v0.2.2: Provides statistical and graphical tools for detecting and measuring discrimination and bias, be it racial, gender, age or other. Detection and remediation of bias in machine learning algorithms. See the [Quick Start Guide](https://cran.r-project.org/web/packages/dsld/vignettes/Quick_Start.html).
 
@@ -85,6 +100,13 @@ editor: source
 
 [wintime](https://cran.r-project.org/package=wintime) v0.2.0: Provides methods to perform an analysis of time-to-event clinical trial data using various methods that calculate and compare treatment effects on ordered composite endpoints. See [Troendle et al. (2024)](https://pubmed.ncbi.nlm.nih.gov/38417455/) for the details of the methods and the [vignette](https://cran.r-project.org/web/packages/wintime/vignettes/wintime_vignette.html) for examples.
 
+### Networks
+
+[arlclustering](https://cran.r-project.org/package=arlclustering) v1.0.5: Implements an innovative approach to community detection in social networks using Association Rules Learning providing tools for processing graph and rules objects, generating association rules, and detecting communities based on node interactions. See [El-Moussaoui et al. (2021)](https://link.springer.com/chapter/10.1007/978-3-030-66840-2_3) for details. There are eight vignettes including [General Introduction](https://cran.r-project.org/web/packages/arlclustering/vignettes/General-Introduction.html) and [Testing WordAdjacency dataset](https://cran.r-project.org/web/packages/arlclustering/vignettes/Word_Adjacencies-Dataset.html).
+
+[ggtangle](https://cran.r-project.org/package=ggtangle) v0.0.2: Extends the `ggplot2` plotting system to support network visualization for network associated data. See the [vignette](https://cran.r-project.org/web/packages/ggtangle/vignettes/ggtangle.html).
+
+![](../#2/ggtangle.png){fig-alt="Various network plots"}
 
 ### Pharma
 
@@ -92,7 +114,14 @@ editor: source
 
 ![](../#2/sdtm.jpeg){fig-alt="Schematic of algorithms"}
 
+### Physics
 
+[rice](https://cran.r-project.org/package=rice) v0.3.0: Provides functions to calibrate radiocarbon dates, different radiocarbon realms (C14 age, F14C, pMC, D14C) and to estimate the effects of contamination or local reservoir offsets. See [Reimer and Reimer 2001](https://www.cambridge.org/core/journals/radiocarbon/article/marine-reservoir-correction-database-and-online-interface/052F4CD7B140707538E4CFD02E7FCA73) and [Stuiver and Polach (1977)](https://www.cambridge.org/core/journals/radiocarbon/article/discussion-reporting-of-14c-data/D686D7894B8BAC3212589AFE418E147E) for background and the [vignette](https://cran.r-project.org/web/packages/rice/vignettes/rice.html) for examples. 
+
+![](../#2/rice.png){fig-alt="Plot showing levels of contamination in 14C estimates."}
+[STICr](https://cran.r-project.org/package=STICr) v1.0: Comprises a collection of functions for processing raw data from Stream Temperature, Intermittency, and Conductivity (STIC) loggers. 'STICr' (pronounced "sticker") that includes functions for tidying, calibrating, classifying, and doing quality checks on data from STIC sensors. See [Wheeler/Zipper et al. (2023)](https://eartharxiv.org/repository/view/4909/) for background and the vignette for an [Introduction](https://cran.r-project.org/web/packages/STICr/vignettes/intro-to-STICr.html).
+
+![](../#2/STICr.png){fig-alt="A specific conductivity time series."}
 
 ### Statistics
 
@@ -105,13 +134,28 @@ editor: source
 ![](../#2/LearnVizLLM.png){fig-alt="Schematic of mutilevel, nested model"}
 
 
-[lnmixsurv](https://cran.r-project.org/package=lnmixsurv) v3.1.6: Combines the mixture distributions of [Fruhwirth-Schnatter(2006)](https://link.springer.com/article/10.1007/s11336-009-9121-4) and the data augmentation techniques of [Tanner and Wong (1987)](https://www.tandfonline.com/doi/abs/10.1080/01621459.1987.10478458) to implement Bayesian Survival models that accommodate different behaviour over time and consider higher censored survival times. There are five vignettes including a [Get started guide}
+[lnmixsurv](https://cran.r-project.org/package=lnmixsurv) v3.1.6: Combines the mixture distributions of [Fruhwirth-Schnatter(2006)](https://link.springer.com/article/10.1007/s11336-009-9121-4) and the data augmentation techniques of [Tanner and Wong (1987)](https://www.tandfonline.com/doi/abs/10.1080/01621459.1987.10478458) to implement Bayesian Survival models that accommodate different behavior over time and consider higher censored survival times. There are five vignettes including a [Get started guide}
 
-### Utility
+[Path.Analysis](https://cran.r-project.org/package=Path.Analysis) v0.1: Provides functions for conducting sequential path coefficient analysis and testing direct effects and functions for estimating correlation, drawing correlograms, heatmaps, and path diagrams. See [Arminian et al. (2008)](https://www.tandfonline.com/doi/abs/10.1080/15427520802043182) for background and the [vignette](https://cran.r-project.org/web/packages/Path.Analysis/vignettes/Path.Analysis_manual.html) for examples.
+
+![](../#2/Path.png){fig-alt="Diagram of coefficient paths"}
+
+### Utilities
+
+[charcuterie](https://cran.r-project.org/package=charcuterie) v0.0.4: Creates a new chars class which looks like a string but is actually a vector of individual characters, making strings iterable and enabling vector operations on 'strings' such as reverse, sort, head, and set operations. See the vignettes [Example Usage](https://cran.r-project.org/web/packages/charcuterie/vignettes/usage.html) and [Use Cases](https://cran.r-project.org/web/packages/charcuterie/vignettes/use_cases.html).
+
+![](../#2/charcuterie.jpeg){fig-alt="The Spongebob case: every second letter upper case"}
+
+[dtreg](https://cran.r-project.org/package=dtreg) v1.0.0: Provides tools to interact with data type registries and create machine-readable data. See the [vinette](https://cran.r-project.org/web/packages/dtreg/vignettes/dtreg.html).
+
 
 [fctutils](https://CRAN.R-project.org/package=fctutils) v0.0.7: Provides a collection of utility functions for manipulating and analyzing factor vectors in R. It offers tools for filtering, splitting, combining, and reordering factor levels based on various criteria. See the [vignette](https://cran.r-project.org/web/packages/fctutils/vignettes/fctutils.html).
 
-[pikchr]()V0.97 : Provides an interface to [pikchr](https://pikchr.org) q markup language for creating diagrams within technical documentation. See the [vignette](https://cran.r-project.org/web/packages/pikchr/vignettes/Examples.html) for examples.
+[interface](https://cran.r-project.org/package=interface) v0.1.2: Provides a run time type system, allowing users to define and implement interfaces, enums, typed data.frame/data.table, as well as typed functions. This package enables stricter type checking and validation, improving code structure, robustness and reliability. There is a [vignette](https://cran.r-project.org/web/packages/interface/vignettes/intro-to-interface.html) and a way to [support the author](https://cran.r-project.org/web/packages/interface/vignettes/donate.html).
+
+
+
+[pikchr](https://cran.r-project.org/package=pikchr)V0.97 : Provides an interface to [pikchr](https://pikchr.org) q markup language for creating diagrams within technical documentation. See the [vignette](https://cran.r-project.org/web/packages/pikchr/vignettes/Examples.html) for examples.
 
 ![](../#2/pitchar.png){fig-alt="Example block diagram"}
 
@@ -127,7 +171,7 @@ editor: source
 
 
 
-[sfcurv](https://CRAN.R-project.org/package=sfcurve) v1.0: Implements  all possible forms of 2x2 and 3x3 space-filling curves, i.e., the generalized forms of the [Hilbert curve](https://en.wikipedia.org/wiki/Hilbert_curve), the [Peano curve](https://en.wikipedia.org/wiki/Peano_curve) and the Peano curve in the [meander type](https://eudml.org/doc/141086). Look [here](https://jokergoo.github.io/sfcurve/) for ec=xamples.
+[sfcurv](https://CRAN.R-project.org/package=sfcurve) v1.0: Implements  all possible forms of 2x2 and 3x3 space-filling curves, i.e., the generalized forms of the [Hilbert curve](https://en.wikipedia.org/wiki/Hilbert_curve), the [Peano curve](https://en.wikipedia.org/wiki/Peano_curve) and the Peano curve in the [meander type](https://eudml.org/doc/141086). Look [here](https://jokergoo.github.io/sfcurve/) for examples.
 
 ![](../#2/sfcurve.png){fig-alt="Plot of 8 space filling curves"}
 
