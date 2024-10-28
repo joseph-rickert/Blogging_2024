@@ -1,0 +1,10 @@
+---
+title: "Manifold Learning"
+format: html
+editor: source
+---
+
+A good portion of the algorithms supporting AI and machine learning depend on the notion of ebeddings. Data sets are mapped to, or embedded in, high dimensional Euclidean vector spaces. Then, various mathematical strategies are employed to reduce data size by mapping these high dimensional points to structures in lower dimensional spaces in ways that preserve some important structural properties of the high dimensional data. Classic examples are the [Word2Vec](https://en.wikipedia.org/wiki/Word2vec) algorithm which maps similar words to nearby points in vector spaces and  Principal Components Analysis which maps multidimensional vector data to lower dimensional spaces while preserving the variance of the data points. The mathehmatical term for the structures sought to contain the data in the lower dimensional space is *manifold*. Manifolds are basically vector spaces with additional structure that enable notions such as connectedness and smoothness to make sense. Think of a sphere as a two dimensional manifold in a three dimensional space, or lines and circles as one dimensional structures in a two dimensional space.
+
+Over the past fifteen years or so these kinds of geometric ideas about working with data have coalesced into the very mathematical field of Manifold Learning. In this post, I hope to provide a way for those of us who are not mathematicians, but willing to do some work, to explore this incredibly interesting field. I will do this by pointing to some of the accessible literature, providing a simple example, and listing some R resources for exploration.
+
