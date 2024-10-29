@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Manifold Learning</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Manifold_Learning_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Manifold_Learning_files/libs/quarto-html/quarto.js"></script>
+<script src="Manifold_Learning_files/libs/quarto-html/popper.min.js"></script>
+<script src="Manifold_Learning_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Manifold_Learning_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Manifold_Learning_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Manifold_Learning_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Manifold_Learning_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Manifold_Learning_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Manifold_Learning_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Manifold Learning</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>A good portion of the algorithms supporting AI and machine learning depend on the notion of ebeddings. Data sets are mapped to, or embedded in, high dimensional Euclidean vector spaces. Then, various mathematical strategies are employed to reduce data size by mapping these high dimensional points to structures in lower dimensional spaces in ways that preserve some important structural properties of the high dimensional data. Classic examples are the <a href="https://en.wikipedia.org/wiki/Word2vec">Word2Vec</a> algorithm which maps similar words to nearby points in vector spaces and Principal Components Analysis which maps multidimensional vector data to lower dimensional spaces while preserving the variance of the data points. The mathematical term for the structures sought to contain the data in the lower dimensional space is <em>manifold</em>. Manifolds are basically vector spaces with additional structure that enable notions such as connectedness and smoothness to make sense. Think of a sphere as a two dimensional manifold in a three dimensional space, or lines and circles as one dimensional structures in a two dimensional space.</p>
+<p>Over the past fifteen years or so these kinds of geometric ideas about working with data have coalesced into the very mathematical field of Manifold Learning. In this post, I hope to provide a way for those of us who are not mathematicians, but willing to do some work, to explore this incredibly interesting field. I will do this by pointing to some of the accessible literature, providing a simple example, and listing some R resources for exploration.</p>
+<section id="an-overview-of-manifold-learning" class="level2">
+<h2 class="anchored" data-anchor-id="an-overview-of-manifold-learning">An overview of Manifold Learning</h2>
+<p>This section provides some notes on the marvelous review paper<a href="https://www.annualreviews.org/content/journals/10.1146/annurev-statistics-040522-115238?crawler=true#right-ref-B71">Manifold Learning: What, How, and Why</a> by Marina Meilă and Hanyu Zhang. The paper is comprehensive, clearly written, historical approach at a level suitable for beginners, and is an expert guide to the vast literature on the subject. The Annual Reviews version of the paper at the link above is pleasure to work with because there are hyperlinks to almost all of the essential papers listed.</p>
+<section id="the-basic-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-basic-problem">The Basic Problem</h3>
+<p>The basic problem motivating manifold learning is data reduction. Given a data set with D features or explanatory variables, how can we transform it into a smaller data set with less features in a way that retains all of the essential information and provides some insight about the structure of the data. The idea is similar to PCA. Here we assume the data exist in a D dimensional vector space but mostly lie in or near a k dimensional subspace. PCA provides a linear mapping from <span class="math inline">\(R^D\)</span> to <span class="math inline">\(R^k\)</span>.</p>
+</section>
+<section id="the-manifold-assumption" class="level3">
+<h3 class="anchored" data-anchor-id="the-manifold-assumption">The Manifold Assumption</h3>
+<p>The data are a sample from a probability distribution with support on or near a d dimensional manifold embedded in <span class="math inline">\(R^D\)</span>.</p>
+</section>
+<section id="three-paradigms-for-manifold-learning" class="level3">
+<h3 class="anchored" data-anchor-id="three-paradigms-for-manifold-learning">Three Paradigms for Manifold learning:</h3>
+<p>The term manifold learning was proposed in the works of <a href="https://pub.uni-bielefeld.de/record/2714741">Roweis &amp; Saul (2000)</a> who proposed the Locally Linear Embedding (LLE) algorithm and <a href="https://citeseerx.ist.psu.edu/document?repid=rep1&amp;type=pdf&amp;doi=9c2c88edc29c02c71064db3a77e89399f9e197c1">Tenenbaum et al.&nbsp;(2000)</a>, who introduced the Isomap algorithm. There are three basic approaches to manifold learning: Locally linear approximations, Principal Curves and Surfaces, and Embeddings.</p>
+</section>
+<section id="local-linear-approximations" class="level3">
+<h3 class="anchored" data-anchor-id="local-linear-approximations">Local Linear Approximations</h3>
+<ul>
+<li>Based on classical PCA</li>
+<li>PCA performed on a weighted covariance matrix, with weights decaying with distance from any reference point</li>
+<li>Approximates data locally on a curved manifold around x</li>
+<li>Reduces dimension locally but provides no global representation</li>
+</ul>
+</section>
+<section id="principal-curves-and-surfaces" class="level3">
+<h3 class="anchored" data-anchor-id="principal-curves-and-surfaces">Principal Curves and Surfaces</h3>
+<ul>
+<li>Data assumed to be of the form <span class="math inline">\(x_i = x^*_i + \epsilon\)</span></li>
+<li>The Subspace Constrained Mean Shift (SCMS) algorithm of <a href="https://www.jmlr.org/papers/volume12/ozertem11a/ozertem11a.pdf">Ozertem &amp; Erdogmus (2011)</a> iteratively maps each <span class="math inline">\(x_i\)</span> to <span class="math inline">\(y_i \in R^D\)</span> lying on the principal curve</li>
+<li>Method can be extended to principal surfaces</li>
+</ul>
+</section>
+<section id="embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="embeddings">Embeddings</h3>
+<p>Marina Meilă and Hanyu Zhang propose a provisional taxonomy of embedding algorithms which they concede is superficial, but which adequately characterizes the state of the art. All approaches begin with information about the data summarized in a weighted neighborhood graph. An embedding algorithm then produces a smooth mapping that is designed to distort the neighborhood information as little as possible. The algorithms differ in their choice of information they preserve and in the constraints on smoothness. The fundamental categories of embedding algorithms are:</p>
+<ul>
+<li><p>“One-shot” algorithms which derive embedding coordinates from principal eigenvectors of a matrix associated with the neighborhood graph of a data set or by solving an optimization problem.</p></li>
+<li><p>Attraction-repulsion algorithms which proceed from an initial embedding, often produced by iterative improvements of a one-shot algorithm.</p></li>
+</ul>
+<section id="one-shot-embedding-algorithms" class="level4">
+<h4 class="anchored" data-anchor-id="one-shot-embedding-algorithms">One-Shot Embedding Algorithms</h4>
+<p>One-Shot algorithms include:</p>
+<ul>
+<li>Diffusion Maps (DM): <a href="https://scholar.google.com/scholar_lookup?title=Diffusion+Maps&amp;author=RR+Coifman&amp;author=S.+Lafon&amp;journal=Appl.+Comput.+Harmon.+Anal.&amp;volume=30&amp;issue=1&amp;doi=10.1016%2Fj.acha.2006.04.006&amp;pages=5-30&amp;publication_year=2006&amp;">Coifman &amp; Lafon (2006)</a> which uses the eigenvectors of the Laplacian matrix to embed the data.</li>
+<li>ISOMAP - <a href="https://www.annualreviews.org/content/journals/10.1146/annurev-statistics-040522-115238?crawler=true#right-ref-B92">Tenenbaum et al.&nbsp;(2000)</a>
+<ul>
+<li>Preserves shortest graph paths</li>
+</ul></li>
+<li>Laplacian Eigenmaps - <a href="https://scholar.google.com/scholar_lookup?title=Manifold+regularization%3A+a+geometric+framework+for+learning+from+labeled+and+unlabeled+examples&amp;author=M+Belkin&amp;author=P+Niyogi&amp;author=V.+Sindhwani&amp;journal=J.+Mach.+Learn.+Res.&amp;volume=7&amp;issue=85&amp;pages=2399-434&amp;publication_year=2006&amp;">Belkin &amp; Niyogi (2003)</a></li>
+<li>Local Transient Space Alignment (LTSA) - <a href="https://www.annualreviews.org/content/journals/10.1146/annurev-statistics-040522-115238?crawler=true#right-ref-B107">Zhang &amp; Zha (2004)</a></li>
+</ul>
+</section>
+<section id="attraction-replusion-embedding-algorithms" class="level4">
+<h4 class="anchored" data-anchor-id="attraction-replusion-embedding-algorithms">Attraction-Replusion Embedding Algorithms</h4>
+<p>Attraction-Repulsion Algorithms include:</p>
+<ul>
+<li>Low Distortion Local Embeddings (LDLE) <a href="https://www.jmlr.org/papers/volume22/21-0131/21-0131.pdf">Lohli, Cloninger, and Mishne (2021)</a></li>
+<li>Maximum Variance Unfolding (MVU) <a href="https://cdn.aaai.org/AAAI/2006/AAAI06-280.pdf">Weinberger and Saul (2006)</a></li>
+<li>Stochastic Neighbor Embedding (SNE) <a href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Hinton and Roweis (2002)</a></li>
+<li>t-SNE <a href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">Van der Maaten and Hinton (2008)</a></li>
+<li>Uniform Manifold Approximation and Projection (UMAP) <a href="https://arxiv.org/pdf/1802.03426">MCinnes et al (2018)</a></li>
+</ul>
+</section>
+</section>
+<section id="sne-and-t-sne" class="level3">
+<h3 class="anchored" data-anchor-id="sne-and-t-sne">SNE and t-SNE</h3>
+<p>This section briefly describes the SNE algorithm and its improved variation t-SNE which were designed to help visualize high dimensional data by mapping the data to a two or three dimensional space.</p>
+<p>The intuition behind Stochastic Neighbor Embedding (SNE) which is described in the paper by <a href="https://proceedings.neurips.cc/paper_files/paper/2002/file/6150ccc6069bea6b5716254057a194ef-Paper.pdf">Hinton &amp; Roweis (2002)</a>, is to emphasize local distances and employ a cost function cleanly enforces both keeping the images of nearby objects nearby and keeping the images of widely separated objects relatively far apart. Most embedding methods require each high-dimensional data point to be associated with only a single location in the low-dimensional space making it difficult to unfold “many-to-one” mappings in which a single ambiguous object really belongs in several disparate locations in the low-dimensional space. SNE tries to place high dimensional data points in a low-dimensional space so as to optimally preserve neighborhood identity, and can be extended to allow multiple different low dimensional images. for example, because of its probabilistic formulation, SNE has the ability to be ex- tended to mixtures in which ambiguous high-dimensional objects such as the word “bank” can be associated several widely-separated images (e.g.&nbsp;both “river” and “finance” in the low-dimensional space.</p>
+<p>The basic idea underlying SNE is to construct a Gaussian probability distribution <span class="math inline">\(P_i\)</span> over each point, <span class="math inline">\(x_i\)</span>, in the high dimensional space that describes the conditional probability <span class="math inline">\(p_{j|i}\)</span> that i would pick j as its neighbor. <span class="math display">\[p_{j|i} =  exp(-\| x_i - x_j\|^2/2\sigma_i^2) \sum_{k \neq i} exp(-\| x_i - x_k\|^2 / 2\sigma_i^2)\]</span></p>
+<p>Then, find a similar distribution, <span class="math inline">\(Q_i\)</span> over the points in the points <span class="math inline">\(y_i\)</span> in the low dimensional space to which the <span class="math inline">\(x_i\)</span> are mapped. If, for all i, <span class="math inline">\(p_{i|j}=q_{i|j}\)</span> then the similarities will be preserved. The <span class="math inline">\({y_i}\)</span> points are found by using gradient descent to minimize the sum of all the Kullback-Liebler divergences using the cost function: <span class="math display">\[C = \sum_i KL(P_i \| Q_i) = \sum_i \sum_j p_{j|i}log(p_{j|i}/q_{j|i)}\]</span></p>
+<p>In the high dimensional space, the <span class="math inline">\(\sigma_i\)</span> values are selected by performing a binary search for the <span class="math inline">\(\sigma_i\)</span> that produces a <span class="math inline">\(P_i\)</span> with a fixed perplexity specified by the user. <span class="math inline">\(Perp(P_i) = 2^{H(P_i)}\)</span> where <span class="math inline">\({H(P_i)} = -\sum_j p_{j|i}log_2 p_{j|i}\)</span> is the Shannon entropy measured in bits. The <span class="math inline">\(\sigma_i\)</span> for the low dimensional space are are set to <span class="math inline">\(1/\sqrt2\)</span>.</p>
+<p>The t_SNE algorithm, described in <a href="https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf?fbcl">van der Maaten and Hinton (2008)</a> is an improvement on SNE that overcomes several technical difficulties. The main differences from SNE are that (1) t-SNE uses a symmetric version of the cost function which has a simpler gradient and (2) t-SNE uses a t distribution with one degree of freedom for the points in the low dimensional space. These help overcome optimization problems and mitigate the effect of the “Crowding Problem” in which the area available in the low dimensional map to accommodate moderately distant data points will not be sufficient.</p>
+<p>In both SNE and t-SNE, “the gradient may be interpreted as the resultant force created by a set of springs between the map points <span class="math inline">\(y_i\)</span> and <span class="math inline">\(y_j\)</span> . . . The spring between <span class="math inline">\(y_i\)</span> and <span class="math inline">\(y_j\)</span> repels or attracts the map points depending on whether distance between the twoin the map is too small or too large to represent the similarities between the two high dimensional points.” The final result, t-SNE, is an algorithm that preserves local similarities between points while preserving enouth of the global structure to recognize clusters.</p>
+<p>The art of both these algorithms comprises not only the marshaling appropriate mathematics to realize intuitive geometric ideas about data relationships, but in working through the many technical difficulties and optimization problems to provide reasonable performance. All of this described with great clarity and in considerable detail in paper by van der Maaten and Hinton referenced above.</p>
+</section>
+</section>
+<section id="r-examples" class="level2">
+<h2 class="anchored" data-anchor-id="r-examples">R Examples</h2>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
