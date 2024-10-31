@@ -91,7 +91,89 @@ The spring between $y_i$ and $y_j$ repels or attracts the map points depending o
 The art of both these algorithms comprises not only the marshaling appropriate mathematics to realize intuitive geometric ideas about data relationships, but in working through the many technical difficulties and optimization problems to provide reasonable performance. All of this described with great clarity and in considerable detail in paper by van der Maaten and Hinton referenced above.
 
 
-
-
 ## R Examples
+
+```{r}
+#| message: false
+#| warning: false
+
+library(palmerpenguins)
+library(tidyverse)
+library(tsne)
+library(modeldata) # for ames housing data
+library(threejs)
+
+```
+
+Have a look at the penguins data.
+```{r}
+df_p <- palmerpenguins::penguins
+glimpse(df_p)
+```
+
+Prepare data frames for fitting the model and then for subsequent plotting.
+```{r}
+#| message: false
+#| warning: false
+
+df_p_fit <- df_p |> mutate(island = as.integer(island),
+                          sex = as.integer(sex)) |>
+                          select(c(-year,-species)) |> na.omit() 
+df_p_plot <- df_p |> select(-year) |> na.omit() 
+
+```
+
+Fit the t-sne model
+```{r}
+#| message: false
+#| warning: false
+
+fit_pen <- tsne(df_p_fit, epoch_callback = NULL, perplexity=50)
+
+```
+
+```{r}
+#| message: false
+#| warning: false
+
+
+df_p_plot <- df_p_plot |> mutate( x = fit_pen[,1], y = fit_pen[,2])
+            
+df_p_plot |> ggplot(aes(x,y, colour = species, shape = island)) +
+           geom_point() +
+           scale_color_manual(values = c("blue", "red", "green"))
+
+```
+
+```{r}
+
+#| message: false
+#| warning: false
+
+fit_pen_3D = tsne(df_p_fit, epoch_callback = NULL, perplexity=50, k=3)
+```
+
+
+```{r}
+x <- fit_pen_3D[,1] 
+y <- fit_pen_3D[,2]
+z <- fit_pen_3D[,3]
+
+
+df_p_plot <- df_p_plot |> mutate(
+  color = if_else(species == "Adelie", "blue", 
+                  if_else( species == "Gentoo","green", "red")))
+
+scatterplot3js(x,y,z, color=df_p_plot$color, cex.symbols = .3, 
+               labels = df_p_plot$species)
+
+```
+
+
+
+
+
+
+
+
 
