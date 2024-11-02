@@ -220,5 +220,44 @@ df_ames_plot <- ames |> mutate(x = fit_ames[,1], y = fit_ames[,2],
             
 df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = neighborhood)) + geom_point()
 ```
- #
-                              #)
+
+
+```{r}
+df_ames_plot <- ames |> mutate(x = fit_ames[,1], y = fit_ames[,2],
+                               MS_Zoning = as.character(MS_Zoning),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "C_all", "C or I"),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "I_all" , "C or I")
+                               )
+                              
+                               
+             
+            
+df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = Neighborhood)) + 
+                geom_point() +
+                guides(color = FALSE, size = none)
+```
+
+
+
+
+### R Packages
+
+cml vo.2.2: Finds a low-dimensional embedding of high-dimensional data, conditioning on available manifold information. The current version supports conditional MDS (based on either conditional SMACOF in Bui (2021) or closed-form solution in Bui (2022) and conditional ISOMAP in Bui (2021) .
+
+dyndimred v1.0.4: Provides a common interface for applying dimensionality reduction methods, such as Principal Component Analysis ('PCA'), Independent Component Analysis ('ICA'), diffusion maps, Locally-Linear Embedding ('LLE'), t-distributed Stochastic Neighbor Embedding ('t-SNE'), and Uniform Manifold Approximation and Projection ('UMAP'). Has built-in support for sparse matrices.
+
+hydra v0.1.0: Calculate an optimal embedding of a set of data points into low-dimensional hyperbolic space. This uses the strain-minimizing hyperbolic embedding of Keller-Ressel and Nargang (2019).
+
+matrixLaplacian v1.0: Constructs the normalized Laplacian matrix of a square matrix, returns the eigenvectors (singular vectors) and visualization of normalized Laplacian map.
+
+phateR v1.0.7: Implements a novel conceptual framework for learning and visualizing the manifold inherent to biological systems in which smooth transitions mark the progressions of cells from one state to another.
+
+Riemann v0.1.4: provides a variety of algorithms for manifold-valued data, including Fréchet summaries, hypothesis testing, clustering, visualization, and other learning tasks. See Bhattacharya and Bhattacharya (2012) for general exposition to statistics on manifolds. See the vignette.
+
+Rtsne v:0.17: Provides a R wrapper around the fast T-distributed Stochastic Neighbor Embedding implementation by Van der Maaten.
+
+spectralGraphTopology v0.2.3: Learning Graphs from Data via Spectral Constraints, It provides implementations of state of the art algorithms such as Combinatorial Graph Laplacian Learning (CGL), Spectral Graph Learning (SGL), Graph Estimation based on Majorization-Minimization (GLE-MM), and Graph Estimation based on Alternating Direction Method of Multipliers (GLE-ADMM). See the vignette.
+
+umap v0.2.10.0: Implements the Uniform manifold approximation and projection algorithm for dimension reduction which was described described byMcInnes and Healy (2018). See the vignette
+
+uwot v0.2.2: An implementation of the Uniform Manifold Approximation and Projection dimensionality reduction by McInnes et al. (2018). It also provides means to transform new data and to carry out supervised dimensionality reduction. An implementation of the related LargeVis method of Tang et al. (2016) is also provided. See the uwot website(https://github.com/jlmelville/uwot>) for more documentation and examples.
