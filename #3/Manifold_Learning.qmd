@@ -1,6 +1,9 @@
 ---
 title: "Manifold Learning"
 format: html
+html:
+    code-fold: true
+    code-summary: "Show the code"
 editor: source
 ---
 
@@ -96,6 +99,7 @@ The art of both these algorithms comprises not only the marshaling appropriate m
 ```{r}
 #| message: false
 #| warning: false
+#| echo: false
 
 library(palmerpenguins)
 library(tidyverse)
@@ -105,8 +109,14 @@ library(threejs)
 
 ```
 
-Have a look at the penguins data.
+### Example 1: The Penguins
+
+For our first example, let's look at the penguins data set from the [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/) package. It has six variables we can use to feed the t-SNE algorithm and we know that we would like any clusters identified to correspond with the three species of penguins.
+
+Here is a glimpse of the data.
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 df_p <- palmerpenguins::penguins
 glimpse(df_p)
 ```
@@ -115,7 +125,8 @@ Prepare data frames for fitting the model and then for subsequent plotting.
 ```{r}
 #| message: false
 #| warning: false
-
+#| code-fold: true
+#| code-summary: "Show the code"
 df_p_fit <- df_p |> mutate(island = as.integer(island),
                           sex = as.integer(sex)) |>
                           select(c(-year,-species)) |> na.omit() 
@@ -131,11 +142,12 @@ Fit the t-sne model
 fit_pen <- tsne(df_p_fit, epoch_callback = NULL, perplexity=50)
 
 ```
-
+Next, we coordinates bit by the model to our plotting data frame and plot. As we would expect, the clusters identified by t-SNE line up very nicely with the the penguin species, and island. All of the Gentoo are on Biscoe island.
 ```{r}
 #| message: false
 #| warning: false
-
+#| code-fold: true
+#| code-summary: "Show the code"
 
 df_p_plot <- df_p_plot |> mutate( x = fit_pen[,1], y = fit_pen[,2])
             
@@ -145,6 +157,8 @@ df_p_plot |> ggplot(aes(x,y, colour = species, shape = island)) +
 
 ```
 
+
+Just for fun, lets alter the k parameter and fit a three dimensional projection.
 ```{r}
 
 #| message: false
@@ -152,9 +166,11 @@ df_p_plot |> ggplot(aes(x,y, colour = species, shape = island)) +
 
 fit_pen_3D = tsne(df_p_fit, epoch_callback = NULL, perplexity=50, k=3)
 ```
-
+The `threejs` visualization emphasizes the single Chinstrap observation floating in space near the Adelle clusters and the two Gentoos reaching the edge of Chinstrap land.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
 x <- fit_pen_3D[,1] 
 y <- fit_pen_3D[,2]
 z <- fit_pen_3D[,3]
@@ -169,11 +185,40 @@ scatterplot3js(x,y,z, color=df_p_plot$color, cex.symbols = .3,
 
 ```
 
+### The Ames Housing Dataset
 
 
+[AMES Housing Data](https://www.tmwr.org/ames)
 
 
+```{r}
+
+data(ames, package = "modeldata")
+glimpse(ames)
+```
+
+Prepare ames for processing with `tsne` by changing all factors to numeric data and fit model.
 
 
+```{r}
+df_ames <- ames %>% mutate_if(is.factor, as.numeric)
+#fit_ames <- tsne(df_ames, epoch_callback = NULL, perplexity=50)
+fit_ames <- readRDS("tsne_fit_ames")
+head(fit_ames)
+```
 
-
+```{r}
+df_ames_plot <- ames |> mutate(x = fit_ames[,1], y = fit_ames[,2],
+                               neighborhood = as.integer(Neighborhood), 
+                               MS_Zoning = as.character(MS_Zoning),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "C_all", "C or I"),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "I_all" , "C or I")
+                               )
+                              
+                               
+             
+            
+df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = neighborhood)) + geom_point()
+```
+ #
+                              #)
