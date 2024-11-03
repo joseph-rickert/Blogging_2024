@@ -237,7 +237,37 @@ df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = Neighborhood)) +
                 guides(color = FALSE, size = none)
 ```
 
+### 3D Ames
 
+```{r}
+
+set.seed(1234)
+
+#fit_ames_3D <- tsne(ames, epoch_callback = NULL, perplexity=50,k=3)
+fit_ames_3D <- readRDS("tsne_fit_ames_3D")
+head(fit_ames_3D)
+```
+
+```{r}
+df_plot_ames_3D <- df_ames |> mutate( x = fit_ames_3D[,1],
+                              y = fit_ames_3D[,2], 
+                              z = fit_ames_3D[,3],
+                              neighborhood = ames$Neighborhood,
+                              zone = ames$MS_Zoning)
+```
+
+
+plot
+
+```{r}
+x <- fit_ames_3D[,1]
+y <- fit_ames_3D[,2]
+z <- fit_ames_3D[,3]
+
+
+scatterplot3js(x, y, z,cex.symbols = .1, 
+                col=rainbow(length(df_plot_ames_3D$Neighborhood)))
+```
 
 
 ### R Packages
