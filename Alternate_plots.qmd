@@ -1,0 +1,19 @@
+---
+title: "A;ternate Plots"
+format: html
+editor: visual
+---
+
+```{r}
+df_ames_plot <- ames |> mutate(x = fit_ames[,1], y = fit_ames[,2],
+                               neighborhood = as.integer(Neighborhood), 
+                               MS_Zoning = as.character(MS_Zoning),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "C_all", "C or I"),
+                               MS_Zoning = replace(MS_Zoning, MS_Zoning == "I_all" , "C or I")
+                               )
+                              
+                               
+             
+            
+df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = neighborhood)) + geom_point()
+```
