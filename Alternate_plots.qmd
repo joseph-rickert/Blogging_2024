@@ -17,3 +17,8 @@ df_ames_plot <- ames |> mutate(x = fit_ames[,1], y = fit_ames[,2],
             
 df_ames_plot |> ggplot(aes(x,y, shape = MS_Zoning, color = neighborhood)) + geom_point()
 ```
+
+```{r}
+scatterplot3js(x, y, z,cex.symbols = .1, 
+                col=rainbow(length(df_plot_ames_3D$Sale_Price)))
+```
