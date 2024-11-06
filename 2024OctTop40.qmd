@@ -1,0 +1,50 @@
+---
+title: "2024_October_Top40"
+format: html
+editor: source
+---
+
+## Intro
+
+
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+### AI
+
+[tidyllm](https://cran.r-project.org/package=tidyllm) v0.1.0: Implements a tidy interface for integrating large language model (LLM) APIs such as [Claude](https://www.anthropic.com/), [ChatGPT](https://openai.com/), [Groq](https://groq.com/), and local models via [Ollama](https://ollama.com/) into R workflows and supports text and media-based interactions, interactive message history, stateful rate limit handling, and a tidy, pipeline-oriented interface for streamlined integration into data workflows. See the [vignette](https://cran.r-project.org/web/packages/tidyllm/vignettes/getting-started.html).
+
+
+### Data
+
+[openFDA](https://cran.r-project.org/package=openFDA) v0.1.0: Facilitates access to U.S. Food and Drug Administrations [openFDA](https://open.fda.gov/
+) data on drugs, devices, foodstuffs, tobacco, and more. See [Kass-Hout et al. (2016)](https://academic.oup.com/jamia/article/23/3/596/2908999?login=false) for background and the [vignette](https://cran.r-project.org/web/packages/openFDA/vignettes/openFDA.html) to get started.
+
+### Medicine
+
+### Statistics
+
+
+[MECfda](https://cran.r-project.org/package=MECfda) v0.1.0: Implements functions to solve scalar-on-function linear models, including generalized linear mixed effect model and quantile linear regression model, and bias correction estimation methods due to measurement error. Details about the measurement error bias correction methods. See [Luan et al. (2023)](https://arxiv.org/abs/2305.12624), [Tekwe et al. (2022)](https://academic.oup.com/biostatistics/article/23/4/1218/6596004?login=false), [Zhang et al. (2023)](https://www3.stat.sinica.edu.tw/statistica/J33N3/J33N321/J33N321.html), and [Tekwe et al. (2019)](https://onlinelibrary.wiley.com/doi/10.1002/sim.8179) for background and the [vignette](https://cran.r-project.org/web/packages/MECfda/vignettes/MECfda.html) for an introduction.
+
+
+[VDPO](https://cran.r-project.org/package=VDPO) v0.1.0: Provides a comprehensive set of tools for analyzing and manipulating functional data with non-uniform lengths, and addresses two common scenarios in functional data analysis: Variable Domain Data, and Partially Observed Data.  See [Amaro et al. (2024)](https://arxiv.org/abs/2401.05839) for the details. There are two vignettes: [Introduction](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-01-introduction.html) and [Model fitting for variable domain data](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-02-vd-models.html).
+
+![](VDPO.png){fig-alt="Heatmap of model Beta"}
+
+
+:::
+
+::: {.column width="10%"}
+
+:::
+
+::: {.column width="45%"}
+
+second 20
+
+:::
+
+::::
