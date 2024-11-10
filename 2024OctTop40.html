@@ -66,7 +66,14 @@ ul.task-list li input[type="checkbox"] {
 <div class="column" style="width:45%;">
 <section id="ai" class="level3">
 <h3 class="anchored" data-anchor-id="ai">AI</h3>
+<p><a href="https://cran.r-project.org/package=hollr">hollr</a> v1.0.0: Enables chat completion and text annotation with local and <a href="https://openai.com/">OpenAI</a> language models, and supports batch processing, multiple annotators, and consistent output formats. See <a href="https://cran.r-project.org/web/packages/hollr/readme/README.html">README</a>.</p>
+<p><a href="https://cran.r-project.org/package=spBPS">spBPS</a> v0.0-4: Provides functions for Bayesian Predictive Stacking within the Bayesian transfer learning framework for geospatial artificial systems, as described in <a href="https://arxiv.org/abs/2410.09504">Rewaiccw &amp; Banerjee (2024)</a>. Core functions leverage <code>C++</code> making the framework well-suited for large-scale spatial data analysis in parallel and distributed computing environments.</p>
+<p><img src="spBPS.png" class="img-fluid" alt="Heatmaps of Spacial Processes"></p>
 <p><a href="https://cran.r-project.org/package=tidyllm">tidyllm</a> v0.1.0: Implements a tidy interface for integrating large language model (LLM) APIs such as <a href="https://www.anthropic.com/">Claude</a>, <a href="https://openai.com/">ChatGPT</a>, <a href="https://groq.com/">Groq</a>, and local models via <a href="https://ollama.com/">Ollama</a> into R workflows and supports text and media-based interactions, interactive message history, stateful rate limit handling, and a tidy, pipeline-oriented interface for streamlined integration into data workflows. See the <a href="https://cran.r-project.org/web/packages/tidyllm/vignettes/getting-started.html">vignette</a>.</p>
+</section>
+<section id="climate-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="climate-analysis">Climate Analysis</h3>
+<p><a href="https://cran.r-project.org/package=carbonr">carbonr</a> v0.2.1: Provides a tool for calculating carbon-equivalent emissions based in the UK Government’s <a href="https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2023">Greenhouse Gas Conversion Factors</a> report, it facilitates transparent emissions calculations for various sectors, including travel, accommodation, and clinical activities. See the <a href="https://cran.r-project.org/web/packages/carbonr/vignettes/introduction-to-carbonr.html">vignette</a>.</p>
 </section>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
@@ -78,13 +85,22 @@ ul.task-list li input[type="checkbox"] {
 <section id="statistics" class="level3">
 <h3 class="anchored" data-anchor-id="statistics">Statistics</h3>
 <p><a href="https://cran.r-project.org/package=MECfda">MECfda</a> v0.1.0: Implements functions to solve scalar-on-function linear models, including generalized linear mixed effect model and quantile linear regression model, and bias correction estimation methods due to measurement error. Details about the measurement error bias correction methods. See <a href="https://arxiv.org/abs/2305.12624">Luan et al.&nbsp;(2023)</a>, <a href="https://academic.oup.com/biostatistics/article/23/4/1218/6596004?login=false">Tekwe et al.&nbsp;(2022)</a>, <a href="https://www3.stat.sinica.edu.tw/statistica/J33N3/J33N321/J33N321.html">Zhang et al.&nbsp;(2023)</a>, and <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.8179">Tekwe et al.&nbsp;(2019)</a> for background and the <a href="https://cran.r-project.org/web/packages/MECfda/vignettes/MECfda.html">vignette</a> for an introduction.</p>
+<p><img src="VDPO.png" class="img-fluid" alt="Heatmap of model Beta"></p>
 <p><a href="https://cran.r-project.org/package=VDPO">VDPO</a> v0.1.0: Provides a comprehensive set of tools for analyzing and manipulating functional data with non-uniform lengths, and addresses two common scenarios in functional data analysis: Variable Domain Data, and Partially Observed Data. See <a href="https://arxiv.org/abs/2401.05839">Amaro et al.&nbsp;(2024)</a> for the details. There are two vignettes: <a href="https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-01-introduction.html">Introduction</a> and <a href="https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-02-vd-models.html">Model fitting for variable domain data</a>.</p>
 <p><img src="VDPO.png" class="img-fluid" alt="Heatmap of model Beta"></p>
 </section>
 </div><div class="column" style="width:10%;">
 
 </div><div class="column" style="width:45%;">
-<p>second 20</p>
+<section id="visualization" class="level3">
+<h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
+<p><a href="https://cran.r-project.org/package=diceplot">doceplot</a> v0.1.3: Provides functions to visualize data with more than two categorical variables and additional continuous variables, and is particularly useful for exploring complex categorical data in the context of pathway analysis across multiple conditions. Look <a href="https://dice-and-domino-plot.readthedocs.io/en/latest/">here</a> for documentation.</p>
+<p><img src="diceplot.png" class="img-fluid" alt="Plot with 6 categorical variables"></p>
+<p><a href="https://cran.r-project.org/package=ggpca">ggpca</a> v0.1.2: Provides tools for creating publication-ready dimensionality reduction plots, including Principal Component Analysis (PCA), t-Distributed Stochastic Neighbor Embedding (t-SNE), and Uniform Manifold Approximation and Projection (UMAP) using the <code>ggplot2</code> framework. See the <a href="https://cran.r-project.org/web/packages/ggpca/vignettes/ggpca-examples.htm">vignette</a>.</p>
+<p><img src="ggpca.png" class="img-fluid" alt="PCA plot"></p>
+<p><a href="https://cran.r-project.org/package=plotscaper">plotscaper</a> v0.2.3: Implements a framework for creating interactive figures for data exploration. All plots are automatically linked and support several kinds of interactive features, including selection, zooming, panning, and parameter manipulation. There is an <a href="https://cran.r-project.org/web/packages/plotscaper/vignettes/plotscaper.html">Introduction</a> and four additional vignettes including <a href="https://cran.r-project.org/web/packages/plotscaper/vignettes/available-interactions.html">Available Interactions</a> and <a href="https://cran.r-project.org/web/packages/plotscaper/vignettes/layout.html">Layout</a>.</p>
+<p><img src="plotscaper.png" class="img-fluid" alt="Four interlinked plots"></p>
+</section>
 </div>
 </div>
 </section>

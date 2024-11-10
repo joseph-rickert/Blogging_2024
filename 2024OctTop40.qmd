@@ -14,7 +14,18 @@ editor: source
 
 ### AI
 
+[hollr](https://cran.r-project.org/package=hollr) v1.0.0: Enables chat completion and text annotation with local and [OpenAI](https://openai.com/) language models, and supports batch processing, multiple annotators, and consistent output formats. See [README](https://cran.r-project.org/web/packages/hollr/readme/README.html).
+
+[spBPS](https://cran.r-project.org/package=spBPS) v0.0-4: Provides functions for Bayesian Predictive Stacking within the Bayesian transfer learning framework for geospatial artificial systems, as described in [Rewaiccw & Banerjee (2024)](https://arxiv.org/abs/2410.09504). Core functions leverage `C++` making the framework well-suited for large-scale spatial data analysis in parallel and distributed computing environments. 
+
+![](spBPS.png){fig-alt="Heatmaps of Spacial Processes"}
+
+
 [tidyllm](https://cran.r-project.org/package=tidyllm) v0.1.0: Implements a tidy interface for integrating large language model (LLM) APIs such as [Claude](https://www.anthropic.com/), [ChatGPT](https://openai.com/), [Groq](https://groq.com/), and local models via [Ollama](https://ollama.com/) into R workflows and supports text and media-based interactions, interactive message history, stateful rate limit handling, and a tidy, pipeline-oriented interface for streamlined integration into data workflows. See the [vignette](https://cran.r-project.org/web/packages/tidyllm/vignettes/getting-started.html).
+
+### Climate Analysis
+
+[carbonr](https://cran.r-project.org/package=carbonr) v0.2.1: Provides a tool for calculating carbon-equivalent emissions based in the UK Government's [Greenhouse Gas Conversion Factors](https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2023) report, it facilitates transparent emissions calculations for various sectors, including travel, accommodation, and clinical activities. See the [vignette](https://cran.r-project.org/web/packages/carbonr/vignettes/introduction-to-carbonr.html).
 
 
 ### Data
@@ -29,6 +40,7 @@ editor: source
 
 [MECfda](https://cran.r-project.org/package=MECfda) v0.1.0: Implements functions to solve scalar-on-function linear models, including generalized linear mixed effect model and quantile linear regression model, and bias correction estimation methods due to measurement error. Details about the measurement error bias correction methods. See [Luan et al. (2023)](https://arxiv.org/abs/2305.12624), [Tekwe et al. (2022)](https://academic.oup.com/biostatistics/article/23/4/1218/6596004?login=false), [Zhang et al. (2023)](https://www3.stat.sinica.edu.tw/statistica/J33N3/J33N321/J33N321.html), and [Tekwe et al. (2019)](https://onlinelibrary.wiley.com/doi/10.1002/sim.8179) for background and the [vignette](https://cran.r-project.org/web/packages/MECfda/vignettes/MECfda.html) for an introduction.
 
+![](VDPO.png){fig-alt="Heatmap of model Beta"}
 
 [VDPO](https://cran.r-project.org/package=VDPO) v0.1.0: Provides a comprehensive set of tools for analyzing and manipulating functional data with non-uniform lengths, and addresses two common scenarios in functional data analysis: Variable Domain Data, and Partially Observed Data.  See [Amaro et al. (2024)](https://arxiv.org/abs/2401.05839) for the details. There are two vignettes: [Introduction](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-01-introduction.html) and [Model fitting for variable domain data](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-02-vd-models.html).
 
@@ -43,8 +55,26 @@ editor: source
 
 ::: {.column width="45%"}
 
-second 20
+### Visualization
+
+
+[doceplot](https://cran.r-project.org/package=diceplot) v0.1.3: Provides functions to visualize data with more than two categorical variables and additional continuous variables, and is particularly useful for exploring complex categorical data in the context of pathway analysis across multiple conditions. Look [here](https://dice-and-domino-plot.readthedocs.io/en/latest/) for documentation.
+
+![](diceplot.png){fig-alt="Plot with 6 categorical variables"}
+
+[ggpca](https://cran.r-project.org/package=ggpca) v0.1.2: Provides tools for creating publication-ready dimensionality reduction plots, including Principal Component Analysis (PCA), t-Distributed Stochastic Neighbor Embedding (t-SNE), and Uniform Manifold Approximation and Projection (UMAP) using the `ggplot2` framework. See the [vignette](https://cran.r-project.org/web/packages/ggpca/vignettes/ggpca-examples.htm).
+
+![](ggpca.png){fig-alt="PCA plot"}
+
+
+[plotscaper](https://cran.r-project.org/package=plotscaper) v0.2.3: Implements a framework for creating interactive figures for data exploration. All plots are automatically linked and support several kinds of interactive features, including selection, zooming, panning, and parameter manipulation. There is an [Introduction](https://cran.r-project.org/web/packages/plotscaper/vignettes/plotscaper.html) and four additional vignettes including [Available Interactions](https://cran.r-project.org/web/packages/plotscaper/vignettes/available-interactions.html) and [Layout](https://cran.r-project.org/web/packages/plotscaper/vignettes/layout.html).
+
+![](plotscaper.png){fig-alt="Four interlinked plots"}
 
 :::
+
+
+
+
 
 ::::
