@@ -27,20 +27,39 @@ editor: source
 
 [carbonr](https://cran.r-project.org/package=carbonr) v0.2.1: Provides a tool for calculating carbon-equivalent emissions based in the UK Government's [Greenhouse Gas Conversion Factors](https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2023) report, it facilitates transparent emissions calculations for various sectors, including travel, accommodation, and clinical activities. See the [vignette](https://cran.r-project.org/web/packages/carbonr/vignettes/introduction-to-carbonr.html).
 
+### Computational Methods
+
+[TensorTools](https://CRAN.R-project.org/package=TensorTools) v1.0.0: Provides a set of tools for basic tensor operators based on the Discrete Fourier Transform including the eigenvalue,  QR decomposition, LU decompositions of a tensor, and thr calculation of the inverse of a tensor and the transpose of a symmetric tensor. See [Kernfeld et al. (2015)](https://www.sciencedirect.com/science/article/pii/S0024379515004358?via%3Dihub)nfor the details and the [vignette](https://cran.r-project.org/web/packages/TensorTools/vignettes/TensorTools.html) for examples. Note, in this context, a tensor is a multidimensional array
+
 
 ### Data
 
 [openFDA](https://cran.r-project.org/package=openFDA) v0.1.0: Facilitates access to U.S. Food and Drug Administrations [openFDA](https://open.fda.gov/
 ) data on drugs, devices, foodstuffs, tobacco, and more. See [Kass-Hout et al. (2016)](https://academic.oup.com/jamia/article/23/3/596/2908999?login=false) for background and the [vignette](https://cran.r-project.org/web/packages/openFDA/vignettes/openFDA.html) to get started.
 
+### Epidemiology
+
+[epichains](https://cran.r-project.org/package=epichains) v0.1.1: Provides methods to simulate and analyse the size and length of branching processes with an arbitrary offspring distribution. These can be used, for example, to analyse the distribution of chain sizes or length of infectious disease outbreaks, as discussed in [Farrington et al. (2003)](https://academic.oup.com/biostatistics/article-abstract/4/2/279/245106?redirectedFrom=fulltext&login=false). There are six vignettes including a [Getting Started](https://cran.r-project.org/web/packages/epichains/vignettes/epichains.html) guide and [Theoretical Background](https://cran.r-project.org/web/packages/epichains/vignettes/theoretical_background.html) 
+
+![](epichains.png){fig-alt="Diagram depicting chain"}
+
 ### Medicine
 
 ### Statistics
 
 
+[extrememix](https://cran.r-project.org/package=extrememix) v0.0.1: Fits extreme value mixture models, which are models for tails not requiring selection of a threshold, for continuous data. See [Behrens et al.(2004)](https://journals.sagepub.com/doi/10.1191/1471082X04st075oa) and [Nascimento et al. (2011)](https://link.springer.com/article/10.1007/s11222-011-9270-z) for the theory and the [vignette](https://cran.r-project.org/web/packages/extrememix/vignettes/my-vignette.html) for examples.
+
+![](extrememix.png){fig-alt="Plot of Predictive Distribution"}
+
 [MECfda](https://cran.r-project.org/package=MECfda) v0.1.0: Implements functions to solve scalar-on-function linear models, including generalized linear mixed effect model and quantile linear regression model, and bias correction estimation methods due to measurement error. Details about the measurement error bias correction methods. See [Luan et al. (2023)](https://arxiv.org/abs/2305.12624), [Tekwe et al. (2022)](https://academic.oup.com/biostatistics/article/23/4/1218/6596004?login=false), [Zhang et al. (2023)](https://www3.stat.sinica.edu.tw/statistica/J33N3/J33N321/J33N321.html), and [Tekwe et al. (2019)](https://onlinelibrary.wiley.com/doi/10.1002/sim.8179) for background and the [vignette](https://cran.r-project.org/web/packages/MECfda/vignettes/MECfda.html) for an introduction.
 
 ![](VDPO.png){fig-alt="Heatmap of model Beta"}
+
+[spStack](https://cran.r-project.org/package=spStack) v1.0.1: Fits Bayesian hierarchical spatial process models for point-referenced Gaussian, Poisson, binomial, and binary data using stacking of predictive densities by sampling from analytically available posterior distributions conditional upon some candidate values of the spatial process parameters. See [Zhang et al. (2024)](https://arxiv.org/abs/2304.12414) and [Pan et al. (2024)](https://arxiv.org/abs/2406.04655) for background and the [vignette](https://cran.r-project.org/web/packages/spStack/vignettes/spStack.html) for examples.
+
+![](spStack.png){fig-alt="Spatial Surface Plots"}
+
 
 [VDPO](https://cran.r-project.org/package=VDPO) v0.1.0: Provides a comprehensive set of tools for analyzing and manipulating functional data with non-uniform lengths, and addresses two common scenarios in functional data analysis: Variable Domain Data, and Partially Observed Data.  See [Amaro et al. (2024)](https://arxiv.org/abs/2401.05839) for the details. There are two vignettes: [Introduction](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-01-introduction.html) and [Model fitting for variable domain data](https://cran.r-project.org/web/packages/VDPO/vignettes/VDPO-02-vd-models.html).
 
@@ -54,6 +73,35 @@ editor: source
 :::
 
 ::: {.column width="45%"}
+
+### Statistics
+
+
+[clusTMB](https://cran.r-project.org/package=clustTMB): v0.1.0: Fits a spatio-temporal finite mixture model using the `TMB` package.. Covariate, spatial and temporal random effects can be incorporated into the gating formula using multinomial logistic regression, the expert formula using a generalized linear mixed model framework, or both. See the vignettes [Covariance Structure](https://cran.r-project.org/web/packages/clustTMB/vignettes/CovarianceStructure.html) and [Meuse Example](https://cran.r-project.org/web/packages/clustTMB/vignettes/SpatialExMeuseData.html).
+
+![](clustTMB.png){fig-alt="Correlation plots of concentration levels"}
+
+[multipois](https://cran.r-project.org/package=multpois) v0.2.0: Implements a method to analyze polytomous responses with three or more unordered categories by transforming nominal response data into counts for each categorical alternative. These counts are then analyzed using (mixed) Poisson regression as per [Baker (1994)](https://www.jstor.org/stable/2348134?origin=crossref). 
+
+![](multipois.png){fig-alt="Mosaic plot of Y by, X1, X2"}
+
+
+
+
+### Utilities
+
+[ctypesio](https://cran.r-project.org/package=ctypesio) v0.1.1: Provides functions for reading and writing binary data (with files, connections, and raw vectors) using `C` type descriptions that convert data between `C` types and R types while checking for values outside the type limits, `NA` values, etc. See the vignettes [Parsing JPEG Markers](https://cran.r-project.org/web/packages/ctypesio/vignettes/parse-jpeg.html) and [Handcrafting a WAV file](https://cran.r-project.org/web/packages/ctypesio/vignettes/wave-format.html).
+
+
+[GitStats](https://cran.r-project.org/package=GitStats) v2.1.2: Provides functions to obtain standardized data from multiple *Git* services, including GitHub and GitLab. There are vignettes on [Getting Repositories](https://cran.r-project.org/web/packages/GitStats/vignettes/get_repos_with_code.html) and [Setting Hosts](https://cran.r-project.org/web/packages/GitStats/vignettes/set_hosts.html). 
+
+[mall](https://cran.r-project.org/package=mall) v0.1.0: Enables users to run multiple Large Language Model predictions against a table. The predictions run row-wise over a specified column. It works using a one-shot prompt, along with the current row's content. Look [here](https://mlverse.github.io/mall/) got examples.
+
+[MDPIexploreR](https://cran.r-project.org/package=MDPIexploreR) v0.2.0: Provides tools to scrape and analyze data from the [MDPI journals](https://www.mdpi.com/about/journals) including function to extract metrics such as submission-to-acceptance times, article types, plot data and explore patterns of self-citations. See the [vignette](https://cran.r-project.org/web/packages/MDPIexploreR/vignettes/introduction_MDPIexploreR.html)
+
+![](MDPI.png){fig-alt="List of first six MDPI Journals"}
+
+
 
 ### Visualization
 
