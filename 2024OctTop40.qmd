@@ -42,11 +42,63 @@ editor: source
 [epichains](https://cran.r-project.org/package=epichains) v0.1.1: Provides methods to simulate and analyse the size and length of branching processes with an arbitrary offspring distribution. These can be used, for example, to analyse the distribution of chain sizes or length of infectious disease outbreaks, as discussed in [Farrington et al. (2003)](https://academic.oup.com/biostatistics/article-abstract/4/2/279/245106?redirectedFrom=fulltext&login=false). There are six vignettes including a [Getting Started](https://cran.r-project.org/web/packages/epichains/vignettes/epichains.html) guide and [Theoretical Background](https://cran.r-project.org/web/packages/epichains/vignettes/theoretical_background.html) 
 
 ![](epichains.png){fig-alt="Diagram depicting chain"}
+[serosv](https://cran.r-project.org/package=serosv) v1.0.1: Implements tools to estimate infectious diseases parameters using serological data. Implemented models include SIR models, nonparametric models, semiparametric models, and hierarchical models which are based on the book by [Hens et al. (2013)](https://link.springer.com/book/10.1007/978-1-4614-4072-7). There are eight vignettes including [Hierarchical Bayesian Models]() and [Modeling directly from antibody levels](https://cran.r-project.org/web/packages/serosv/vignettes/model_quantitative_data.html).
+
+![](serosv.png){fig-alt="Model visualization showing sero prevalence and fprce of infection"}
+
+### Genomics
+
+[GSEMA](https://cran.r-project.org/package=GSEMA) v0.99.3: Provides functions to perform various steps of gene set enrichment meta-analysis ncluding meta-analysis of effect sizes from different pathways in different studies. See the [vignette](https://cran.r-project.org/web/packages/GSEMA/vignettes/GSEMA.html) for examples.
+
+![](GSEMA.png){fig-alt="Heatmap of random effects model"}
+
+[phylotypr](https://cran.r-project.org/package=phylotypr) v0.1.0: Implements Naive Bayesian Classifier from the Ribosomal Database Project that traditionally has been used to classify 16S rRNA gene sequences to bacterial taxonomic outlines, but which applies to any type of gene sequence. See [Wang et al. (2007)](https://journals.asm.org/doi/10.1128/aem.00062-07) for background and the [vignette](https://cran.r-project.org/web/packages/phylotypr/vignettes/phylotypr.html) for examples.
+
+
+### Machine Learning
+
+[textpress](https://cran.r-project.org/package=textpress) v1.0.0: Provides a Natural Language Processing (NLP) toolkit focused on search-centric workflows with minimal dependencies. The package offers key features for web scraping, text processing, corpus search, and text embedding generation via the [HuggingFace API](https://huggingface.co/docs/api-inference/index).See [README](https://cran.r-project.org/web/packages/textpress/readme/README.html) for examples.
+
 
 ### Medicine
 
+[eyetools](https://cran.r-project.org/package=eyetools) v0.7.2: Provides functions to help researchers analyze eye-data enabling the automation of actions across a pipeline that includes transforming binocular data and gap repair and event-based processing such as fixations, saccades, and entry and duration in areas of interest. Functions implement the fixation and saccade detection methods proposed by [Salvucci and Goldberg (2000)]https://dl.acm.org/doi/10.1145/355017.355028) and visualize eye movement. See the [Intrudction](https://cran.r-project.org/web/packages/eyetools/vignettes/eyetools.html).
+
+![](eyetools.png){fig-alt="Eye movement plots"}
+
+
+[MedDataSets](https://cran.r-project.org/package=MedDataSets) v0.1.0: Provides an extensive collection of datasets related to medicine, diseases, treatments, drugs, and public health covering topics such as drug effectiveness, vaccine trials, survival rates, infectious disease outbreaks, and medical treatments. including AIDS, cancer, bacterial infections, and COVID-19, and information on pharmaceuticals and vaccines. These datasets are sourced from the R ecosystem and other R packages. See the [vignette](https://cran.r-project.org/web/packages/MedDataSets/vignettes/intro_meddatasets.html).
+
+
+[trtswitch](https://cran.r-project.org/package=trtswitch) v0.1.1: Implements rank-preserving structural failure time model (RPSFTM), iterative parameter estimation (IPE), inverse probability of censoring weights (IPCW), and two-stage estimation (TSE) methods for treatment switching in randomized clinical trials. See [Latimer et al. (2017)](https://pubmed.ncbi.nlm.nih.gov/25416688/) for background. There are five vignettes including ones on [RPSFTM](https://cran.r-project.org/web/packages/trtswitch/vignettes/rpsftm.html) and [IPE](https://cran.r-project.org/web/packages/trtswitch/vignettes/ipe.html).
+
+[UnplanSimon](https://cran.r-project.org/package=UnplanSimon) v0.1.0: Implements methods to manage under- and over-enrollment in Simon's Two-Stage Design by providing adaptive threshold adjustments and sample size recalibration, and  post-inference analysis tools to support clinical trial design and evaluation. See the [vignette](https://cran.r-project.org/web/packages/UnplanSimon/vignettes/UnplanSimon.html).
+
+
+### Quality Management
+
+[r6qualitytools](https://cran.r-project.org/package=r6qualitytools) v1.0.1: Implements a suite of statistical tools for Quality Management, designed around the Define, Measure, Analyze, Improve, and Control (DMAIC) cycle used in Six Sigma methodology. It refactors the `qualitytools`package incorporating 'R6' object-oriented programming for increased flexibility and performance and replaces traditional graphics with modern, interactive visualizations. Look [here](https://github.com/Fabianenc/r6qualitytool) for examples.
+
+![](r6quality.png){fig-alt="Process controol charts"}
+
+
+
+
+:::
+
+::: {.column width="10%"}
+
+:::
+
+::: {.column width="45%"}
+
+
+
 ### Statistics
 
+[clusTMB](https://cran.r-project.org/package=clustTMB): v0.1.0: Fits a spatio-temporal finite mixture model using the `TMB` package.. Covariate, spatial and temporal random effects can be incorporated into the gating formula using multinomial logistic regression, the expert formula using a generalized linear mixed model framework, or both. See the vignettes [Covariance Structure](https://cran.r-project.org/web/packages/clustTMB/vignettes/CovarianceStructure.html) and [Meuse Example](https://cran.r-project.org/web/packages/clustTMB/vignettes/SpatialExMeuseData.html).
+
+![](clustTMB.png){fig-alt="Correlation plots of concentration levels"}
 
 [extrememix](https://cran.r-project.org/package=extrememix) v0.0.1: Fits extreme value mixture models, which are models for tails not requiring selection of a threshold, for continuous data. See [Behrens et al.(2004)](https://journals.sagepub.com/doi/10.1191/1471082X04st075oa) and [Nascimento et al. (2011)](https://link.springer.com/article/10.1007/s11222-011-9270-z) for the theory and the [vignette](https://cran.r-project.org/web/packages/extrememix/vignettes/my-vignette.html) for examples.
 
@@ -54,7 +106,11 @@ editor: source
 
 [MECfda](https://cran.r-project.org/package=MECfda) v0.1.0: Implements functions to solve scalar-on-function linear models, including generalized linear mixed effect model and quantile linear regression model, and bias correction estimation methods due to measurement error. Details about the measurement error bias correction methods. See [Luan et al. (2023)](https://arxiv.org/abs/2305.12624), [Tekwe et al. (2022)](https://academic.oup.com/biostatistics/article/23/4/1218/6596004?login=false), [Zhang et al. (2023)](https://www3.stat.sinica.edu.tw/statistica/J33N3/J33N321/J33N321.html), and [Tekwe et al. (2019)](https://onlinelibrary.wiley.com/doi/10.1002/sim.8179) for background and the [vignette](https://cran.r-project.org/web/packages/MECfda/vignettes/MECfda.html) for an introduction.
 
-![](VDPO.png){fig-alt="Heatmap of model Beta"}
+[multipois](https://cran.r-project.org/package=multpois) v0.2.0: Implements a method to analyze polytomous responses with three or more unordered categories by transforming nominal response data into counts for each categorical alternative. These counts are then analyzed using (mixed) Poisson regression as per [Baker (1994)](https://www.jstor.org/stable/2348134?origin=crossref). 
+
+![](multipois.png){fig-alt="Mosaic plot of Y by, X1, X2"}
+
+
 
 [spStack](https://cran.r-project.org/package=spStack) v1.0.1: Fits Bayesian hierarchical spatial process models for point-referenced Gaussian, Poisson, binomial, and binary data using stacking of predictive densities by sampling from analytically available posterior distributions conditional upon some candidate values of the spatial process parameters. See [Zhang et al. (2024)](https://arxiv.org/abs/2304.12414) and [Pan et al. (2024)](https://arxiv.org/abs/2406.04655) for background and the [vignette](https://cran.r-project.org/web/packages/spStack/vignettes/spStack.html) for examples.
 
@@ -66,24 +122,10 @@ editor: source
 ![](VDPO.png){fig-alt="Heatmap of model Beta"}
 
 
-:::
-
-::: {.column width="10%"}
-
-:::
-
-::: {.column width="45%"}
-
-### Statistics
 
 
-[clusTMB](https://cran.r-project.org/package=clustTMB): v0.1.0: Fits a spatio-temporal finite mixture model using the `TMB` package.. Covariate, spatial and temporal random effects can be incorporated into the gating formula using multinomial logistic regression, the expert formula using a generalized linear mixed model framework, or both. See the vignettes [Covariance Structure](https://cran.r-project.org/web/packages/clustTMB/vignettes/CovarianceStructure.html) and [Meuse Example](https://cran.r-project.org/web/packages/clustTMB/vignettes/SpatialExMeuseData.html).
 
-![](clustTMB.png){fig-alt="Correlation plots of concentration levels"}
 
-[multipois](https://cran.r-project.org/package=multpois) v0.2.0: Implements a method to analyze polytomous responses with three or more unordered categories by transforming nominal response data into counts for each categorical alternative. These counts are then analyzed using (mixed) Poisson regression as per [Baker (1994)](https://www.jstor.org/stable/2348134?origin=crossref). 
-
-![](multipois.png){fig-alt="Mosaic plot of Y by, X1, X2"}
 
 
 
@@ -105,10 +147,17 @@ editor: source
 
 ### Visualization
 
+[affiner](https://cran.r-project.org/package=affiner) v0.1.1: Provides functions to dilate, permute, project, reflect, rotate, shear, and translate 2D and 3D points. Supports parallel projections including oblique projections such as the cabinet projection as well as axonometric projections such as the isometric projection. There is an [Introduction](https://cran.r-project.org/web/packages/affiner/vignettes/affiner.html) and a [vignette]() on geometry.
+
+![](affiner.png){fig-alt="3D cube"}
 
 [doceplot](https://cran.r-project.org/package=diceplot) v0.1.3: Provides functions to visualize data with more than two categorical variables and additional continuous variables, and is particularly useful for exploring complex categorical data in the context of pathway analysis across multiple conditions. Look [here](https://dice-and-domino-plot.readthedocs.io/en/latest/) for documentation.
 
 ![](diceplot.png){fig-alt="Plot with 6 categorical variables"}
+
+[ggcompare](https://cran.r-project.org/package=ggcompare) v0.0.2: Add mean comparison annotations to a `ggplot` to indicate if two or more groups are significantly different. For comparisons between two groups, the p-value is calculated by t-test (parametric) or Wilcoxon rank sum test (nonparametric). For comparisons among more than two groups, the p-value is calculated by One-way ANOVA (parametric) or Kruskal-Wallis test (nonparametric). Look [here](https://github.com/HMU-WH/ggcompare/) for examples.
+
+![](ggcompare.png){fig-alt="Boxplots annotated with pvalues"}
 
 [ggpca](https://cran.r-project.org/package=ggpca) v0.1.2: Provides tools for creating publication-ready dimensionality reduction plots, including Principal Component Analysis (PCA), t-Distributed Stochastic Neighbor Embedding (t-SNE), and Uniform Manifold Approximation and Projection (UMAP) using the `ggplot2` framework. See the [vignette](https://cran.r-project.org/web/packages/ggpca/vignettes/ggpca-examples.htm).
 
@@ -118,6 +167,10 @@ editor: source
 [plotscaper](https://cran.r-project.org/package=plotscaper) v0.2.3: Implements a framework for creating interactive figures for data exploration. All plots are automatically linked and support several kinds of interactive features, including selection, zooming, panning, and parameter manipulation. There is an [Introduction](https://cran.r-project.org/web/packages/plotscaper/vignettes/plotscaper.html) and four additional vignettes including [Available Interactions](https://cran.r-project.org/web/packages/plotscaper/vignettes/available-interactions.html) and [Layout](https://cran.r-project.org/web/packages/plotscaper/vignettes/layout.html).
 
 ![](plotscaper.png){fig-alt="Four interlinked plots"}
+
+[vchartr](https://cran.r-project.org/package=vchartr) v0.1.3: Provides an `htmlwidgets` interface to [VChart](https://www.visactor.io/vchart), a cross-platform charting library and expressive data storyteller. See the [vignette](https://cran.r-project.org/web/packages/vchartr/vignettes/vchartr.html).
+
+![](vchart.png){fig-alt="Examples of charts"}
 
 :::
 
