@@ -56,6 +56,14 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 [metasnf](https://cran.r-project.org/src/contrib/Archive/metasnf) v1.1.2: Provides a framework for transforming multi-modal data into a wide range of similarity networks using the similarity network fusion (SNF) algorithm introduced by [Wang et al. (2014)](https://www.nature.com/articles/nmeth.2810) and the meta clustering approach of [Caruana et al. (2006)](https://ieeexplore.ieee.org/document/4053039). Core functionality includes easy customization of distance metrics, clustering algorithms, and SNF hyperparameters. There are twenty-two vignettes including [The Settings Matrix](https://cran.r-project.org/web/packages/metasnf/vignettes/settings_matrix.html) and [A Complete Example](https://cran.r-project.org/web/packages/metasnf/vignettes/a_complete_example.html).
 
 ![](metasnf.png){fig-alt="Plot of variable/solution associations"}
+### Mathematics
+
+[cellularautomata](https://cran.r-project.org/package=cellularautomata) v0.1.0: Provides functions to create cellular automata from `Wolfram` with plots and animations rules. The output of a cellular automaton is given as a matrix, making it easy to try to explore the possibility of predicting its time evolution using various statistical tools available in R. See Wolfram S. (2002, ISBN:1579550088) *A New Kind of Science* for background and the [vignette](https://cran.r-project.org/web/packages/cellularautomata/vignettes/basic-usage.html) for examples.
+
+![](ca.gif){fig-alt="Animation of Wolfram rule 193"}
+
+[redcas](https://CRAN.R-project.org/package=redcas) v0.1.1: Implements an interface to the `Lisp` based computer algebra system [REDUCE](http://www.reduce-algebra.com) for interactively executing arbitrary `REDUCE` code interactively from `R`, returning output as character vectors. `R` code and `REDUCE` code can be interspersed. See [README](https://cran.r-project.org/web/packages/redcas/readme/README.html) to get started.
+
 
 ### Medicine
 
@@ -103,19 +111,11 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 
 
 
-
-
-
-
-
-
-
-
 ### Time Series
 
+[tsmarch](https://cran.r-project.org/package=tsmarch) v1.0.0: Implements feasible multivariate generalized autoregressive conditional heteroscedasticity (GARCH) models including dynamic conditional correlation (DCC), copula GARCH and generalized orthogonal GARCH with generalized hyperbolic distribution. See [Boudt et al.(2019)](https://www.sciencedirect.com/science/article/abs/pii/S016971611930001X?via%3Dihub) for background and the vignettes [Feasible Multivariate Garch Models](https://cran.r-project.org/web/packages/tsmarch/vignettes/feasible_multivariate_garch.pdf) and [demo](https://cran.r-project.org/web/packages/tsmarch/vignettes/tsmarch_demo.html).
 
-
-
+![](tsmarch.png){fig-alt="Plot of Kurtosis with prediction"}
 
 
 
