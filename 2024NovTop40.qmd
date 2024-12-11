@@ -90,6 +90,19 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 [metasnf](https://cran.r-project.org/src/contrib/Archive/metasnf) v1.1.2: Provides a framework for transforming multi-modal data into a wide range of similarity networks using the similarity network fusion (SNF) algorithm introduced by [Wang et al. (2014)](https://www.nature.com/articles/nmeth.2810) and the meta clustering approach of [Caruana et al. (2006)](https://ieeexplore.ieee.org/document/4053039). Core functionality includes easy customization of distance metrics, clustering algorithms, and SNF hyperparameters. There are twenty-two vignettes including [The Settings Matrix](https://cran.r-project.org/web/packages/metasnf/vignettes/settings_matrix.html) and [A Complete Example](https://cran.r-project.org/web/packages/metasnf/vignettes/a_complete_example.html).
 
 ![](metasnf.png){fig-alt="Plot of variable/solution associations"}
+
+[ReSurv](https://cran.r-project.org/package=ReSurv) V1.0.0: Implements Machine Learning models for predicting claim accounts using neural nets, extreme gradient boosting, and Cox model with splines to optimise the partial log-likelihood of proportional hazard models. There are five vignettes including an [Introduction](https://cran.r-project.org/web/packages/ReSurv/vignettes/Manuscript_replication_material.html) and [Claim Counts Prediction Using Individual Data](https://cran.r-project.org/web/packages/ReSurv/vignettes/cas_call.html).
+
+
+[SVEMnet](https://cran.r-project.org/package=SVEMnet) 1.2.1: Implements Self-Validated Ensemble Models (SVEM) [Lemkus et al. (2021)](https://www.sciencedirect.com/science/article/abs/pii/S0169743921002070?via%3Dihub) using Elastic Net regression via `glmnet`, and also implements the the randomized permutation whole model test for SVEM [Karl (2024)](https://www.sciencedirect.com/science/article/abs/pii/S0169743924000625?via%3Dihub). See the [vignette](https://cran.r-project.org/web/packages/SVEMnet/vignettes/SVEMnet_vignette.html).
+
+![](SVEMnet.png){fig-alt="Boxplots showing model test results"}
+
+
+
+
+
+
 ### Mathematics
 
 [cellularautomata](https://cran.r-project.org/package=cellularautomata) v0.1.0: Provides functions to create cellular automata from `Wolfram` with plots and animations rules. The output of a cellular automaton is given as a matrix, making it easy to try to explore the possibility of predicting its time evolution using various statistical tools available in R. See Wolfram S. (2002, ISBN:1579550088) *A New Kind of Science* for background and the [vignette](https://cran.r-project.org/web/packages/cellularautomata/vignettes/basic-usage.html) for examples.
@@ -103,9 +116,11 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 
 
 
+### Networks
 
+[ig.degree.betweenness](https://cran.r-project.org/package=ig.degree.betweenness) v0.1.0: Implements the "Smith-Pittman" community detection algorithm for network analysis using `igraph` objects. This algorithm combines node degree and betweenness centrality measures to identify communities within networks, with a gradient evident in social partitioning. See [Smith, Pittman and Xu (2024)](https://arxiv.org/abs/2411.01394) for background and look [here](https://github.com/benyamindsmith/ig.degree.betweenness) for examples.
 
-
+![](ig.png){fig-alt="Network diagram depicing clustering for UK faculty"}
 
 
 
@@ -169,12 +184,15 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 [RegrCoeffsExplorer](https://cran.r-project.org/package=RegrCoeffsExplorer) v1.1.0: Implements a visualization tool that offers a nuanced understanding of regression dynamics, going beyond traditional per-unit interpretation of continuous and categorical variables th highlight the impact of unit changes as well as larger shifts such as interquartile changes. See the vignettes [BetaVisualizer](https://cran.r-project.org/web/packages/RegrCoeffsExplorer/vignettes/BetaVisualizer.html) and [OddsRatioVisualizer](https://cran.r-project.org/web/packages/RegrCoeffsExplorer/vignettes/OddsRatioVisualizer.html).
 
 ![](RegCoef.png){fig-alt="Boxblor and OR plot sshing effect sizes"}
+[scatterbar](https://cran.r-project.org/package=scatterbar) v0.1.0: Implements a new tool for visualizing proportional data across spatially resolved contexts by combining concepts of scatter plots and stacked bar charts. `scatterbar` plots allow users to create scattered bar chart plots, which effectively display the proportions of different categories at each (x, y) location. See [Velazquez et al. (2024)](https://www.biorxiv.org/content/10.1101/2024.08.14.606810v2) for details. There are five vignettes including [Getting Started](https://cran.r-project.org/web/packages/scatterbar/vignettes/getting-started-with-scatterbars.html) and [Customizing scatterbar](https://cran.r-project.org/web/packages/scatterbar/vignettes/customizing_scatterbar.html).
+
+![](scatterbar.png){fig-alt="Example of scatterbarchart"}
+[talkr](https://cran.r-project.org/package=talkr) v0.1.3: Provides visualisation, analysis and quality control tools for gaining insights into the nature of conversational data. See [Dingemanse et al., (2022)](https://aclanthology.org/2022.acl-long.385/)  for details and the [vignette](https://cran.r-project.org/web/packages/talkr/vignettes/workflows.html) for examples.
+
+![](talkr.png){fig-alt="Conversation patterns"}
 
 
-
-
-
-
+![](.png){fig-alt=""}
 
 
 
