@@ -17,13 +17,17 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 
 
 ![](.png){fig-alt=""}
+### Botany 
 
+[MultiTraits](https://cran.r-project.org/package=MultiTraits) v0.1.0: Implements analytical methods for multidimensional plant traits, including Competitors-Stress tolerators-Ruderals strategy analysis using leaf traits, Leaf-Height-Seed strategy analysis, Niche Periodicity Table analysis, and Trait Network analysis. See [Grime (1974)](https://www.nature.com/articles/250026a0), [Pierce et al. (2017)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2435.12882) and other references provided for methods and the [vignette](https://cran.r-project.org/web/packages/MultiTraits/vignettes/MultiTraits_tutorial.html) for a tutorial.
 
+![](MultiTraits.png){fig-alt="Diagram of LHS Strategy"}
 
 ### Climate Analysis
 
+[chooseGCM](https://cran.r-project.org/package=chooseGCM) v1.0.1: Implements methods to help selecting General [Circulation Models (GCMs)](https://en.wikipedia.org/wiki/General_circulation_model) for projecting models to future scenarios. Functions include clustering algorithms, distance and correlation metrics, and a tailor-made algorithm to detect the optimum subset of GCMs that recreate the environment of all GCMs. Look [here]() for examples.
 
-![](.png){fig-alt="Time series "}
+![](chooseGCM.png){fig-alt="Various clustering plots"}
 
 ### Computational Methods
 
@@ -35,10 +39,40 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 ### Data
 
 
+[PurpleAirAPI](https://cran.r-project.org/package=PurpleAirAPI) v0.1.0: Provides tools for retrieving and analyzing air quality data from [PurpleAir](https://api.purpleair.com/) sensors through an API. Functions enable downloading historical measurements, accessing sensor metadata, and managing API request limitations through chunked data retrieval. 
+
+[sivirep](https://cran.r-project.org/package=sivirep) v1.0.1: Provides tools for data wrangling, pre-processing, and generating automated reports from Colombia's epidemiological surveillance system, [SIVIGILA](https://portalsivigila.ins.gov.co/) including a customizable R Markdown template for analysis and automatic generation of epidemiological reports. See the [vignette](https://cran.r-project.org/web/packages/sivirep/vignettes/sivirep.html).
+
+
+[STATcubeR](https://cran.r-project.org/package=STATcubeR) v1.0.0: Implements an R client to import data from the STATcube REST API or via the open government data portal [Statistik Austria](https://data.statistik.gv.at). Look [here](https://statistikat.github.io/STATcubeR/) and [here](https://github.com/statistikat/STATcubeR) for more information. See the [vignette](https://cran.r-project.org/web/packages/PurpleAirAPI/vignettes/getting-started-with-purpleairapi.html) to get started.
+
+[wbids](https://cran.r-project.org/package=wbids) v0.1.0:  Provides access to the World Bank’s [International Debt Statistics (IDS)](<https://datacatalog.worldbank.org/search/dataset/0038015 which contains creditor-debtor relationships between countries, regions, and institutions.
+
+![](wbids.png){fig-alt="Schematic of data model"}
+
+### Ecology
+
+[ecostate](https://cran.r-project.org/package=ecostate) v0.2.0: Fits a state-space mass-balance model for marine ecosystems, which implements dynamics derived from [Ecopath with Ecosim](https://ecopath.org/) while fitting to time-series of fishery catch, biomass indices, age-composition samples, and weight-at-age data.
+
+[tidywater](https://cran.r-project.org/package=tidywater) v0,6.2: Provides multiple water chemistry-based models and published empirical models in one standard format. Functions can be chained together to model a complete treatment process. See [Benjamin (2002)](https://www.amazon.com/Water-Chemistry-Second-Mark-Benjamin/dp/147862308X), [Crittenden et al. (2012)](https://onlinelibrary.wiley.com/doi/book/10.1002/9781118131473) and [US EPA Manual, (2001)](https://www.epa.gov/sites/default/files/2017-03/documents/wtp_model_v._2.0_manual_508.pdf) for background. There is an [Introduction](https://cran.r-project.org/web/packages/tidywater/vignettes/intro.html) and two additional vignettes.
+
+![](tidywater.png){fig-alt="Plot of ion concentrations"}
+
+
+### Education
+
+[evolved](https://cran.r-project.org/package=evolved) 1.0.0: Provides multiple tools to help educators (especially at the graduate level or in advanced undergraduate level courses) in general evolution classes. Tools include functions to simulate evolutionary processes (e.g., genetic drift, natural selection) and concepts (e.g. Hardy-Weinberg equilibrium, phylogenetic distribution of traits). There are eleven vignettes including [birthdeath_deeptime](https://cran.r-project.org/web/packages/evolved/vignettes/birthdeath_deeptime.html) and [popgen_intro](https://cran.r-project.org/web/packages/evolved/vignettes/popgen_intro.html).
+
+![](evolved.png){fig-alt="Photo of Bears"}
+
+[exams2forms](https://CRAN.R-project.org/package=exams2forms) v0.1-0: Implements automatic generation of quizzes or individual questions as (interactive) forms within `rmarkdown` or `quarto` documents based on `R/exams` exercises. See the [vignette](https://cran.r-project.org/web/packages/exams2forms/vignettes/exams2forms.html).
+
+![](exams.png){fig-alt="Sample exercise"}
 
 ### Epidemiology
 
 
+[sivirep](https://cran.r-project.org/package=sivirep) v1.0.1: Provides tools for data wrangling, pre-processing, and generating automated reports from Colombia's epidemiological surveillance system, [SIVIGILA](https://portalsivigila.ins.gov.co/) including a customizable R Markdown template for analysis and automatic generation of epidemiological reports. See the [vignette](https://cran.r-project.org/web/packages/sivirep/vignettes/sivirep.html).
 
 
 
@@ -47,9 +81,9 @@ One hundred eighty-one new packages made CRAN's final cut in October. Here are m
 
 ### Genomics
 
+[divent](https://cran.r-project.org/package=divent) v0.4-4: Implements a method to measure and partition diversity, including phylogenetic and functional diversity, with functions to estimate alpha, beta and gamma diversity of communities, See [Marcon and Herault (2015)](https://www.jstatsoft.org/article/view/v067i08) for background and the [vignette](https://cran.r-project.org/web/packages/divent/vignettes/divent.html) for an introduction.
 
-
-
+![](divent.png){fig-alt="Plot f phylogenetic diversity by sample size"}
 
 ### Machine Learning
 
