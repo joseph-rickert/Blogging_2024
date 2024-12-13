@@ -6,6 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Joseph Rickert">
+<meta name="dcterms.date" content="2024-12-13">
+<meta name="description" content="An attempt to capture the depth and breadth of what’s new on CRAN.">
 
 <title>November 2024 Top 40 New CRAN Packages</title>
 <style>
@@ -48,11 +51,28 @@ ul.task-list li input[type="checkbox"] {
 <h1 class="title">November 2024 Top 40 New CRAN Packages</h1>
 </div>
 
+<div>
+  <div class="description">
+    An attempt to capture the depth and breadth of what’s new on CRAN.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Joseph Rickert </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 13, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -63,9 +83,8 @@ ul.task-list li input[type="checkbox"] {
 <p>One hundred eighty-one new packages made CRAN’s final cut in October. Here are my Top 40 picks in fifteen categories: AI, Climate Analysis, Computational Methods, Data, Epidemiology, Genomics, Machine Learning, Medicine, Quality Management, Statistics, Time Series, Utilities, and Visualization.</p>
 <div class="columns">
 <div class="column" style="width:45%;">
-<section id="ai" class="level3">
-<h3 class="anchored" data-anchor-id="ai">AI</h3>
-<p><img src=".png" class="img-fluid" alt=""> ### Botany</p>
+<section id="botany" class="level3">
+<h3 class="anchored" data-anchor-id="botany">Botany</h3>
 <p><a href="https://cran.r-project.org/package=MultiTraits">MultiTraits</a> v0.1.0: Implements analytical methods for multidimensional plant traits, including Competitors-Stress tolerators-Ruderals strategy analysis using leaf traits, Leaf-Height-Seed strategy analysis, Niche Periodicity Table analysis, and Trait Network analysis. See <a href="https://www.nature.com/articles/250026a0">Grime (1974)</a>, <a href="https://besjournals.onlinelibrary.wiley.com/doi/10.1111/1365-2435.12882">Pierce et al.&nbsp;(2017)</a> and other references provided for methods and the <a href="https://cran.r-project.org/web/packages/MultiTraits/vignettes/MultiTraits_tutorial.html">vignette</a> for a tutorial.</p>
 <p><img src="MultiTraits.png" class="img-fluid" alt="Diagram of LHS Strategy"></p>
 </section>
@@ -76,6 +95,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="computational-methods" class="level3">
 <h3 class="anchored" data-anchor-id="computational-methods">Computational Methods</h3>
+<p><a href="https://cran.r-project.org/package=spconf">spconf</a> v1.0.1: Provides functions to compute the effective range of a smoothing matrix, which is a measure of the distance to which smoothing occurs. See <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0311440">Rainey and Keller (2024)</a> and <a href="https://academic.oup.com/jrsssa/article/183/3/1121/7056457?login=false">Keller and Szpiro (2020)</a> for algortihmic details and <a href="https://cran.r-project.org/web/packages/spconf/readme/README.html">README</a> for examples.</p>
 </section>
 <section id="data" class="level3">
 <h3 class="anchored" data-anchor-id="data">Data</h3>
@@ -98,14 +118,30 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="https://CRAN.R-project.org/package=exams2forms">exams2forms</a> v0.1-0: Implements automatic generation of quizzes or individual questions as (interactive) forms within <code>rmarkdown</code> or <code>quarto</code> documents based on <code>R/exams</code> exercises. See the <a href="https://cran.r-project.org/web/packages/exams2forms/vignettes/exams2forms.html">vignette</a>.</p>
 <p><img src="exams.png" class="img-fluid" alt="Sample exercise"></p>
 </section>
+<section id="environment" class="level3">
+<h3 class="anchored" data-anchor-id="environment">Environment</h3>
+<p><a href="https://cran.r-project.org/package=OpeNoise">OpeNoise</a> v0.2-18: Provides functions to analyse, interpret and understand noise pollution data typically regular time series measured with sound meter. See <a href="https://dael.euracoustics.org/confs/landing_pages/fa2023/000063.html">Grasso, Masera and Scordino (2023)</a> for background and look <a href="https://github.com/Arpapiemonte/openoise-analysis/">here</a> for examples.</p>
+<p><img src="OpeNoise.png" class="img-fluid" alt="Noise spectrogram"></p>
+</section>
 <section id="epidemiology" class="level3">
 <h3 class="anchored" data-anchor-id="epidemiology">Epidemiology</h3>
 <p><a href="https://cran.r-project.org/package=sivirep">sivirep</a> v1.0.1: Provides tools for data wrangling, pre-processing, and generating automated reports from Colombia’s epidemiological surveillance system, <a href="https://portalsivigila.ins.gov.co/">SIVIGILA</a> including a customizable R Markdown template for analysis and automatic generation of epidemiological reports. See the <a href="https://cran.r-project.org/web/packages/sivirep/vignettes/sivirep.html">vignette</a>.</p>
+<p><a href="https://cran.r-project.org/package=vaccineff">vaccineff</a> v1.0.0: Provides tools for estimating vaccine effectiveness and related metrics and includes fuctions for managing key features and organizing cohort data, as well as estimating vaccine effectiveness. There are three vignettes including <a href="https://cran.r-project.org/web/packages/vaccineff/vignettes/cohort_design.html">Introduction to cohort design</a> and <a href="https://cran.r-project.org/web/packages/vaccineff/vignettes/vaccineff.html">vaccineff</a>.</p>
+<p><img src="vaccineff.png" class="img-fluid" alt="Plot of vaccinestatus"></p>
 </section>
 <section id="genomics" class="level3">
 <h3 class="anchored" data-anchor-id="genomics">Genomics</h3>
 <p><a href="https://cran.r-project.org/package=divent">divent</a> v0.4-4: Implements a method to measure and partition diversity, including phylogenetic and functional diversity, with functions to estimate alpha, beta and gamma diversity of communities, See <a href="https://www.jstatsoft.org/article/view/v067i08">Marcon and Herault (2015)</a> for background and the <a href="https://cran.r-project.org/web/packages/divent/vignettes/divent.html">vignette</a> for an introduction.</p>
-<p><img src="divent.png" class="img-fluid" alt="Plot f phylogenetic diversity by sample size"></p>
+<p><img src="divent.png" class="img-fluid" alt="Plot f phylogenetic diversity by sample size"> <a href="https://cran.r-project.org/package=GRIN2">GRIN2</a> v1.0: Implements the GRIN algorithm as described in <a href="https://academic.oup.com/bioinformatics/article/29/17/2088/244947?login=false">Pounds et al.&nbsp;(2013)</a> for analyzing genomic lesion data and expands its analysis capabilities to answer additional scientific questions including a rigorous evaluation of the association of genomic lesions with RNA expression. See the <a href="https://cran.r-project.org/web/packages/GRIN2/vignettes/GRIN2.html">vignette</a>.</p>
+<p><img src="GRIN2.png" class="img-fluid" alt="Annotated OncoPrint"></p>
+<p><a href="https://cran.r-project.org/package=scregclust">scregclust</a> v0.2.0: Implements the scregclust algorithm described in <a href="https://www.nature.com/articles/s41467-024-53954-3">Larsson, Held, et al.&nbsp;(2024)</a> which reconstructs regulatory programs of target genes in scRNA-seq data. See the <a href="https://cran.r-project.org/web/packages/scregclust/vignettes/pbmc.html">vignette</a>.</p>
+<p><img src="scregclust.png" class="img-fluid" alt="Plot of regulator network"></p>
+</section>
+<section id="health-technology-assessment" class="level3">
+<h3 class="anchored" data-anchor-id="health-technology-assessment">Health Technology Assessment</h3>
+<p><a href="https://cran.r-project.org/package=AIscreenR">AIscreenR</a> v0.1.1: Provides functions to conduct title and abstract screening in systematic reviews using large language models, such as the Generative Pre-trained Transformer (GPT) models from <a href="https://platform.openai.com/">OpenAI</a> and also tools for quality assessment of title and abstract screenings, as described in <a href="https://osf.io/preprints/osf/yrhzm">Vembye et al.&nbsp;(2024)</a>. See the <a href="https://cran.r-project.org/web/packages/AIscreenR/vignettes/Using-GPT-API-Models-For-Screening.html">vignette</a></p>
+<p><a href="https://www.valueinhealthjournal.com/article/S1098-3015(12)01610-5/fulltext?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS1098301512016105%3Fshowall%3Dtrue">maicplus</a> v0.1.1: Implements the method described in <a href="">Signorovitch et al (2012)</a> to facilitate matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g.&nbsp;overall survival) or binary (e.g.&nbsp;objective tumor response). There are seven vignettes including an <a href="https://cran.r-project.org/web/packages/maicplus/vignettes/introduction.html">Introduction</a> and <a href="https://cran.r-project.org/web/packages/maicplus/vignettes/anchored_survival.html">Anchored Survival Analysis</a>.</p>
+<p><img src="maicplus.png" class="img-fluid" alt="Multiple Kaplan-Meier Plots"></p>
 </section>
 <section id="machine-learning" class="level3">
 <h3 class="anchored" data-anchor-id="machine-learning">Machine Learning</h3>
@@ -115,6 +151,9 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="https://cran.r-project.org/package=SVEMnet">SVEMnet</a> 1.2.1: Implements Self-Validated Ensemble Models (SVEM) <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169743921002070?via%3Dihub">Lemkus et al.&nbsp;(2021)</a> using Elastic Net regression via <code>glmnet</code>, and also implements the the randomized permutation whole model test for SVEM <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169743924000625?via%3Dihub">Karl (2024)</a>. See the <a href="https://cran.r-project.org/web/packages/SVEMnet/vignettes/SVEMnet_vignette.html">vignette</a>.</p>
 <p><img src="SVEMnet.png" class="img-fluid" alt="Boxplots showing model test results"></p>
 </section>
+</div><div class="column" style="width:10%;">
+
+</div><div class="column" style="width:45%;">
 <section id="mathematics" class="level3">
 <h3 class="anchored" data-anchor-id="mathematics">Mathematics</h3>
 <p><a href="https://cran.r-project.org/package=cellularautomata">cellularautomata</a> v0.1.0: Provides functions to create cellular automata from <code>Wolfram</code> with plots and animations rules. The output of a cellular automaton is given as a matrix, making it easy to try to explore the possibility of predicting its time evolution using various statistical tools available in R. See Wolfram S. (2002, ISBN:1579550088) <em>A New Kind of Science</em> for background and the <a href="https://cran.r-project.org/web/packages/cellularautomata/vignettes/basic-usage.html">vignette</a> for examples.</p>
@@ -123,6 +162,9 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="medicine" class="level3">
 <h3 class="anchored" data-anchor-id="medicine">Medicine</h3>
+<p><a href="https://cran.r-project.org/package=ClinTrialPredict">ClinTrialPredict</a> v0.0.4: Implements a method to predict the course of clinical trial with a time-to-event endpoint for both two-arm and single-arm designs. Simulation datasets can be generated based on the design settings. See the <a href="https://cran.r-project.org/web/packages/ClinTrialPredict/vignettes/ClinTrialPredict.pdf">vignette</a>.</p>
+<p><a href="https://cran.r-project.org/package=Virusparies">Virusparies</a> v1.0.0: Implements a visualtion tool for the <a href="https://github.com/lauberlab/VirusHunterGatherer">VirusHunterGather</a> computational pipeline for data-driven virus discovery from sequencing data from the NIH’s <a href="https://www.ncbi.nlm.nih.gov/sra">Sequence Read Archive</a> or the user’s own data. <a href="https://cran.r-project.org/web/packages/Virusparies/readme/README.html">README</a> points to eleveng vignettes including <a href="https://github.com/SergejRuff/Virusparies?tab=readme-ov-file#virushuntergatherer-plot---vhgboxplot">VhgBoxplot</a> and <a href="https://github.com/SergejRuff/Virusparies?tab=readme-ov-file#virushuntergatherer-plot---vhgidentityscatterplot">VhgScatterPlot</a>.</p>
+<p><img src="Virusparies.png" class="img-fluid" alt="Violinplot of Viral group by Contig Length"></p>
 </section>
 <section id="networks" class="level3">
 <h3 class="anchored" data-anchor-id="networks">Networks</h3>
@@ -135,12 +177,6 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="statistics" class="level3">
 <h3 class="anchored" data-anchor-id="statistics">Statistics</h3>
-</section>
-</div><div class="column" style="width:10%;">
-
-</div><div class="column" style="width:45%;">
-<section id="statistics-continued" class="level3">
-<h3 class="anchored" data-anchor-id="statistics-continued">Statistics (Continued)</h3>
 <p><a href="https://cran.r-project.org/package=BayesGP">BayesGP</a> v0.1.3: Implements Bayesian hierarchical models with flexible Gaussian process priors, focusing on extended latent Gaussian models and incorporating various Gaussian process priors for Bayesian smoothing. See <a href="https://journals.sagepub.com/doi/10.1177/09622802221134172">Zhang et al.&nbsp;(2023)</a>. <a href="https://www.tandfonline.com/doi/full/10.1080/10618600.2023.2289532">Zhang et al.&nbsp;(2024)</a>, and <a href="https://academic.oup.com/biometrics/article/77/3/785/7445030?login=false">Stringer, Brown, and Stafford (2021)</a> for the methods used. There are three vignettes including <a href="https://cran.r-project.org/web/packages/BayesGP/vignettes/BayesGP-Partial_Likelihood.html">Partial Likelihood</a> and <a href="https://cran.r-project.org/web/packages/BayesGP/vignettes/BayesGP-sGP.html">Fitting sGP</a>.</p>
 <p><img src="BayesGP.png" class="img-fluid" alt="Plot of inferred function"></p>
 <p><a href="https://cran.r-project.org/package=distfreereg">distfreereg</a> v1.0.1: Implements distribution-free goodness-of-fit regression testing for the mean structure of parametric models introduced in <a href="https://link.springer.com/article/10.1007/s10463-021-00786-3">Khmaladze (2021)</a>. There is an <a href="https://cran.r-project.org/web/packages/distfreereg/vignettes/v1_introduction.html">Introduction</a> and four additional vignettes including <a href="https://cran.r-project.org/web/packages/distfreereg/vignettes/v2_compare.html">Comparing Distributions</a>.</p>
@@ -158,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="utilities">Utilities</h3>
 <p><a href="https://cran.r-project.org/package=deident">deident</a> v1.0.0: Implements a framework for the replicable removal of personally identifiable data (PID) in data sets and provides methods to suit different data types based on the suggestions of <a href="https://nvlpubs.nist.gov/nistpubs/ir/2015/NIST.IR.8053.pdf">Garfinkel (2015)</a> and the <a href="https://ico.org.uk/media/1061/anonymisation-code.pdf">ICO “Guidelines on Anonymization” (2012)</a>. There are nine vignettes including <a href="https://cran.r-project.org/web/packages/deident/vignettes/rationale.html">Rational for De-identification</a> and <a href="https://cran.r-project.org/web/packages/deident/vignettes/worked_example.html">Worked Example</a>.</p>
 <p><a href="https://cran.r-project.org/package=lofifonts">lofifonts</a> v0.1.3: Provides tools for alternate font rendering with bitmap and vector fonts that allow for custom layout and rendering using pixel coordinates and line drawing. There are five vignettes including <a href="https://cran.r-project.org/web/packages/lofifonts/vignettes/bitmap-fonts.html">Using bitmap fonts</a> and <a href="https://cran.r-project.org/web/packages/lofifonts/vignettes/unicode-support.html">Unicode Support</a>.</p>
-<p><img src="lofifonts.png" class="img-fluid" alt="Sample bitmap font"></p>
+<p><img src="lofifonts.png" class="img-fluid" alt="Sample bitmap font"> <a href="https://cran.r-project.org/package=surveydown">surveydown</a> v0.5.1: Provides functions to generate surveys using markdown and R code chunks. Features include controls for conditional skip logic (skip to a page based on an answer to a question), conditional display logic (display a question based on an answer to a question), a customizable progress bar, and a wide variety of question types, including multiple choice (single choice and multiple choices), select, text, numeric, multiple choice buttons. Designers can also leverage the reactive capabilities of <code>shiny</code> to create dynamic and interactive surveys. See the <a href="https://cran.r-project.org/web/packages/surveydown/vignettes/surveydown.html">vignette</a>.</p>
 </section>
 <section id="visualization" class="level3">
 <h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
