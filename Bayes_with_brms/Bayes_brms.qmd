@@ -1,0 +1,149 @@
+---
+title: "Bayesian Analysis with brms"
+format: html
+---
+
+in our previous post, [Examining Meta Analysis](https://rworks.dev/posts/meta-analysis/) we contrasted a frequentist version of a meta analysis conducted with R's [meta](https://cran.r-project.org/package=meta) package with a Bayesian meta analysis done mostly in [stan](https://mc-stan.org/) using `R's` [rstan](https://cran.r-project.org/package=rstan) package as a front end. We did this to hint at the difference between working within the restricted confines of a traditional frequentist framework and the amazing freedom to set up and solve complex probabilistic models in a modern Bayesian engine like `stan`. However, we fully acknowledge the cognitive burden of learning a completely new language while perhaps also learning Bayesian methods.
+
+In this post, we will ease your anxiety by "going buddhist" and pointing to the middle way.
+
+
+## Meta-Analysis Models
+
+```{r}
+#| warning: false
+#| message: false
+library(tidyverse)
+library(brms)
+library(tidybayes)
+library(ggdist)
+
+```
+
+### Read the Data
+
+```{r}
+angina <- read_csv(file = "Amlodipine.csv", col_types = c("c",rep(c("i","d","d"),2))) %>%
+                 rename(study = Protocol)
+angina
+
+```
+
+### Review The Model
+
+As in the previous post, we will measure the effect of the amlodipine treatment bu looking at the difference in the observed means from the two arms of the study. We continue to use the very simple "random effects" frequentist model analyzed with Bayesian methods. Our model can be expressed as :
+
+$$\Delta_i = \mu + \nu_i + \epsilon_i$$ where:
+
+for each study, i, $\Delta_i$, the observed treatment effect, is the difference between the mean of the control arm subtracted from the mean of the treatment arm which we express as: $$\Delta_i = \theta_{Ei} - \theta_{Ci}$$
+
+$\mu$ is the unobserved true population mean from which all of the $\Delta_i$ are drawn. It is the common intercept in the model. The $\nu_i$ is the intercept associated with study, i, and $\epsilon_i$ is random noise. We assume that the $\Delta_i$ are distributed as:
+
+$$\Delta_i \sim N(\mu, \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}} + \tau) $$ where: $\sigma_{Ei}$ and $\sigma_{Ci}$ are the observed standard errors for each study. The standard error of $\Delta_i$ is $$\sqrt(\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C})$$
+
+
+$\nu_i$ is assumed to be distributed as: $$\nu_i \sim N(0, \tau^2) $$
+
+$\epsilon$ is random noise which is distributed as: $$\epsilon_i \sim N(0, \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}}) $$
+
+### Set up the model using the brms package
+
+The formula argument accepts formulas of the following syntax: response \| aterms \~ pterms + (gterms \| group) The pterms part contains effects that are assumed to be the same across observations. We call them ’population-level’ or ’overall’ effects, or (adopting frequentist vocabulary) ’fixed’ effects. The optional gterms part may contain effects that are assumed to vary across grouping variables specified in group. We call them ’group-level’ or ’varying’ effects,
+
+```{r}
+ 
+df <- angina %>% mutate(se_di = sqrt(varE/nE + varC/nC),
+                        delta_i = (meanE - meanC)/se_di)
+                        
+                           
+df
+```
+
+```{r}
+#| eval: false
+#| warning: false
+#| message: false
+fit_brms <- brm(
+  delta_i | se(se_di) ~ 1 + (1 | study), 
+  data = df, 
+  # set priors in stan language
+  prior = c(prior(normal(0, 1), class = Intercept), 
+                prior(cauchy(0, 1), class = sd, group = study)),
+  iter = 2000, warmup = 1000, cores = 4, chains = 4, seed = 14,
+  control = list(adapt_delta = 0.95))
+```
+
+```{r}
+#| eval: false
+# Save an object to a file
+saveRDS(fit_brms, file = "fit_brms.rds")
+``` 
+
+```{r}
+#| eval: false
+# Restore the object
+fit_brms <- readRDS(file = "fit_brms.rds")
+
+```
+
+```{r}
+fit_brms
+```
+
+
+
+```{r}
+plot(fit_brms)
+```
+
+```{r}
+# Prepare dataframe for plottig
+out_indiv <- spread_draws(fit_2, r_study[study,term], b_Intercept) %>%
+             mutate(Intercept = r_study + b_Intercept) %>%
+             mutate(study = as.character(study)) %>%
+             select(study,term,Intercept)
+ 
+out_mu <- spread_draws(fit_2, r_study[study,term], b_Intercept) %>%
+           mutate(study = "mu") %>%
+           mutate(Intercept = b_Intercept) %>%
+           select(study,term,Intercept)
+
+out_all <- bind_rows(out_indiv, out_mu) %>%
+            mutate(study = factor(study))
+          
+```
+
+```{r}
+ 
+out_all %>% ungroup() %>%
+  # tidybayes garbles names so fix here
+  mutate(study = str_replace_all(study, "\\.", " "))
+# Data frame of summary numbers
+out_all_sum <- group_by(out_all, study) %>% 
+  mean_qi(Intercept) # provides point and intercept summary for Intercept
+
+# Draw plot
+out_all %>%   
+  ggplot(aes(Intercept,study)) + 
+  # Zero!
+  geom_vline(xintercept = 0, linewidth = .25, lty = 2) +
+  stat_halfeye(.width = c(.8, .95), fill = "dodgerblue") +
+  # Add text labels
+  geom_text(
+    data = mutate_if(out_all_sum, is.numeric, round, 2),
+    aes(label = str_glue("{Intercept} [{.lower}, {.upper}]"), x = 0.75),
+    hjust = "inward"
+  ) +
+  # Observed as empty points
+  geom_point(
+    data = df %>% mutate(study = str_replace_all(study, "\\.", " ")), 
+    aes(x=di), position = position_nudge(y = -.2), shape = 1 
+  ) 
+
+
+
+```
+
+Matti Vuorre [Bayesian Meta-Analysis with R, Stan, and brms Meta-analysis is a special case of Bayesian multilevel modeling](https://mvuorre.github.io/posts/2016-09-29-bayesian-meta-analysis/)
+
+Solomon Kuz, [Bayesian meta-analysis in brms](https://solomonkurz.netlify.app/blog/bayesian-meta-analysis/)
