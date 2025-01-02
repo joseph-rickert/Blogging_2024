@@ -48,16 +48,15 @@ $\epsilon$ is random noise which is distributed as: $$\epsilon_i \sim N(0, \sqrt
 
 Although it is much simpler than using `stan` directly, `brms` is not without its own cognitive load. Any complex 'R' package, or for that matter, any sophisticated function written in an language you like requires taking time to understand how it works in order to use it confidently and correctly. At a minimum, it is necessary to fully comprehend the function signature and all of the options implicitly coded therein.
 
-A good bit of the cognitive load associated with `brms` is associated with the formula interface which it adopts form the [`lmw4`](https://CRAN.R-project.org/package=lme4) package for formulating and solving frequentist mixed-effects models. `brms` builds on this syntax to allow formulating expressions to set up complex, multilevel models. 
+A good bit of the cognitive load associated with `brms` is associated with the formula interface which it adopts form the [`lmw4`](https://CRAN.R-project.org/package=lme4) package for formulating and solving frequentist mixed-effects models. `brms` builds on this syntax to allow formulating expressions to set up complex, multilevel models.
 
-The general formula argument^1 is structured as *response* | *aterms* ~ *pterms* + (*gterms* | *group*). Everything on the right side of ∼ specifies predictors. `+` is used to separate different effects from each other.
+The general formula argument\^1 is structured as *response* \| *aterms* \~ *pterms* + (*gterms* \| *group*). Everything on the right side of ∼ specifies predictors. `+` is used to separate different effects from each other.
 
 #### aterms
 
 The *aterms* are optional terms that provide special information about the response variable. Especially helpful for meta-analysis the term `se` specifies the standard errors of the response variable when response is a treatment effect. The pdf states:
 
-> Suppose that the variable yi contains the effect sizes from the studies and sei the corresponding standard errors. Then, fixed and random effects meta-analyses can be conducted using the formulas yi | se(sei) ~ 1 and yi | se(sei) ~ 1
-+ (1|study), respectively, where study is a variable uniquely identifying every study. ... By default, the standard errors replace the parameter sigma. To model sigma in addition to the known standard errors, set argument sigma in function se to TRUE, for instance, yi | se(sei, sigma = TRUE) ~ 1.
+> Suppose that the variable yi contains the effect sizes from the studies and sei the corresponding standard errors. Then, fixed and random effects meta-analyses can be conducted using the formulas yi \| se(sei) \~ 1 and yi \| se(sei) \~ 1 + (1\|study), respectively, where study is a variable uniquely identifying every study. ... By default, the standard errors replace the parameter sigma. To model sigma in addition to the known standard errors, set argument sigma in function se to TRUE, for instance, yi \| se(sei, sigma = TRUE) \~ 1.
 
 #### pterms
 
@@ -65,35 +64,44 @@ The *aterms* are optional terms that provide special information about the respo
 
 #### gterms
 
- `gterms` are group level terms that are specified as  (coefs | group) where coefs contains one or more variables whose effects are assumed to vary with the levels of the grouping factor. For example, if both a group intercept and subject age vary by group, the group effects would be specified by (1 + age | group). Note that it is possble to specify multiple grouping factors each with multiple group-level coefficients.
-
+`gterms` are group level terms that are specified as (coefs \| group) where coefs contains one or more variables whose effects are assumed to vary with the levels of the grouping factor. For example, if both a group intercept and subject age vary by group, the group effects would be specified by (1 + age \| group). Note that it is possble to specify multiple grouping factors each with multiple group-level coefficients.
 
 ### Set up the model using the brms package
 
-The formula argument accepts formulas of the following syntax: response \| aterms \~ pterms + (gterms \| group) The pterms part contains effects that are assumed to be the same across observations. We call them ’population-level’ or ’overall’ effects, or (adopting frequentist vocabulary) ’fixed’ effects. The optional gterms part may contain effects that are assumed to vary across grouping variables specified in group. We call them ’group-level’ or ’varying’ effects,
+First we read in the data using `dplyr` and add `delta_i` the difference in means and its standard error, `se_di`.
 
 ```{r}
  
-df <- angina %>% mutate(se_di = sqrt(varE/nE + varC/nC),
-                        delta_i = (meanE - meanC)/se_di)
+df <- angina %>% mutate(delta_i = (meanE - meanC), se_di = sqrt(varE/nE + varC/nC))
                         
-                           
-df
+head(df)
 ```
+
+`sigma` = TRUE indicates that the residual standard deviation parameter sigma should be included in addition to the known measurement error.
 
 ```{r}
 #| eval: false
 #| warning: false
 #| message: false
+
+
+## Random effects meta-analysis
+
 fit_brms <- brm(
-  delta_i | se(se_di) ~ 1 + (1 | study), 
+  delta_i | se(se_di, sigma = TRUE) ~ 1 + (1 | study),
   data = df, 
   # set priors in stan language
   prior = c(prior(normal(0, 1), class = Intercept), 
-                prior(cauchy(0, 1), class = sd, group = study)),
-  iter = 2000, warmup = 1000, cores = 4, chains = 4, seed = 14,
-  control = list(adapt_delta = 0.95))
+           prior(normal(0, 1), class = sd, group = study)),
+           iter = 2000, warmup = 1000, cores = 4, chains = 4, seed = 14,
+           control = list(adapt_delta = 0.95))
 ```
+
+Look at the model summary
+```{r}
+summary(fit_brms)
+```
+
 
 ```{r}
 #| eval: false
@@ -108,22 +116,21 @@ fit_brms <- readRDS(file = "fit_brms.rds")
 
 ```
 
-```{r}
-fit_brms
-```
 
 ```{r}
 plot(fit_brms)
 ```
 
+
+Prepare data frame for individual plots
 ```{r}
 # Prepare dataframe for plottig
-out_indiv <- spread_draws(fit_2, r_study[study,term], b_Intercept) %>%
+out_indiv <- spread_draws(fit_brms, r_study[study,term], b_Intercept) %>%
              mutate(Intercept = r_study + b_Intercept) %>%
              mutate(study = as.character(study)) %>%
              select(study,term,Intercept)
  
-out_mu <- spread_draws(fit_2, r_study[study,term], b_Intercept) %>%
+out_mu <- spread_draws(fit_brms, r_study[study,term], b_Intercept) %>%
            mutate(study = "mu") %>%
            mutate(Intercept = b_Intercept) %>%
            select(study,term,Intercept)
@@ -131,9 +138,6 @@ out_mu <- spread_draws(fit_2, r_study[study,term], b_Intercept) %>%
 out_all <- bind_rows(out_indiv, out_mu) %>%
             mutate(study = factor(study))
           
-```
-
-```{r}
  
 out_all %>% ungroup() %>%
   # tidybayes garbles names so fix here
@@ -142,6 +146,9 @@ out_all %>% ungroup() %>%
 out_all_sum <- group_by(out_all, study) %>% 
   mean_qi(Intercept) # provides point and intercept summary for Intercept
 
+```
+
+```{r}
 # Draw plot
 out_all %>%   
   ggplot(aes(Intercept,study)) + 
@@ -157,7 +164,7 @@ out_all %>%
   # Observed as empty points
   geom_point(
     data = df %>% mutate(study = str_replace_all(study, "\\.", " ")), 
-    aes(x=di), position = position_nudge(y = -.2), shape = 1 
+    aes(x=delta_i), position = position_nudge(y = -.2), shape = 1 
   ) 
 
 
@@ -167,6 +174,5 @@ out_all %>%
 Matti Vuorre [Bayesian Meta-Analysis with R, Stan, and brms Meta-analysis is a special case of Bayesian multilevel modeling](https://mvuorre.github.io/posts/2016-09-29-bayesian-meta-analysis/)
 
 Solomon Kuz, [Bayesian meta-analysis in brms](https://solomonkurz.netlify.app/blog/bayesian-meta-analysis/)
-
 
 1 See Details under `brmsformula` in the `brms` [package pdf](https://cran.r-project.org/web/packages/brms/brms.pdf)
