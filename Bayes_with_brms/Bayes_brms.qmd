@@ -5,8 +5,7 @@ format: html
 
 in our previous post, [Examining Meta Analysis](https://rworks.dev/posts/meta-analysis/) we contrasted a frequentist version of a meta analysis conducted with R's [meta](https://cran.r-project.org/package=meta) package with a Bayesian meta analysis done mostly in [stan](https://mc-stan.org/) using `R's` [rstan](https://cran.r-project.org/package=rstan) package as a front end. We did this to hint at the difference between working within the restricted confines of a traditional frequentist framework and the amazing freedom to set up and solve complex probabilistic models in a modern Bayesian engine like `stan`. However, we fully acknowledge the cognitive burden of learning a completely new language while perhaps also learning Bayesian methods.
 
-In this post, we will ease your anxiety by "going buddhist" and pointing to the middle way.
-
+In this post, we will ease your anxiety by pointing to a middle way.
 
 ## Meta-Analysis Models
 
@@ -41,10 +40,33 @@ $\mu$ is the unobserved true population mean from which all of the $\Delta_i$ ar
 
 $$\Delta_i \sim N(\mu, \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}} + \tau) $$ where: $\sigma_{Ei}$ and $\sigma_{Ci}$ are the observed standard errors for each study. The standard error of $\Delta_i$ is $$\sqrt(\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C})$$
 
-
 $\nu_i$ is assumed to be distributed as: $$\nu_i \sim N(0, \tau^2) $$
 
 $\epsilon$ is random noise which is distributed as: $$\epsilon_i \sim N(0, \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}}) $$
+
+### brms Syntax
+
+Although it is much simpler than using `stan` directly, `brms` is not without its own cognitive load. Any complex 'R' package, or for that matter, any sophisticated function written in an language you like requires taking time to understand how it works in order to use it confidently and correctly. At a minimum, it is necessary to fully comprehend the function signature and all of the options implicitly coded therein.
+
+A good bit of the cognitive load associated with `brms` is associated with the formula interface which it adopts form the [`lmw4`](https://CRAN.R-project.org/package=lme4) package for formulating and solving frequentist mixed-effects models. `brms` builds on this syntax to allow formulating expressions to set up complex, multilevel models. 
+
+The general formula argument^1 is structured as *response* | *aterms* ~ *pterms* + (*gterms* | *group*). Everything on the right side of ∼ specifies predictors. `+` is used to separate different effects from each other.
+
+#### aterms
+
+The *aterms* are optional terms that provide special information about the response variable. Especially helpful for meta-analysis the term `se` specifies the standard errors of the response variable when response is a treatment effect. The pdf states:
+
+> Suppose that the variable yi contains the effect sizes from the studies and sei the corresponding standard errors. Then, fixed and random effects meta-analyses can be conducted using the formulas yi | se(sei) ~ 1 and yi | se(sei) ~ 1
++ (1|study), respectively, where study is a variable uniquely identifying every study. ... By default, the standard errors replace the parameter sigma. To model sigma in addition to the known standard errors, set argument sigma in function se to TRUE, for instance, yi | se(sei, sigma = TRUE) ~ 1.
+
+#### pterms
+
+`pterms` are population level terms. Everything on the right side of formula that is not recognized as part of a group-level term is treated as a population-level effect.
+
+#### gterms
+
+ `gterms` are group level terms that are specified as  (coefs | group) where coefs contains one or more variables whose effects are assumed to vary with the levels of the grouping factor. For example, if both a group intercept and subject age vary by group, the group effects would be specified by (1 + age | group). Note that it is possble to specify multiple grouping factors each with multiple group-level coefficients.
+
 
 ### Set up the model using the brms package
 
@@ -77,7 +99,7 @@ fit_brms <- brm(
 #| eval: false
 # Save an object to a file
 saveRDS(fit_brms, file = "fit_brms.rds")
-``` 
+```
 
 ```{r}
 #| eval: false
@@ -89,8 +111,6 @@ fit_brms <- readRDS(file = "fit_brms.rds")
 ```{r}
 fit_brms
 ```
-
-
 
 ```{r}
 plot(fit_brms)
@@ -147,3 +167,6 @@ out_all %>%
 Matti Vuorre [Bayesian Meta-Analysis with R, Stan, and brms Meta-analysis is a special case of Bayesian multilevel modeling](https://mvuorre.github.io/posts/2016-09-29-bayesian-meta-analysis/)
 
 Solomon Kuz, [Bayesian meta-analysis in brms](https://solomonkurz.netlify.app/blog/bayesian-meta-analysis/)
+
+
+1 See Details under `brmsformula` in the `brms` [package pdf](https://cran.r-project.org/web/packages/brms/brms.pdf)
