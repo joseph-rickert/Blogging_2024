@@ -3,9 +3,9 @@ title: "Bayesian Analysis with brms"
 format: html
 ---
 
-in our previous post, [Examining Meta Analysis](https://rworks.dev/posts/meta-analysis/) we contrasted a frequentist version of a meta analysis conducted with R's [meta](https://cran.r-project.org/package=meta) package with a Bayesian meta analysis done mostly in [stan](https://mc-stan.org/) using `R's` [rstan](https://cran.r-project.org/package=rstan) package as a front end. We did this to hint at the difference between working within the restricted confines of a traditional frequentist framework and the amazing freedom to set up and solve complex probabilistic models in a modern Bayesian engine like `stan`. However, we fully acknowledge the cognitive burden of learning a completely new language while perhaps also learning Bayesian methods.
+in our previous post, [Examining Meta Analysis](https://rworks.dev/posts/meta-analysis/) we contrasted a frequentist version of a meta analysis conducted with R's [meta](https://cran.r-project.org/package=meta) package with a Bayesian meta analysis done mostly in [stan](https://mc-stan.org/) using `R's` [rstan](https://cran.r-project.org/package=rstan) package as a front end. We did this to hint at the difference between working within the restricted confines of a traditional frequentist framework and the amazing freedom to set up and solve complex probabilistic models using a modern Bayesian engine like `stan`. However, we fully acknowledge the cognitive burden of learning a completely new language and at the same time also learning Bayesian methods.
 
-In this post, we will ease your anxiety by pointing to a middle way.
+In this post, we will ease your anxiety by pointing to a middle way, by using the well established and powerful package `brms` to formulate `stan` models.
 
 ## Meta-Analysis Models
 
@@ -34,25 +34,37 @@ angina
 As in the previous post, we will measure the effect of the amlodipine treatment by looking at the difference in the observed means from the two arms of the study. Our model can be expressed as :
 
 $$\delta_i = \theta + \nu_i + \epsilon$$
-where for each study, i, $\delta_i$, the observed treatment effect. $\theta$ is the difference between population mean of the control arm subtracted from the population mean of the treatment arm. It is the common intercept of the model.
+where for each study, i, $\delta_i$, the observed treatment effect, is the mean of the control arm subtracted from the mean of the treatment arm.
 
-$$\theta = \theta_E - \theta_C$$.
+$$\theta_i = \theta_{Ei} - \theta_{Ci}$$
+$$ \theta_i \sim N(\theta, \tau)$$
 
-Both of these population parameters are estimated from the data. For the treatment arm, $\hat\theta_E$ = meanE and $\hat\sigma^2_E$ = varE and the control arm estimates are similarly part of the data set. So we have that:
 
-$$ \theta_E \sim N(\hat\theta_E, \hat\sigma_E) \:\:and\:\: \theta_C \sim N(\hat\theta_C, \hat\sigma_C)$$ 
+$\nu_i$ is the group effect from each study
+
+
+
+
+$$ \nu_i \sim N\left( \theta_i, \sqrt{\frac{\sigma_{Ei}^2}{n_{Ei}}+\frac{\sigma_{Ci}^2}{n_{Ci}}} \right)$$
+
+
+
+
+and $\epsilon_i$ is random noise: 
+
+$$\epsilon \sim N(0, \sigma)$$.
+
+The data include $\hat\theta_E$ = meanE and $\hat\sigma^2_E$ = varE and the corresponding parameters for the control arm.
+
+
 
 With this we have that $\theta$ is distributed as:
 
-$$ \theta \sim N\left(\theta_E - \theta_C, \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}}\right)$$
+$$ \delta_i \sim N\left(\theta +\theta_i \;,\; \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}} + \sigma\right)$$
 
-$\nu_i$, the intercept associated with study i, is assumed to be distributed as: 
 
-$$\nu_i \sim N(0, \tau) $$
 
-and $\epsilon_i$ is random noise which we assume is distributed:
 
-$$\epsilon \sim N(0, \sigma)$$.
 
 
 ### brms Syntax
@@ -85,7 +97,7 @@ First we read in the data using `dplyr` , add `delta_i` the difference in means 
  
 df <- angina %>% mutate(delta_i = (meanE - meanC), se_di = sqrt(varE/nE + varC/nC)) %>%
                 rename(study = Protocol) %>%
-                select(study, delta_i, se_di)
+                select(study, delta_i, se_di, nE,nC)
                         
 head(df)
 ```
@@ -111,8 +123,6 @@ fit_brms <- brm(
            iter = 2000, warmup = 1000, cores = 4, chains = 4, seed = 14,
            control = list(adapt_delta = 0.95))
 ```
-
-
 
 ```{r}
 #| eval: false
