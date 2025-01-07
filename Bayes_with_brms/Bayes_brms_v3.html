@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Bayesian Analysis with brms</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Bayes_brms_v3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Bayes_brms_v3_files/libs/quarto-html/quarto.js"></script>
+<script src="Bayes_brms_v3_files/libs/quarto-html/popper.min.js"></script>
+<script src="Bayes_brms_v3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Bayes_brms_v3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Bayes_brms_v3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Bayes_brms_v3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Bayes_brms_v3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Bayes_brms_v3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Bayes_brms_v3_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Bayesian Analysis with brms</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In our previous post, <a href="https://rworks.dev/posts/meta-analysis/">Examining Meta Analysis</a> we contrasted a frequentist version of a meta analysis conducted with R’s <a href="https://cran.r-project.org/package=meta">meta</a> package with a Bayesian meta analysis done mostly in <a href="https://mc-stan.org/">stan</a> using <code>R's</code> <a href="https://cran.r-project.org/package=rstan">rstan</a> package as a front end. We did this to hint at the difference between working within the restricted confines of a traditional frequentist framework and the amazing freedom to set up and solve complex probabilistic models using a modern Bayesian engine like <code>stan</code>. However, we fully acknowledge the cognitive burden of learning a completely new language and at the same time also learning Bayesian methods.</p>
+<p>In this post, we will ease your anxiety by pointing to a middle way, by using the well established and powerful package <code>brms</code> to formulate <code>stan</code> models.</p>
+<section id="meta-analysis-models" class="level2">
+<h2 class="anchored" data-anchor-id="meta-analysis-models">Meta-Analysis Models</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="read-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-data">Read the Data</h3>
+<p>First, we remind ourselves what the data look like. nE is the number of subjects in the treatment arm for each Protocol, meanE is sample treatment mean that was calculated for each protocol, varE is the observed sample variance for each protocol and nC, meanC, and varC are the statistics for the control arm. (Note we will refer to Protocol as study from now on.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>angina <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">"Amlodipine.csv"</span>, <span class="at">col_types =</span> <span class="fu">c</span>(<span class="st">"c"</span>,<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"i"</span>,<span class="st">"d"</span>,<span class="st">"d"</span>),<span class="dv">2</span>))) </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>angina</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 7
+  Protocol    nE meanE   varE    nC   meanC   varC
+  &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+1 154         46 0.232 0.225     48 -0.0027 0.0007
+2 156         30 0.281 0.144     26  0.027  0.114 
+3 157         75 0.189 0.198     72  0.0443 0.497 
+4 162         12 0.093 0.139     12  0.228  0.0488
+5 163         32 0.162 0.0961    34  0.0056 0.0955
+6 166         31 0.184 0.125     31  0.0943 0.173 
+7 303         27 0.661 0.706     27 -0.0057 0.989 
+8 306         46 0.137 0.121     47 -0.0057 0.129 </code></pre>
+</div>
+</div>
+</section>
+<section id="review-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="review-the-model">Review The Model</h3>
+<p>As in the previous post, we will measure the effect of the amlodipine treatment by looking at the difference in the observed means from the two arms of the study. Our model can be expressed as :</p>
+<p><span class="math display">\[\delta_i = \theta + \nu_i + \epsilon\]</span> where for each study, i, <span class="math inline">\(\delta_i\)</span>, the observed treatment effect, is the mean of the control arm subtracted from the mean of the treatment arm.</p>
+<p><span class="math display">\[\theta_i = \theta_{Ei} - \theta_{Ci}\]</span> <span class="math display">\[ \theta_i \sim N(\theta, \tau)\]</span></p>
+<p><span class="math inline">\(\nu_i\)</span> is the group effect from each study</p>
+<p><span class="math display">\[ \nu_i \sim N\left( \theta_i, \sqrt{\frac{\sigma_{Ei}^2}{n_{Ei}}+\frac{\sigma_{Ci}^2}{n_{Ci}}} \right)\]</span></p>
+<p>and <span class="math inline">\(\epsilon_i\)</span> is random noise:</p>
+<p><span class="math display">\[\epsilon \sim N(0, \sigma)\]</span>.</p>
+<p>The data include <span class="math inline">\(\hat\theta_E\)</span> = meanE and <span class="math inline">\(\hat\sigma^2_E\)</span> = varE and the corresponding parameters for the control arm.</p>
+<p>With this we have that <span class="math inline">\(\theta\)</span> is distributed as:</p>
+<p><span class="math display">\[ \delta_i \sim N\left(\theta +\theta_i \;,\; \sqrt{\frac{\sigma_E^2}{n_E} + \frac{\sigma_C^2}{n_C}} + \sigma\right)\]</span></p>
+</section>
+<section id="brms-syntax" class="level3">
+<h3 class="anchored" data-anchor-id="brms-syntax">brms Syntax</h3>
+<p>Although it is much simpler than using <code>stan</code> directly, <code>brms</code> is not without its own cognitive load. Any complex ‘R’ package, or for that matter, any sophisticated function written in an language you like requires taking time to understand how it works in order to use it confidently and correctly. At a minimum, it is necessary to fully comprehend the function signature and all of the options implicitly coded therein.</p>
+<p>A good bit of the cognitive load associated with <code>brms</code> is associated with the formula interface which it adopts form the <a href="https://CRAN.R-project.org/package=lme4"><code>lme4</code></a> package for formulating and solving frequentist mixed-effects models. <code>brms</code> builds on this syntax to allow formulating expressions to set up complex, multilevel models.</p>
+<p>The general formula argument^1 is structured as <em>response</em> | <em>aterms</em> ~ <em>pterms</em> + (<em>gterms</em> | <em>group</em>). Everything on the right side of ∼ specifies predictors. <code>+</code> is used to separate different effects from each other. Note: the formula syntax is a very compressed notation, so even though it itself is concise explanations of it tend to be long. We have to leave this to the package documentation.</p>
+<section id="aterms" class="level4">
+<h4 class="anchored" data-anchor-id="aterms">aterms</h4>
+<p>The <em>aterms</em> are optional terms that provide special information about the response variable. Especially helpful for meta-analysis the term <code>se</code> specifies the standard errors of the response variable when response is a treatment effect. The pdf states:</p>
+<blockquote class="blockquote">
+<p>Suppose that the variable yi contains the effect sizes from the studies and sei the corresponding standard errors. Then, fixed and random effects meta-analyses can be conducted using the formulas yi | se(sei) ~ 1 and yi | se(sei) ~ 1 + (1|study), respectively, where study is a variable uniquely identifying every study. … By default, the standard errors replace the parameter sigma. To model sigma in addition to the known standard errors, set argument sigma in function se to TRUE, for instance, yi | se(sei, sigma = TRUE) ~ 1.</p>
+</blockquote>
+</section>
+<section id="pterms" class="level4">
+<h4 class="anchored" data-anchor-id="pterms">pterms</h4>
+<p><code>pterms</code> are population level terms. Everything on the right side of formula that is not recognized as part of a group-level term is treated as a population-level effect.</p>
+</section>
+<section id="gterms" class="level4">
+<h4 class="anchored" data-anchor-id="gterms">gterms</h4>
+<p><code>gterms</code> are group level terms that are specified as (coefs | group) where coefs contains one or more variables whose effects are assumed to vary with the levels of the grouping factor. For example, if both a group intercept and subject age vary by group, the group effects would be specified by (1 + age | group). Note that it is possible to specify multiple grouping factors each with multiple group-level coefficients.</p>
+</section>
+</section>
+<section id="set-up-the-model-using-the-brms-package" class="level3">
+<h3 class="anchored" data-anchor-id="set-up-the-model-using-the-brms-package">Set up the model using the brms package</h3>
+<p>First we read in the data using <code>dplyr</code> , add <code>delta_i</code> the difference in means and its standard error, <code>se_di</code>, rename Protocol to study for convenience, and drop the variables we no longer need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> angina <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">delta_i =</span> (meanE <span class="sc">-</span> meanC), <span class="at">se_di =</span> <span class="fu">sqrt</span>(varE<span class="sc">/</span>nE <span class="sc">+</span> varC<span class="sc">/</span>nC)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">rename</span>(<span class="at">study =</span> Protocol) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(study, delta_i, se_di, nE,nC)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                        </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  study delta_i  se_di    nE    nC
+  &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 154    0.234  0.0701    46    48
+2 156    0.254  0.0958    30    26
+3 157    0.145  0.0977    75    72
+4 162   -0.135  0.125     12    12
+5 163    0.157  0.0762    32    34
+6 166    0.0894 0.0980    31    31</code></pre>
+</div>
+</div>
+</section>
+<section id="fit-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="fit-the-model">Fit the model</h3>
+<p>Note that we are using the <em>aterm</em> <code>se</code> to inform the <code>brm()</code> function about varE and varC. The <code>sigma</code> = TRUE flag indicates that the residual standard deviation parameter sigma should be included in addition to the known measurement error. See the epsilon term in the model equations above. <code>prior</code> is an alias for the <code>set_prior()</code> function^2.</p>
+<p>The last two lines in the call to <code>brm()</code> specify that the model is to be fitted using 4 chains, each with 2000 iterations of which the first 1000 are warm up to calibrate the sampler. This provides a total of 4000 posterior samples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Random effects meta-analysis</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fit_brms <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># specify random standard error effect size by group. See p43 of pdf </span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sigma = TRUS means estimate epsilon variation in addition to using standard error estimates from data</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  delta_i <span class="sc">|</span> <span class="fu">se</span>(se_di, <span class="at">sigma =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> study),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># set priors in stan language</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept), </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> study)),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">seed =</span> <span class="dv">14</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.95</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The model fit function shows the great advantage <code>brms</code> achieves by combining <code>lme4</code>s concise formula notation with the exact solutions provided by <code>stan</code>. Working directly in <code>stan</code> does provide great freedom, but freedom comes at the cost of easily specifying models that might not make sense. The <code>brms</code>notation helps to guide users into specifying meaningful models.</p>
+<p>Also note that in most cases, it is not necessary it is not necessary to specify Normal or t-distribution priors. The software will get it right. We included the prior statement to show how it works.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save an object to a file</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(fit_brms, <span class="at">file =</span> <span class="st">"fit_brms.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restore the object</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fit_brms <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">"fit_brms.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here are the results of the model fit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_brms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: delta_i | se(se_di, sigma = TRUE) ~ 1 + (1 | study) 
+   Data: df (Number of observations: 8) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~study (Number of levels: 8) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.10      0.09     0.00     0.33 1.00     1505     2108
+
+Regression Coefficients:
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept     0.16      0.08     0.01     0.34 1.00     2033     1610
+
+Further Distributional Parameters:
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.10      0.09     0.00     0.33 1.00     2129     1798
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<p>The first section of the summary gives some basic information about the model specification. Following this are the statistics for each of the estimated parameters. We see that they are in substantial agreement with the results obtained in our previous post, even though some of the details of the model specification are slightly different than the previous model fits. The payoff is the Intercept whose value is 0.16.</p>
+<p>For each estimated parameter <em>Estimate</em> and <em>Est.Error</em> provide the mean and the standard deviation of the posterior distribution. <em>l-95% CI</em> and <em>u-95% CI</em> provide the lower and upper bounds on the 95% credible intervals. <em>Rhat</em> = 1 for each parameter, indicating that the Markov chains have converged. An <em>Rhat</em> considerably greater than 1 (i.e., &gt; 1.1) would mean that the chains have not yet converged, and it would be necessary to run more iterations or perhaps set stronger priors. (See Gelman and Rubin) <em>Bulk_ESS</em> and <em>Tail_ESS</em> are diagnostics for the sampling efficiency in the bulk and tail of the posterior distribution respectively. See the <a href="https://mc-stan.org/posterior/reference/ess_bulk.html">stan documentation</a> for details and interpretation.</p>
+<p>The <code>brms</code> package also provides a plot method that plots posterity density and trace plots of the MCMC draws for the estimated statistics. Note that <em>b_Intercept</em> is the internal <code>stan</code> name for the population intercept.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_brms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Bayes_brms_v3_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="plots-for-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="plots-for-analysis">Plots for analysis</h3>
+<p>Now we will prepare a Bayesian version of a <em>forest plot</em> with the help of the <code>spread_draws()</code> function in the <code>tidybayes</code> package that collects information from the <code>fit_brms</code> object and returns it as columns in a data frame. This first code block creates two data frames <code>out_indiv</code> adds the population to the study specific intercept for each draw, while <code>out_theta</code> sets up the data to compute the mean value of population intercept. These data frames are combined into <code>out_all</code> which is ready for plotting. The <code>mean_qi()</code> function from <code>tidybayes</code> translates draws from distributions in a the grouped data frame into point and interval summaries.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data frame for plotting</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>out_indiv <span class="ot">&lt;-</span> <span class="fu">spread_draws</span>(fit_brms, r_study[study,term], b_Intercept) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">mutate</span>(<span class="at">Intercept =</span> r_study <span class="sc">+</span> b_Intercept) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">mutate</span>(<span class="at">study =</span> <span class="fu">as.character</span>(study)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">select</span>(study,term,Intercept)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>out_theta <span class="ot">&lt;-</span> <span class="fu">spread_draws</span>(fit_brms, r_study[study,term], b_Intercept) <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">study =</span> <span class="st">"theta"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">Intercept =</span> b_Intercept) <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(study,term,Intercept)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>out_all <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(out_indiv, out_theta) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">study =</span> <span class="fu">factor</span>(study))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>out_all <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">study =</span> <span class="fu">str_replace_all</span>(study, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">" "</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 64,000 × 3
+   study term      Intercept
+   &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
+ 1 154   Intercept     0.322
+ 2 154   Intercept     0.254
+ 3 154   Intercept     0.322
+ 4 154   Intercept     0.227
+ 5 154   Intercept     0.149
+ 6 154   Intercept     0.309
+ 7 154   Intercept     0.176
+ 8 154   Intercept     0.258
+ 9 154   Intercept     0.253
+10 154   Intercept     0.153
+# ℹ 63,990 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frame of summary numbers</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>out_all_sum <span class="ot">&lt;-</span> <span class="fu">group_by</span>(out_all, study) <span class="sc">%&gt;%</span>  <span class="fu">mean_qi</span>(Intercept) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This code stacks and plots the graphs of the labels.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw plot</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>out_all <span class="sc">%&gt;%</span>   </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(Intercept,study)) <span class="sc">+</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Zero!</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">linewidth =</span> .<span class="dv">25</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">8</span>, .<span class="dv">95</span>), <span class="at">fill =</span> <span class="st">"dodgerblue"</span>) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add text labels</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">mutate_if</span>(out_all_sum, is.numeric, round, <span class="dv">2</span>),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">str_glue</span>(<span class="st">"{Intercept} [{.lower}, {.upper}]"</span>), <span class="at">x =</span> <span class="fl">0.75</span>),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="st">"inward"</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Observed as empty points</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">study =</span> <span class="fu">str_replace_all</span>(study, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>, <span class="st">" "</span>)), </span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span>delta_i), <span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">y =</span> <span class="sc">-</span>.<span class="dv">2</span>), <span class="at">shape =</span> <span class="dv">1</span> </span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Bayes_brms_v3_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="stan-code" class="level3">
+<h3 class="anchored" data-anchor-id="stan-code">Stan Code</h3>
+<p>Finally, we extract the stan code from the <code>fit_brms</code> object. This is an extremely useful feature for checking the model, checking that your <code>brms</code> code is doing what you think it is, and maybe for learning <code>stan</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stancode</span>(fit_brms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>// generated with brms 2.21.0
+functions {
+}
+data {
+  int&lt;lower=1&gt; N;  // total number of observations
+  vector[N] Y;  // response variable
+  vector&lt;lower=0&gt;[N] se;  // known sampling error
+  // data for group-level effects of ID 1
+  int&lt;lower=1&gt; N_1;  // number of grouping levels
+  int&lt;lower=1&gt; M_1;  // number of coefficients per level
+  array[N] int&lt;lower=1&gt; J_1;  // grouping indicator per observation
+  // group-level predictor values
+  vector[N] Z_1_1;
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  vector&lt;lower=0&gt;[N] se2 = square(se);
+}
+parameters {
+  real Intercept;  // temporary intercept for centered predictors
+  real&lt;lower=0&gt; sigma;  // dispersion parameter
+  vector&lt;lower=0&gt;[M_1] sd_1;  // group-level standard deviations
+  array[M_1] vector[N_1] z_1;  // standardized group-level effects
+}
+transformed parameters {
+  vector[N_1] r_1_1;  // actual group-level effects
+  real lprior = 0;  // prior contributions to the log posterior
+  r_1_1 = (sd_1[1] * (z_1[1]));
+  lprior += normal_lpdf(Intercept | 0, 1);
+  lprior += student_t_lpdf(sigma | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+  lprior += normal_lpdf(sd_1 | 0, 1)
+    - 1 * normal_lccdf(0 | 0, 1);
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    mu += Intercept;
+    for (n in 1:N) {
+      // add more terms to the linear predictor
+      mu[n] += r_1_1[J_1[n]] * Z_1_1[n];
+    }
+    target += normal_lpdf(Y | mu, sqrt(square(sigma) + se2));
+  }
+  // priors including constants
+  target += lprior;
+  target += std_normal_lpdf(z_1[1]);
+}
+generated quantities {
+  // actual population-level intercept
+  real b_Intercept = Intercept;
+}</code></pre>
+</div>
+</div>
+</section>
+<section id="conclusion-and-observations" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion-and-observations">Conclusion and Observations</h3>
+<p>There are two “take aways” from this post that we would like to emphasize.</p>
+<ol type="1">
+<li><p><code>brms</code> makes it easy to specify Bayesian models that produce probability distribution that fully characterize estimated quantities. There is really no reason to settle for the frequentist point estimates that the norm before the availability of MCMC engines like <code>stan</code>.</p></li>
+<li><p>In Bayesian analysis we use the fact assumption that unidentified population parameters generate individual outcomes and in turn summaries of these individuals. This means knowing the individuals (or in our case sufficient statistics about the individuals) greatly influences our posterior estimates of plausible population parameters. With <code>brms</code> we are able to quickly infer the difference between treatment and control in a disciplined and documented fashion.</p></li>
+</ol>
+<p>We would also like to point out that our simple example which is a typical meta-analysis project is a multi-level model that looks quite different from the kind of multi-level model one might encounter. If we had the patient level data from the amplodipine study then we might have considered a three level nested model: subjects within treatment arms within studies. We avoided the first level by not having the data and the second level by directly modeling the difference between treatment arms.</p>
+</section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Bürkner PC (2017). “brms: An R Package for Bayesian Multilevel Models using Stan.” Journal of Statistical Software, 80(1), 1–28. doi:10.18637/jss.v080.i01</p>
+<p>Gelman A, Rubin DB (1992). “Inference from Iterative Simulation Using Multiple Sequences.” Statistical Science, pp.&nbsp;457–472.</p>
+<p>Solomon Kuz, <a href="https://solomonkurz.netlify.app/blog/bayesian-meta-analysis/">Bayesian meta-analysis in brms</a></p>
+<p>Matti Vuorre <a href="https://mvuorre.github.io/posts/2016-09-29-bayesian-meta-analysis/">Bayesian Meta-Analysis with R, Stan, and brms Meta-analysis is a special case of Bayesian multilevel modeling</a></p>
+<p>1 See Details under <code>brmsformula</code> in the <code>brms</code> <a href="https://cran.r-project.org/web/packages/brms/brms.pdf">package pdf</a> 2 See Details under <code>set_prior</code> on page 211 of the package pdf.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
