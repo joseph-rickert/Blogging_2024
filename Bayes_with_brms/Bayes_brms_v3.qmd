@@ -1,5 +1,5 @@
 ---
-title: "Bayesian Analysis with brms"
+title: "Bayesian MetaAnalysis with brms"
 format: html
 ---
 
