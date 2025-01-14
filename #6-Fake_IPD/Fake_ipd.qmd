@@ -4,10 +4,12 @@ format: html
 editor: source
 ---
 
+
+
 ```{r}
-data.generator <- function(K, nvec, meanvec, advec){
+data.generator <- function(K, nvec, meanvec, sdvec){
   #Initialize data generation
-  trt = study = mu = epsilon = NULL
+  trt = study = mu = epsilon = NULL;
 # loop to generate data for each study
   for(i in 1:K){
     # study identifier
@@ -15,24 +17,69 @@ data.generator <- function(K, nvec, meanvec, advec){
     # indicator for treatment assignment
     trt0 = mu0 = which.trt = rbinom(nvec[i],1,0.5)
     # assign 1 to TRT and get its mean value
-    trt0[mu0==1] = 1: muo[muo ==1] = meanvec[i]
-    # assign 0 for Placepo and get its mean value
-    trt[mu0 ==0]. = 0; muo[mu0==0] = meanvec[1+K]
+    trt0[mu0==1] = 1
+    mu0[mu0==1] = meanvec[i]
+    # assign 0 for Placebo and get its mean value
+    trt[mu0==0] = 0
+    mu0[mu0==0] = meanvec[i+K]
     #epsilon
-    epsilon - rnorm(nvec[i], 0, advec) 
+    epsilon0 = rnorm(nvec[i], 0, sdvec) 
     # put together
-    trt = append(drt, trt0)
+    print(trt)
+    trt = append(trt, trt0)
+    print(trt)
     mu = append(mu, mu0)
     epsilon = append(epsilon, epsilon0)
   } # end of i loop for data generation
+  print("end of loop")
   # put data into a data frame
-  trt[trt==i] = "TRT"
+  trt[trt==1] = "TRT"
   trt[trt==0] = "PBO"
   y = mu + epsilon
-  dat = data.frame(Study = as.factor(study), 
-        TRT = trt, mu = mu, y = y)
+  Study = as.factor(study)
+  print(length(Study))
+  print(length(trt))
+  print(length(mu))
+  print(length(y))
+  dat = data.frame(Study = Study, TRT = trt, mu = mu, y = y)
   # output data frame
   dat
     } #end of function data.generator
+```
+
+Set some parameters
+
+```{r}
+set.seed(123)
+ K <- 4 # the number of studies
+ n <- 200 # the number of observations for each study
+ nvec <- rep(n,K)
+ nvec
+ mTRT <- -10 # treatment mean for HAMD in  Lamotrigine study 
+ mPBO <- -8  # placebo mean for HAMD in  Lamotrigine study 
+ meanvec <- c(rep(mTRT,K), rep(mPBO,K))
+ length(meanvec)
+ sdvec <- 8 + runif(K)
+ sdvec
+ 
+```
+
+Generate the synthetic data
+
+```{r}
+K
+nvec
+meanvec
+sdvec
+
+
+dat <- data.generator(K, nvec, meanvec,sdvec)
+head(dat)
+```
+
+```{r}
+library(lattice)
+print(bwplot(y ~ Study|TRT, data=dat, xlab="Study", lwd=3, 
+                 ylab="Simulated Data",  cex = 1.3, pch=20, type=c("p","r")))
 ```
 
