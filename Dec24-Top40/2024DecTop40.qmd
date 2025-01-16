@@ -20,7 +20,15 @@ editor: source
 ::: {.column width="45%"}
 
 
-### Botany 
+### Agriculture
+
+[pacu](https://cran.r-project.org/package=pacu) v0.1.44: Provides support for a variety of commonly used precision data science agriculture operations including functions to download and process raw satellite images from [Sentinel-2](https://documentation.dataspace.copernicus.eu/APIs/OData.html),  functions to [download vegetation index statistics](https://documentation.dataspace.copernicus.eu/APIs/SentinelHub/Statistical.html) for a given period of time, without the need to download the raw images, and functions to visualize weather data in a historical context. There are five vignettes including an [Introduction](https://cran.r-project.org/web/packages/pacu/vignettes/pacu.html),  [Satellite data](https://cran.r-project.org/web/packages/pacu/vignettes/pacu_sat.html) and [Weather data](https://cran.r-project.org/web/packages/pacu/vignettes/pacu_weather.html).
+
+![](pacu.png){fig-alt="Plots of temperature distributions"}
+
+### Biology
+
+[moRphomenes]() v1.0.3: Provides tools to extend geometric morphometric principles, [Mitteroecker & Gunz (2009)](https://link.springer.com/article/10.1007/s11692-009-9055-x) to the study of non-physical structures, hormone profiles, as outlined in [Ehrlich et al (2021)](https://onlinelibrary.wiley.com/doi/10.1002/ajpa.24514) and includes a `shiny` app for data exploration
 
 
 ![](.png){fig-alt=""}
@@ -32,6 +40,9 @@ editor: source
 
 ### Computational Methods
 
+[moonboot](https://cran.r-project.org/package=moonboot) v0.9.1: Implements the m-out-of-n bootstrap suggested by [Politis and Romano (1994)](https://projecteuclid.org/journals/annals-of-statistics/volume-22/issue-4/Large-Sample-Confidence-Regions-Based-on-Subsamples-under-Minimal-Assumptions/10.1214/aos/1176325770.full) for subsampling size m. See [Dalitz and Lögler (2024)]https://arxiv.org/abs/2412.05032) for package details.
+
+![](moonboot.png){fig-alt="Three methods for choosing m of n"}
 
 
 ### Data
@@ -122,7 +133,9 @@ owing model test results"}
 
 ### Networks
 
+[tna](https://cran.r-project.org/package=tna) v0.3.0: Provides tools for performing Transition Network Analysis (TNA) to study relational dynamics, including functions for building and plotting TNA models, calculating centrality measures, and identifying dominant events and patterns. See [Saqr et al. (2024)](https://arxiv.org/abs/2411.15486) for details on TNA. There is a [Getting Started Guide](https://cran.r-project.org/web/packages/tna/vignettes/getting_started.html) and ttwo additional vignettes with examples.
 
+![](tna.png){fig-alt="Diagram showing initial state probabilities"}
 
 ### Pharma
 
@@ -137,12 +150,16 @@ owing model test results"}
 ### Statistics
 
 
+[catalytic](https://cran.r-project.org/package=catalytic) v0.1.0: Catalytic prior distributions which integrate observed data with synthetic data generated from a simpler model's predictive distributions may improve estimation accuracy and stability in statistical modeling. See [Huang et al. (2020)](https://www.pnas.org/doi/full/10.1073/pnas.1920913117) and [Li and Huang (202)](https://arxiv.org/abs/2312.01411) for background and the vignettes [catalytic_cox](https://cran.r-project.org/web/packages/catalytic/vignettes/catalytic_cox.html), [catalytic_glm_binomial](https://cran.r-project.org/web/packages/catalytic/vignettes/catalytic_glm_binomial.html), and [catalytic_glm_gaussian](https://cran.r-project.org/web/packages/catalytic/vignettes/catalytic_glm_gaussian.html).
+
+![](catalytic.png){fig-alt="scatter plot for predicted vs true values"}
+
+[multvardiv](https://cran.r-project.org/package=multvardiv) Prvovides functions for the multivariate generalized Gaussian distribution, multivariate Cauchy distribution, multivariate t distribution and for computing the distance between two distributions. See [Bouhlel and Dziri (2019)](https://ieeexplore.ieee.org/document/8707051), [Bouhlel and Rousseau (2022)](https://www.mdpi.com/1099-4300/24/6/838), [Bouhlel and Rousseau (2023)](https://ieeexplore.ieee.org/document/10284989) for background.
 
 
+[greta.gam](https://cran.r-project.org/package=greta.gam) v0.3.0: Implements a `greta`, [Golding (2019)](https://joss.theoj.org/papers/10.21105/joss.01601)  module that provides `mgcv` smoother functions and formula syntax to define smooth terms for use in a `greta` model. Users can define their own likelihood to complete the model and fit it by Markov Chain Monte Carlo (MCMC). See the [vignette](https://cran.r-project.org/web/packages/greta.gam/vignettes/getting-started.html).
 
-
-
-
+![](greta.png){fig-alt="Plot comparing mgcv and greta fits"}
 
 
 
@@ -157,7 +174,7 @@ owing model test results"}
 
 ### Utilities
 
-
+[fasterRaste](https://cran.r-project.org/package=fasterRaster) v8.4.0.3: Processing of large-in-memory/large-on disk rasters and spatial vectors using the stand-alone version of [GRASS GIS](https://grass.osgeo.org/). There are seven vignettes including [Getting Started](https://cran.r-project.org/web/packages/fasterRaster/vignettes/fasterRaster.html) and [Making fasterRaster faster](https://cran.r-project.org/web/packages/fasterRaster/vignettes/faster_fasterRaster.html).
 
 ### Visualization
 
