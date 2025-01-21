@@ -83,23 +83,36 @@ editor: source
 
 ### Epidemiology
 
-
+[BayesianFitForecast](https://cran.r-project.org/package=BayesianFitForecast) v1.0.0: Implements methods for Bayesian parameter estimation and forecasting in epidemiological models. Functions enable model fitting using Bayesian methods and generate forecasts with uncertainty quantification. See [Karami et al. (2024)](https://arxiv.org/abs/2411.05371) and [Grinsztajn et al. (2021])](https://onlinelibrary.wiley.com/doi/10.1002/sim.9164) for details and the [vignette](https://cran.r-project.org/web/packages/BayesianFitForecast/vignettes/BayesianFitForecast.html) to get started.
 
 
 ![](.png){fig-alt=""}
 
 ### Genomics
 
+[sffdr](https://cran.r-project.org/web/packages/sffdr/vignettes/sffdr.html) v1.0.0: Provides suffogate functional false discovery rates for genome-wide association studies and provides estimates of key FDR quantities in a significance analysis such as the functional local FDR and q-value, and uses these estimates to derive a functional p-value for type I error rate control and a functional local Bayes' factor for post-GWAS analyses. See [Bass and Wallace (2024)](https://www.medrxiv.org/content/10.1101/2024.09.24.24314276v1) for details and the [vignette](https://cran.r-project.org/web/packages/sffdr/vignettes/sffdr.html) vor an example.
 
-![](.png){fig-alt=""}
+![](sffdr.png){fig-alt="Functional FDR and p-value quantities"}
+
+[TransProR]https://cran.r-project.org/package=TransProR) v0.0.6: Implements tools for transcriptomic data analysis, with a focus on transcript-level data preprocessing, expression profiling, differential expression analysis, and functional enrichment that enables researchers to identify key biological processes, disease biomarkers, and gene regulatory mechanisms. Differential expression analysis methods incorporated in the package include `limma` [Ritchie et al. (2015)](https://academic.oup.com/nar/article/43/7/e47/2414268#google_vignette), [Smyth (2005)](https://link.springer.com/chapter/10.1007/0-387-29362-0_23), `edgeR` [Robinson et al. (2010)](https://academic.oup.com/bioinformatics/article/26/1/139/182458?login=false),  `DESeq2` [Love et al. (2014)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8),  and Wilcoxon tests [Li et al. (2022)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02648-4) An e-book providing extensive documentation is available [here](https://sssydysss.github.io/TransProRBook/).
+
+
+![](TransProR.png){fig-alt="Enrichment diagram"}
 
 ![].png){fig-alt=""}
 
 
+### Healthcare
 
+[pprof](https://cran.r-project.org/package=pprof) v1.0.1: Implements linear and generalized linear models for provider profiling, incorporating both fixed and random effects as well as post-modeling features, such as standardization measures, hypothesis testing, confidence intervals, and visualization. See [Wu et al. (2022)](https://onlinelibrary.wiley.com/doi/10.1002/sim.9387) ad [README](https://cran.r-project.org/web/packages/pprof/readme/README.html) for ore information.
 
-### Health Technology Assessment 
+### Health Technology Assessment
 
+[tatooheene](https://cran.r-project.org/package=tatooheene) v0.19.0: Provides functions to support economic modelling in R based on the methods of the [Dutch guideline](ttps://www.zorginstituutnederland.nl/publicaties/publicatie/2024/01/16/richtlijn-voor-het-uitvoeren-van-economische-evaluaties-in-de-gezondheidszorg) for economic evaluations in healthcare, [CBS data](https://www.cbs.nl/), and [OECD data](https://www.oecd.org/en.html). See [README](https://cran.r-project.org/web/packages/tatooheene/readme/README.html).
+
+[WARDEN](https://cran.r-project.org/package=WARDEN) v0.99.1: Provides a toolkit for discrete event simulations without resource constraints in the context of health technology assessments (HTA). The package focuses on cost-effectiveness modelling and aims to be submission-ready to relevant HTA bodies in alignment with [NICE TSD 15](https://www.sheffield.ac.uk/nice-dsu/tsds/patient-level-simulation). Look [here](https://jsanchezalv.github.io/WARDEN/) for details and the [vignette](https://cran.r-project.org/web/packages/WARDEN/vignettes/example_ssd.html) for an example.
+
+![](WARDEN.png){fig-alt="Qualy plots"}
 
 ![].png){fig-alt=""}
 
@@ -126,18 +139,12 @@ owing model test results"}
 
 
 
-### Mathematics
-
-
-
-
-
-
-
 
 ### Medicine
 
+[metalite.sl](https://cran.r-project.org/package=metalite.sl) v0.1.0: Provdes tools to analyze subject-level data in clinical trials and simplify workflows to create production-ready tables, listings, and figures. See [Zhang et al. (2022)](https://r4csr.org/) for background. There are six vignettes including [Introduction](https://cran.r-project.org/web/packages/metalite.sl/vignettes/metalite.sl.html) and [Disposition Table](https://cran.r-project.org/web/packages/metalite.sl/vignettes/disposition.html).
 
+![](metalite.png){fig-alt="Disposition Table"}
 
 
 ### Networks
@@ -183,7 +190,7 @@ owing model test results"}
 
 ### Time Series
 
-
+[bridgr](https://cran.r-project.org/web/packages/bridgr/vignettes/bridgr.html) v0.1.1: Implements bridge models for nowcasting and forecasting macroeconomic variables by linking high-frequency indicator variables (e.g., monthly data) to low-frequency target variables (e.g., quarterly GDP). See [Baffigi et al. (2004)](https://www.sciencedirect.com/science/article/abs/pii/S0169207003000670?via%3Dihub), [Burri (2023)](https://www.sciencedirect.com/science/article/abs/pii/S0169207003000670?via%3Dihub) or [Schumacher (2016)](https://www.sciencedirect.com/science/article/abs/pii/S0169207015001144?via%3Dihub) for background and [README](https://cran.r-project.org/web/packages/bridgr/readme/README.html) to get started.
 
 ![](.png){fig-alt="}
 
@@ -192,7 +199,27 @@ owing model test results"}
 
 ### Utilities
 
+
+[cpp11qpdf](https://cran.r-project.org/package=cpp11qpdf) v1.3.5: Provides tools to split, combine, and compress PDF files using  [`qpdf`](https://qpdf.sourceforge.io/), an open-source PDF rendering library that enables content-preserving transformations of PDF files. See the [vignette](https://cran.r-project.org/web/packages/cpp11qpdf/vignettes/cpp11qpdf.html).
+
+
+[doParabar](https://cran.r-project.org/package=doParabar) v1.0.2: Provides a `foreach` parallel adapter for [`parabar`](https://parabar.mihaiconstantin.com/) backends enabling users to run `foreach` loops in parallel while leveraging the parallel and progress-tracking capabilities of the `parabar` package. Look [here](https://parabar.mihaiconstantin.com/articles/foreach) for documentation.
+
+
 [fasterRaste](https://cran.r-project.org/package=fasterRaster) v8.4.0.3: Processing of large-in-memory/large-on disk rasters and spatial vectors using the stand-alone version of [GRASS GIS](https://grass.osgeo.org/). There are seven vignettes including [Getting Started](https://cran.r-project.org/web/packages/fasterRaster/vignettes/fasterRaster.html) and [Making fasterRaster faster](https://cran.r-project.org/web/packages/fasterRaster/vignettes/faster_fasterRaster.html).
+
+[iso8601](https://cran.r-project.org/package=iso8601) v0.1.2: Provides functions to parse strings with [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) dates, times, and date-times into R-objects, and determine the type of string and to standardise ISO8601 strings. Look [here](https://github.com/djvanderlaan/iso8601/tree/main/R-package) for examples.
+
+[pipeflow](https://cran.r-project.org/package=pipeflow) v0.2.2: Implements a lightweight framework for building robust data analysis pipelines. Users initialize a pipeline with a dataset and construct workflows step by step by adding R functions. Steps can be modified, removed, or inserted at any stage. There are six vignettes including [Getting started](https://cran.r-project.org/web/packages/pipeflow/vignettes/v01-get-started.html) and [How pipllines can modify themselves at runtime](https://cran.r-project.org/web/packages/pipeflow/vignettes/v06-self-modify-pipeline.html).
+
+
+[tablespan](https://cran.r-project.org/package=tablespan) v0.1.7 Prvides functions to create "good enough" tables that can be exported to `Excel`, `HTML`, `LaTeX`, and `RTF`. Look [here](https://jhorzek.github.io/tablespan/) for an introduction.
+
+![](tablespan.png){fig-alt="An excel table"}
+
+[tinylens](https://cran.r-project.org/package=tinylens) v0.1.0: Provides functions whach are based on the  [`lenses`](https://github.com/cfhammill/lenses) package and the Haskell [`lens`](https://github.com/ekmett/lens) package to create and use [lenses](https://github.com/ekmett/lens/wiki/History-of-Lenses) for manipulating deeply nested data structures.
+
+
 
 ### Visualization
 
