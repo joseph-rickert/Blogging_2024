@@ -2,16 +2,16 @@
 ---
 title: "December 2024 Top 40 New CRAN Packages"
 author: "Joseph Rickert"
-date: 2025-01-20
+date: 2025-01-25
 description: "An attempt to capture the depth and breadth of what's new on CRAN."
 image: ""
-image-alt: "ca.gif"
+image-alt: "pacu.png"
 categories: "Top 40"
 editor: source
 ---
 
 
- new packages made CRAN's final cut in . Here are my Top 40 picks in nineteen categories: Botany, Climate Analysis, Computational Methods, Data, Ecology, Education, Environment, Epidemiology, Genomics, Health Technology Assessment, Machine Learning, Mathematics, Medicine, Networks, Pharma, Statistics, Time Series, Utilities, and Visualization.
+In December, one hundred twenty three new packages made it to CRAN. Here are my Top 40 picks in eighteen categories: Agriculture, Biology, Computational Methods, Data, Ecology, Epidemiology, Genomics, Healthcare, Health Technology Assessment, Machine Learning, Medicine, Networks, Statistics, Time Series, Utilities, and Visualization.
 
 
 
@@ -29,9 +29,12 @@ editor: source
 [qPRAentry](https://cran.r-project.org/package=qPRAentry) v0.1.0: Provides functions to estimate the amount of a plant pest entering a risk assessment area (in terms of founder populations) by calculating imported commodities that could be potential pathways of pest entry, and the development of a pathway model. Two `shiny` apps are included to simplify the process of assessing the risk. The approach is based on the European Food Safety Authority (EFSA) guidance document [Jeger et al. (2018)](https://efsa.onlinelibrary.wiley.com/doi/full/10.2903/j.efsa.2018.5350). See the [vignette](https://cran.r-project.org/web/packages/qPRAentry/vignettes/qPRAentry_workflow.htm)
 
 ![](qPRAentry.png){fig-alt="Map of North America showing median N trade by country"}
+
+
 ### Biology
 
-[moRphomenes]((https://cran.r-project.org/package=moRphomenes) v1.0.3: Provides tools to extend geometric morphometric principles, [Mitteroecker & Gunz (2009)](https://link.springer.com/article/10.1007/s11692-009-9055-x) to the study of non-physical structures, hormone profiles, as outlined in [Ehrlich et al (2021)](https://onlinelibrary.wiley.com/doi/10.1002/ajpa.24514) and includes a `shiny` app for data exploration
+
+[moRphomenes](https://cran.r-project.org/package=moRphomenes) v1.0.3: Provides tools to extend geometric morphometric principles, [Mitteroecker & Gunz (2009)](https://link.springer.com/article/10.1007/s11692-009-9055-x) to the study of non-physical structures, hormone profiles, as outlined in [Ehrlich et al (2021)](https://onlinelibrary.wiley.com/doi/10.1002/ajpa.24514) and includes a `shiny` app for data exploration
 
 [SunCalMeeus](https://cran.r-project.org/package=SunCalcMeeus) v0.1.2: Provides functions to compute the position of the sun, and local solar time using Meeus' formulae and compute day and/or night length using different twilight definitions or arbitrary sun elevation angles. This package is part of the `r4photobiology suite described in [Aphalo, P. J. (2015)](https://bulletin.uv4plants.org/index.php/uv4pbulletin/article/view/16). There is a [User Guide](https://cran.r-project.org/web/packages/SunCalcMeeus/vignettes/userguide-1-astronomy.html) for the package and a guide for the [R for Photobiology](https://cran.r-project.org/web/packages/SunCalcMeeus/vignettes/userguide-0-r4p-introduction.html) suite.
 
@@ -85,10 +88,14 @@ editor: source
 
 ![](sffdr.png){fig-alt="Functional FDR and p-value quantities"}
 
-[TransProR]https://cran.r-project.org/package=TransProR) v0.0.6: Implements tools for transcriptomic data analysis, with a focus on transcript-level data preprocessing, expression profiling, differential expression analysis, and functional enrichment that enables researchers to identify key biological processes, disease biomarkers, and gene regulatory mechanisms. Differential expression analysis methods incorporated in the package include `limma` [Ritchie et al. (2015)](https://academic.oup.com/nar/article/43/7/e47/2414268#google_vignette), [Smyth (2005)](https://link.springer.com/chapter/10.1007/0-387-29362-0_23), `edgeR` [Robinson et al. (2010)](https://academic.oup.com/bioinformatics/article/26/1/139/182458?login=false),  `DESeq2` [Love et al. (2014)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8),  and Wilcoxon tests [Li et al. (2022)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02648-4) An e-book providing extensive documentation is available [here](https://sssydysss.github.io/TransProRBook/).
+[TransProR](https://cran.r-project.org/package=TransProR) v0.0.6: Implements tools for transcriptomic data analysis, with a focus on transcript-level data preprocessing, expression profiling, differential expression analysis, and functional enrichment that enables researchers to identify key biological processes, disease biomarkers, and gene regulatory mechanisms. Differential expression analysis methods incorporated in the package include `limma` [Ritchie et al. (2015)](https://academic.oup.com/nar/article/43/7/e47/2414268#google_vignette), [Smyth (2005)](https://link.springer.com/chapter/10.1007/0-387-29362-0_23), `edgeR` [Robinson et al. (2010)](https://academic.oup.com/bioinformatics/article/26/1/139/182458?login=false),  `DESeq2` [Love et al. (2014)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8),  and Wilcoxon tests [Li et al. (2022)](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-022-02648-4) An e-book providing extensive documentation is available [here](https://sssydysss.github.io/TransProRBook/).
 
 
 ![](TransProR.png){fig-alt="Enrichment diagram"}
+
+
+
+
 
 
 ### Healthcare
@@ -99,9 +106,22 @@ editor: source
 
 [tatooheene](https://cran.r-project.org/package=tatooheene) v0.19.0: Provides functions to support economic modelling in R based on the methods of the [Dutch guideline](ttps://www.zorginstituutnederland.nl/publicaties/publicatie/2024/01/16/richtlijn-voor-het-uitvoeren-van-economische-evaluaties-in-de-gezondheidszorg) for economic evaluations in healthcare, [CBS data](https://www.cbs.nl/), and [OECD data](https://www.oecd.org/en.html). See [README](https://cran.r-project.org/web/packages/tatooheene/readme/README.html).
 
+
+
+
+
+
 [WARDEN](https://cran.r-project.org/package=WARDEN) v0.99.1: Provides a toolkit for discrete event simulations without resource constraints in the context of health technology assessments (HTA). The package focuses on cost-effectiveness modelling and aims to be submission-ready to relevant HTA bodies in alignment with [NICE TSD 15](https://www.sheffield.ac.uk/nice-dsu/tsds/patient-level-simulation). Look [here](https://jsanchezalv.github.io/WARDEN/) for details and the [vignette](https://cran.r-project.org/web/packages/WARDEN/vignettes/example_ssd.html) for an example.
 
 ![](WARDEN.png){fig-alt="Qualy plots"}
+:::
+
+::: {.column width="10%"}
+
+:::
+
+::: {.column width="45%"}
+
 
 
 ### Machine Learning
@@ -111,18 +131,11 @@ editor: source
 [scR](https://cran.r-project.org/package=scR) v0.4.0: Provides tools for estimating the sample complexity of a chosen model through theoretical bounds and simulation including methods for estimating the Vapnik-Chervonenkis dimension (VCD) of a chosen algorithm as well as methods to estimate sample complexity directly. For more details, see [Carter, P & Choi, D (2024)](https://osf.io/preprints/osf/evrcj). 
 
 
+
+
+
 [wordvector](https://cran.r-project.org/package=wordvector) v0.2.0: Create dense vector representation of words and documents using `quanteda`, currently implements Word2vec ([Mikolov et al. (2013)](https://arxiv.org/abs/1310.4546)) and Latent Semantic Analysis ([Deerwester et al. (1990)](https://asistdl.onlinelibrary.wiley.com/doi/10.1002/(SICI)1097-4571(199009)41:6%3C391::AID-ASI1%3E3.0.CO;2-9)). Look [here](https://github.com/koheiw/wordvector) to get started.
 
-
-
-
-:::
-
-::: {.column width="10%"}
-
-:::
-
-::: {.column width="45%"}
 
 
 
@@ -140,6 +153,8 @@ editor: source
 [PhenotypeR](https://cran.r-project.org/package=PhenotypeR) v0.1.1: Provides tools to phenotype study cohorts in data mapped to the [Observational Medical Outcomes Partnership Common Data Model](https://www.ohdsi.org/data-standardization/). Diagnostics are run at the database, code list, cohort, and population level to assess whether study cohorts are ready for research. See [README](https://cran.r-project.org/web/packages/PhenotypeR/readme/README.html) and the vignette [CohortDiagnostics](https://cran.r-project.org/web/packages/PhenotypeR/vignettes/a03_CohortDiagnostics.html) for details.
 
 ![](PhenotypeR.png){fig-alt="Cohort diagnostic plots"}
+
+
 
 ### Networks
 
@@ -178,7 +193,7 @@ editor: source
 
 [bridgr](https://cran.r-project.org/web/packages/bridgr/vignettes/bridgr.html) v0.1.1: Implements bridge models for nowcasting and forecasting macroeconomic variables by linking high-frequency indicator variables (e.g., monthly data) to low-frequency target variables (e.g., quarterly GDP). See [Baffigi et al. (2004)](https://www.sciencedirect.com/science/article/abs/pii/S0169207003000670?via%3Dihub), [Burri (2023)](https://www.sciencedirect.com/science/article/abs/pii/S0169207003000670?via%3Dihub) or [Schumacher (2016)](https://www.sciencedirect.com/science/article/abs/pii/S0169207015001144?via%3Dihub) for background and [README](https://cran.r-project.org/web/packages/bridgr/readme/README.html) to get started.
 
-![](.png){fig-alt="}
+![](bridgr.png){fig-alt="Quarterly GDP"}
 
 
 
