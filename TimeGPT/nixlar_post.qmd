@@ -1,0 +1,15 @@
+
+---
+title: "A First Look at TimeGPT"
+author: "Joseph Rickert"
+date: 2024-12-13
+description: ""
+image: ""
+image-alt: ""
+categories: ""
+editor: source
+---
+
+This post is a first look at [Nixtla's](https://docs.nixtla.io/) `TimeGPT` generative, pre-trained transformer for time series forecasting. Nixtla's website provides a considerable amount of explanatory material, documentation, and code examples in Python. The [`nixlar`](https://cran.r-project.org/package=nixtlar) package wraps the Python code to provide an R interface. The package documentation for version 0.6.2 doesn't fully the R functions, but the vignettes provide sufficient code examples to get started.
+
+
