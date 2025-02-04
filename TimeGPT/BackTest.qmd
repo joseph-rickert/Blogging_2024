@@ -1,0 +1,194 @@
+
+---
+title: "A First Look at TimeGPT"
+author: "Joseph Rickert"
+date: 2024-12-13
+description: ""
+image: ""
+image-alt: ""
+categories: ""
+editor: source
+---
+
+
+See the `nixtlar` [API guide](https://cran.r-project.org/web/packages/nixtlar/vignettes/get-started.html) for options
+
+
+```{r}
+library(nixtlar)
+nixtla_client_setup(api_key = "nixak-pClLnoPc6lVWa4SitSyVo8ExtbPAkcnQblW6n3LiFW4QEqe3PT8bC9WlqLJNgpfzPHvNrEB92x5rJKqV")
+```
+
+
+
+```{r}
+library(tidyverse)
+library(forecast)
+library(xts)
+```
+
+## The Electricity Forecast example
+
+```{r}
+df <- nixtlar::electricity
+dim(df)
+glimpse(df)
+
+```
+
+
+```{r}
+df2 <- df |> mutate( time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S")) |> 
+  group_by(unique_id)
+head(df2)
+```
+
+
+
+
+```{r}
+p <- df2 |> ggplot(aes(x = time, y = y, color = unique_id)) +
+           geom_line() + facet_wrap(~unique_id, scales = "free")
+p
+```
+
+
+
+
+```{r}
+NF <- 24
+BE_df_wide <- df |> pivot_wider(names_from = unique_id, values_from = y) |>
+                    select(ds,BE) |> drop_na()
+BE_train_df <- BE_df_wide %>% filter(row_number() <= n()-NF)
+BE_test_df <- tail(BE_df_wide,NF)
+dim(BE_df_wide)
+dim(BE_train_df)
+dim(BE_test_df)
+BE_train_df <- BE_train_df |> rename(y = BE) |> mutate(unique_id = "BE")
+BE_test_df <- BE_test_df |> rename(y = BE)
+```
+
+
+## Forecast
+
+```{r}
+nixtla_fcst <- nixtla_client_forecast(BE_train_df, h = NF, level = 95)
+#> Frequency chosen: h
+head(nixtla_fcst)
+```
+```{r}
+names(nixtla_fcst) <- c("unique_id", "ds", "TimeGPT", "lo95", "up95")
+nixtla_fcst
+```
+
+
+
+Create the data frame to hold the actual and forecast values
+```{r}
+fcst_df <- tail(nixtla_fcst,NF) |> select(ds,TimeGPT) |> 
+           rename(time = ds, tgpt_fcst = TimeGPT) |>
+           mutate(elec_actual = BE_test_df$y)
+```
+
+
+Auto forecast
+
+```{r}
+arima_train <- BE_train_df |> select(-unique_id) |>
+               mutate( time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S"))
+arima_train <- arima_train |> select(-ds)
+```
+
+
+```{r}
+elec_ts <- as.xts(arima_train)
+
+arima_fcst <- elec_ts |> 
+  auto.arima() |>
+  # number of periods to forecast
+  forecast(h =NF , level = 95)
+
+```
+
+
+```{r}
+fcst_df2 <- fcst_df |>
+             mutate(arima_fcst = as.vector(arima_fcst$mean))
+```
+
+
+
+```{r}
+fcst_df2
+```
+
+
+
+```{r}
+ets_fcst <- elec_ts |> 
+  ets() |>
+  # number of periods to forecast
+  forecast(h = NF)
+
+```
+
+
+
+```{r}
+x <- as.vector(ets_fcst$mean)
+fcst_df2 <- fcst_df2 |>
+             mutate(ets_fcst = x)
+                   
+fcst_df2
+```
+
+```{r}
+library(prophet)
+```
+
+
+```{r}
+prophet_fit <- prophet(BE_train_df)
+```
+
+```{r}
+future <- make_future_dataframe(prophet_fit, periods = NF,  freq = 3600, include_history = FALSE)
+```
+
+```{r}
+prophet_fcst <- predict(prophet_fit, future)
+head(prophet_fcst)
+```
+
+```{r}
+x3 <- as.vector(ets_fcst$mean)
+fcst_df2 <- fcst_df2 |>
+             mutate(prophet_fcst = prophet_fcst$yhat)
+                   
+fcst_df2
+```
+
+
+## Plot
+
+```{r}
+fcst_dft2_long <- fcst_df2 %>%
+  pivot_longer(!time, names_to = "method", values_to = "mean")
+head(fcst_dft2_long)
+```
+
+
+
+```{r}
+p <- fcst_dft2_long |> ggplot(aes(x = time, y = mean, group = method, color = method)) +
+                        geom_line() +
+                        geom_point()
+p
+```
+
+
+
+
+
+
+
