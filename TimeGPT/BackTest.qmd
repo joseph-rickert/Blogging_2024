@@ -187,8 +187,62 @@ p
 ```
 
 
+```{r}
+saveRDS(nixtla_fcst, "nixtla_fcst.rds")
+```
+
+### Begin section to add historical forecast
+
+
+```{r}
+nixtla_hist_fcst <- nixtla_client_forecast(df, h = 8, level = 95, add_history = TRUE)
+```
+
+
+```{r}
+tail(nixtla_hist_fcst)
+```
+```{r}
+saveRDS(nixtla_hist_fcst, "nixtla_hist_fcst.rds")
+```
 
 
 
 
+```{r}
+df_hist <- nixtla_hist_fcst |> filter(unique_id == "BE")
+names(df_hist) <- c("unique_id", "ds", "TimeGPT", "lo95", "up95")
+tail(df_hist)
+```
+
+
+```{r}
+df_hist2 <- df_hist %>% filter(row_number() <= n()-8) |> select(ds,TimeGPT) |> 
+           rename(time = ds, tgpt_hist_fcst = TimeGPT) 
+```
+
+```{r}
+df_hist3 <- tail(df_hist2,24)
+df_hist3
+```
+
+Add random noise
+```{r}
+fcst_df3 <- fcst_df2 |> mutate(tgpt_hist_fcst = (df_hist3$tgpt_hist_fcst + rnorm(1,0,1)))
+```
+
+plot
+
+```{r}
+fcst_dft3_long <- fcst_df3 %>%
+  pivot_longer(!time, names_to = "method", values_to = "mean")
+head(fcst_dft3_long)
+```
+
+```{r}
+p3 <- fcst_dft3_long |> ggplot(aes(x = time, y = mean, group = method, color = method)) +
+                        geom_line() +
+                        geom_point()
+p3
+```
 
