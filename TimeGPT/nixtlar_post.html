@@ -9,7 +9,7 @@
 <meta name="author" content="Joseph Rickert">
 <meta name="dcterms.date" content="2024-12-13">
 
-<title>A First Look at TimeGPT</title>
+<title>A First Look at TimeGPT using nixtlar</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">A First Look at TimeGPT</h1>
+<h1 class="title">A First Look at TimeGPT using nixtlar</h1>
 </div>
 
 
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>This post is a first look at <a href="https://docs.nixtla.io/">Nixtla’s</a> <code>TimeGPT</code> generative, pre-trained transformer for time series forecasting.</p>
+<p>This post is a first look at <a href="https://docs.nixtla.io/">Nixtla’s</a> <code>TimeGPT</code> generative, pre-trained transformer for time series forecasting using the <code>nixtlar</code> R package.</p>
 <p>According to <a href="https://arxiv.org/abs/2111.04052">Garza et al.&nbsp;(2021)</a>, TimeGPT is a Transformer-based time series model with self-attention mechanisms. The architecture comprises an encoder-decoder structure with multiple layers, each with residual connections and layer normalization. The encoder, a stack of multi-head self-attention layers followed by a feed-forward neural network, processes the input time series. The decoder, which is similar to the encoder, generates the forecast. The decoder includes an additional multi-head attention layer that takes the encoder’s output as input. The model is trained using a teacher-forcing strategy, where the decoder receives the ground-truth values during training. The model is then used for forecasting by feeding the model’s predictions back as input during inference.</p>
 <p><img src="timegpt.png" class="img-fluid" alt="TimeGPT architecture"></p>
 <p>Nixtla’s website provides a considerable amount of explanatory material, documentation, and code examples in Python. The <a href="https://cran.r-project.org/package=nixtlar"><code>nixlar</code></a> package wraps the Python code to provide an R interface. The package documentation for version 0.6.2 doesn’t fully the R functions, but the vignettes provide sufficient code examples to get started.</p>
@@ -120,22 +120,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(prophet)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nixtlar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<section id="the-data" class="level2">
+<h2 class="anchored" data-anchor-id="the-data">The Data</h2>
+<p>The electricity dataset included in the <code>nixtlar</code> package contains hourly observations of electricity consumption generated sourced from the <a href="https://www.pjm.com/">PJM Interconnection LLC</a>, a regional transmission organization that is part of the Eastern Interconnection grid in the United States. There are five different time series with data taken from 2012 to 2018. A look at the data frame shows that the various series do not cover the same time periods.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(nixtla_fcst, "nixtla_fcst.rds")</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>nixtla_fcst <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"nixtla_fcst.rds"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(nixtla_hist_fcst, "nixtla_hist_fcst.rds")</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>nixt_hist_fcst <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"nixtla_hist_fcst.rds"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(nixtla_client_fcst, "nixtla_client_fcst.rds")</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>nixtla_client_fcst <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"nixtla_client_fcst.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="the-data" class="level3">
-<h3 class="anchored" data-anchor-id="the-data">The Data</h3>
-<p>We will use the electricity dataset provided with the <code>nixtlar</code> package that contains a total of 61,320 observations of hourly electricity consumption generated from 2012 to 2018 for five different markets New York markets. So there are five different time series. You can see that the various time series do not cover the same time periods.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> nixtlar<span class="sc">::</span>electricity</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> unique_id, <span class="at">values_from =</span> y) </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> nixtlar<span class="sc">::</span>electricity</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_wide <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> unique_id, <span class="at">values_from =</span> y) </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 6
   ds                     BE    DE    FR    NP   PJM
@@ -148,38 +140,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 6 2016-10-22 05:00:00  35.6    NA  41.4    NA    NA</code></pre>
 </div>
 </div>
-<p>A plot will give you a good feel for the data.</p>
+<p>Plots indicate that all of the series show periods of considerable volatility. The BE, DE, and FR series appear to be stationary. NP trends upward to the right and the PJM series appears to be nonlinear.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">group_by</span>(unique_id)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> df2 <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> y, <span class="at">color =</span> unique_id)) <span class="sc">+</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span>unique_id, <span class="at">scales =</span> <span class="st">"free"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">group_by</span>(unique_id)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> df2 <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> y, <span class="at">color =</span> unique_id)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">facet_wrap</span>(<span class="sc">~</span>unique_id, <span class="at">scales =</span> <span class="st">"free"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
-<section id="forecasting" class="level3">
-<h3 class="anchored" data-anchor-id="forecasting">Forecasting</h3>
-<p>We will start out by showing off the <code>nixtlar</code> forecasting function which can handle multiple time series by forecasting eight hours ahead using all of the data. The parameter <code>h</code> specifies the number of steps ahead to forecast, and <code>level</code> specifies parameter that the confidence level for the forecast.</p>
+<section id="some-comparative-frecasts" class="level2">
+<h2 class="anchored" data-anchor-id="some-comparative-frecasts">Some Comparative Frecasts</h2>
+<section id="the-timegpt-forecst" class="level3">
+<h3 class="anchored" data-anchor-id="the-timegpt-forecst">The TimeGPT Forecst</h3>
+<p>I’ll begin by showing off the <code>nixtlar</code> forecasting function which can handle multiple time series by forecasting eight hours ahead using all of the data. The parameter <code>h</code> specifies the number of steps ahead to forecast, and <code>level</code> specifies parameter that the confidence level for the forecast.</p>
 <p>Here is the built-in <code>nixtlar</code> plot function</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#nixtla_client_plot(df, nixtla_client_fcst, max_insample_length = 200)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p><img src="fcst.png" class="img-fluid" alt=""></p>
-<p>And here we focuse on the forecasts using <code>ggplot2</code>.</p>
+<p>This plot uses<code>ggplot2</code>to focus in on the forecasts.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># nixtla_client_fcst &lt;- nixtla_client_forecast(df, h = 8, level = c(80,95))</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ncf_df <span class="ot">&lt;-</span>  nixtla_client_fcst <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> <span class="fu">group_by</span>(unique_id)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ncf_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>, <span class="st">"ds"</span>, <span class="st">"TimeGPT"</span>,  <span class="st">"lon"</span>, <span class="st">"loe"</span>, <span class="st">"hie"</span>, <span class="st">"hin"</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>pf <span class="ot">&lt;-</span> ncf_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ds, <span class="at">y =</span> TimeGPT, <span class="at">color =</span> unique_id)) <span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lon, <span class="at">ymax=</span>hin), <span class="at">linetype=</span><span class="dv">2</span>, <span class="at">alpha=</span><span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>           <span class="fu">facet_wrap</span>(<span class="sc">~</span>unique_id, <span class="at">scales =</span> <span class="st">"free"</span>) </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>pf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(nixtla_client_fcst, "nixtla_client_fcst.rds")</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>nixtla_client_fcst <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"nixtla_client_fcst.rds"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>ncf_df <span class="ot">&lt;-</span>  nixtla_client_fcst <span class="sc">|&gt;</span> <span class="fu">mutate</span>( <span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> <span class="fu">group_by</span>(unique_id)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ncf_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>, <span class="st">"ds"</span>, <span class="st">"TimeGPT"</span>,  <span class="st">"lon"</span>, <span class="st">"loe"</span>, <span class="st">"hie"</span>, <span class="st">"hin"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>pf <span class="ot">&lt;-</span> ncf_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ds, <span class="at">y =</span> TimeGPT, <span class="at">color =</span> unique_id)) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lon, <span class="at">ymax=</span>hin), <span class="at">linetype=</span><span class="dv">2</span>, <span class="at">alpha=</span><span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">facet_wrap</span>(<span class="sc">~</span>unique_id, <span class="at">scales =</span> <span class="st">"free"</span>) </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>pf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>For the rest of this post we will work only with the BE data and do some simple back testing. We will split the data into training set and a test set containing 24 hours worth of observations. We will then fit several time series forecasting models and compare how well they do vis a vis the actual data and with each other.</p>
+<p>For the rest of this post I’ll work only with the BE data and do some simple back testing. I will split the data into training set and a test set containing 24 hours worth of observations. Then I’ll fit established time series forecasting models and compare how well they do vis-a-vis the actual data and with each other. Note, I will not attempt any tuning of these models. This will make it a fair, “out-of-the-box” comparison.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>NF <span class="ot">&lt;-</span> <span class="dv">24</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>BE_df_wide <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> unique_id, <span class="at">values_from =</span> y) <span class="sc">|&gt;</span></span>
@@ -189,12 +189,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>BE_train_df <span class="ot">&lt;-</span> BE_train_df <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">y =</span> BE) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">unique_id =</span> <span class="st">"BE"</span>)</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>BE_test_df <span class="ot">&lt;-</span> BE_test_df <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">y =</span> BE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We start of with the TemeGPT forecast.</p>
+<p>The <code>nixtla_client_forecast()</code> function is the main <code>nixtlar</code> forecasting function. (I have already run this function and saved the results RDS file in order not to make an API call every time the code is run during the blog building process.)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#nixtla_fcst &lt;- nixtla_client_forecast(BE_train_df, h = NF, level = 95)</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nixtla_fcst) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>, <span class="st">"ds"</span>, <span class="st">"TimeGPT"</span>, <span class="st">"lo95"</span>, <span class="st">"up95"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># nixtla_fcst &lt;- nixtla_client_forecast(BE_train_df, h = NF, level = 95)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># saveRDS(nixtla_fcst, "nixtla_fcst.rds")</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>nixtla_fcst <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"nixtla_fcst.rds"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nixtla_fcst) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>, <span class="st">"ds"</span>, <span class="st">"TimeGPT"</span>, <span class="st">"lo95"</span>, <span class="st">"up95"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Create the data frame to hold the actual and forecast values</p>
+<p>Here, I create a data frame to hold the actual and forecast values</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fcst_df <span class="ot">&lt;-</span> <span class="fu">tail</span>(nixtla_fcst,NF) <span class="sc">|&gt;</span> <span class="fu">select</span>(ds,TimeGPT) <span class="sc">|&gt;</span> </span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">rename</span>(<span class="at">time =</span> ds, <span class="at">tgpt_fcst =</span> TimeGPT) <span class="sc">|&gt;</span></span>
@@ -213,6 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="arima-forecast-with-auto.arima" class="level3">
 <h3 class="anchored" data-anchor-id="arima-forecast-with-auto.arima">ARIMA Forecast with <code>auto.arima()</code></h3>
+<p>The <code>auto.arima()</code> function form the <code>forecast</code> package fits an ARIMA(2,1,1) model. This means two autoregressive terms, one difference and one moving average term.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>arima_train <span class="ot">&lt;-</span> BE_train_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>unique_id) <span class="sc">|&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>( <span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>))</span>
@@ -228,17 +231,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="exponential-smoothing-forecast-with-ets" class="level3">
 <h3 class="anchored" data-anchor-id="exponential-smoothing-forecast-with-ets">Exponential smoothing forecast with <code>ets()</code></h3>
+<p>Because I have provided no guidance, the <code>ets()</code> function from the <code>forecast</code> package fits an ETS(A,A,N) model with an additive error, an additive trend and no seasonality. All parameters are estimated from the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ets_fcst <span class="ot">&lt;-</span> elec_ts <span class="sc">|&gt;</span> </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ets</span>() <span class="sc">|&gt;</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># number of periods to forecast</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h =</span> NF)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="prophet-forecast" class="level3">
+<h3 class="anchored" data-anchor-id="prophet-forecast">Prophet Forecast</h3>
+<p>I also ask the <code>prophet()</code> function from the <code>prophet</code> package for an automatic fit using the default parameters. Among other things this means a linear growth curve additive seasonality and automatic estimates for daily seasonality. As above, the model is fit to the data in the <code>BE_train_df</code> data frame, but here the <code>make_future_dataframe()</code> function creates a data frame with the same structure as <code>BE_train_df</code> but with the <code>ds</code> column extended by <code>NF</code> periods.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>prophet_fit <span class="ot">&lt;-</span> <span class="fu">prophet</span>(BE_train_df)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(prophet_fit, <span class="at">periods =</span> NF,  <span class="at">freq =</span> <span class="dv">3600</span>, <span class="at">include_history =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>prophet_fcst <span class="ot">&lt;-</span> <span class="fu">predict</span>(prophet_fit, future)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+</section>
+<section id="final-plot-and-discussion" class="level2">
+<h2 class="anchored" data-anchor-id="final-plot-and-discussion">Final Plot and Discussion</h2>
+<p>Before plotting, Let’s have a look at the wide data frame that holds the forecasts.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fcst_df2 <span class="ot">&lt;-</span> fcst_df <span class="sc">|&gt;</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">mutate</span>(<span class="at">arima_fcst =</span> <span class="fu">as.vector</span>(arima_fcst<span class="sc">$</span>mean),</span>
@@ -255,6 +268,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 6 2016-12-30 05:00:00  33.27422       41.02   49.22347 40.49310     23.54824</code></pre>
 </div>
 </div>
+<p>Then, shape the data into long format and plot.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fcst_dft2_long <span class="ot">&lt;-</span> fcst_df2 <span class="sc">%&gt;%</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>time, <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"mean"</span>)</span>
@@ -265,9 +279,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">ggtitle</span>(<span class="st">"TimeGPT vs ARIMA vs ETS vs Prophet vs actual data"</span>) </span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="nixtlar_post_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>I don’t think that there are any big surprises here. Because the Nixtla folks chose the electricity data set to show off their transformer, I was expecting a pretty good fit. However, it is curious that except for one point the TimeGPT forecast is lower than the actual data. It is also interesting that the forecasts that are farther out are a better match to the actual data.</p>
+<p>The “no thought” prophet model does a pretty good job, but it does seem to have overacted to the downward trends at the beginning and end of the forecast period. My guess is that with a little thought prophet could do better.</p>
+<p>The ARIMA model is a bit of a disappointment. I would have expected it to follow some of the twists and turns. It is as if the exponential smoothing and ARIMA models flipped a coin at the beginning of the forecast to decide who takes the high road and who gets the low road, but then tracked each other all the way through. However, to my way of thinking the exponential smoothing forecast is outstanding. It tracks the actual data closely for six forecast points. If I could find a model that does this regularly six out of ten times I could make some money. Thereafter, it looks like the exponential model does exactly what it is supposed to do.</p>
+</section>
+<section id="some-final-thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="some-final-thoughts">Some Final Thoughts</h2>
+<p>It is clear that the TimeGPT model has upped the game for black box time series forecasting. It looks like it will be a powerful tool for doing exploratory work with large time series and comparing and contrasting multiple time series. Moreover, I expect that time series experts who can fine tune prophet and more traditional time series models will assess its behavior in relation to these models and develop a better intuition as to how to deploy TimeGPT.</p>
+<p>For a more sophisticated analysis of these series that deals with their multiseasonality aspects see the <a href="https://nixtlaverse.nixtla.io/statsforecast/docs/tutorials/electricityloadforecasting.html">Electricity Load Forecast Tutorial</a>.</p>
 </section>
 
 </main>

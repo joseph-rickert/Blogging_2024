@@ -1,6 +1,6 @@
 
 ---
-title: "A First Look at TimeGPT"
+title: "A First Look at TimeGPT using nixtlar"
 author: "Joseph Rickert"
 date: 2024-12-13
 description: ""
@@ -10,9 +10,9 @@ categories: ""
 editor: source
 ---
 
-This post is a first look at [Nixtla's](https://docs.nixtla.io/) `TimeGPT` generative, pre-trained transformer for time series forecasting.
+This post is a first look at [Nixtla's](https://docs.nixtla.io/) `TimeGPT` generative, pre-trained transformer for time series forecasting using the `nixtlar` R package.
 
-According to [Garza et al. (2021)](https://arxiv.org/abs/2111.04052), TimeGPT is a Transformer-based time series model with self-attention mechanisms. The architecture comprises an encoder-decoder structure with multiple layers, each with residual connections and layer normalization. The encoder, a stack of multi-head self-attention layers followed by a feed-forward neural network, processes the input time series. The decoder, which is similar to the encoder, generates the forecast. The decoder includes an additional multi-head attention layer that takes the encoder’s output as input. The model is trained using a teacher-forcing strategy, where the decoder receives the ground-truth values during training. The model is then used for forecasting by feeding the model’s predictions back as input during inference.
+As described in [Garza et al. (2021)](https://arxiv.org/abs/2111.04052), TimeGPT is a Transformer-based time series model with self-attention mechanisms. The architecture comprises an encoder-decoder structure with multiple layers, each with residual connections and layer normalization. The encoder, a stack of multi-head self-attention layers followed by a feed-forward neural network, processes the input time series. The decoder, which is similar to the encoder, generates the forecast. The decoder includes an additional multi-head attention layer that takes the encoder’s output as input. The model is trained using a teacher-forcing strategy, where the decoder receives the ground-truth values during training. The model is then used for forecasting by feeding the model’s predictions back as input during inference.
 
 ![](timegpt.png){fig-alt="TimeGPT architecture"}
 
@@ -46,7 +46,7 @@ df_wide <- df |>
 head(df_wide)
 ```
 
-Plots indicate that all of the series show periods of considerable volatility. The BE, DE, and FR series appear to be stationary. NP trends upward to the righe and the PJM series appears to be nonlinear.
+Plots indicate that all of the series show periods of considerable volatility. The BE, DE, and FR series appear to be stationary. NP trends upward to the right and the PJM series appears to be nonlinear.
 ```{r}
 df2 <- df |> mutate( time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S")) |> 
                      group_by(unique_id)
@@ -64,8 +64,8 @@ I'll begin by showing off the `nixtlar` forecasting function which can handle mu
 
 Here is the built-in `nixtlar` plot function
 ```{r}
-#| include: FALSE
-nixtla_client_plot(df, nixtla_client_fcst, max_insample_length = 200)
+
+#nixtla_client_plot(df, nixtla_client_fcst, max_insample_length = 200)
 ```
 
 
@@ -88,7 +88,7 @@ pf
 ```
 
 
-For the rest of this post I'll work only with the BE data and do some simple back testing. I will split the data into training set and a test set containing 24 hours worth of observations. Then I'll fit established time series forecasting models and compare how well they do vis-a-vis the actual data and with each other. Note, I will not attempt any tuning of these models. This will make it a fair, "outof-the-box" comparison.
+For the rest of this post I'll work only with the BE data and do some simple back testing. I will split the data into training set and a test set containing 24 hours worth of observations. Then I'll fit established time series forecasting models and compare how well they do vis-a-vis the actual data and with each other. Note, I will not attempt any tuning of these models. This will make it a fair, "out-of-the-box" comparison.
 
 ```{r}
 NF <- 24
@@ -101,7 +101,7 @@ BE_test_df <- BE_test_df |> rename(y = BE)
 ```
 
 
-The `nixtla_client_forecast()` function is the main `nixtlar` forecastind function. (I have already run this function and saved the results RDS file in order not to make an API call every time the code is run during the blog building process.) 
+The `nixtla_client_forecast()` function is the main `nixtlar` forecasting function. (I have already run this function and saved the results RDS file in order not to make an API call every time the code is run during the blog building process.) 
 
 ```{r}
 #| message: FALSE
@@ -155,7 +155,7 @@ ets_fcst <- elec_ts |>
 
 ### Prophet Forecast
 
-I also ask the `prophet()` function from the `prophet` package for an automatic fit using the default parameters. Among other things this means a linear growth curve additive seasonality and autimatic estimates for daily seasonality. As above, the model is fit to the data in the `BE_train_df` data frame, but here the `make_future_dataframe()` function creates a data frame with the same structure as `BE_train_df` but with the `ds` column extended by `NF` periods.
+I also ask the `prophet()` function from the `prophet` package for an automatic fit using the default parameters. Among other things this means a linear growth curve additive seasonality and automatic estimates for daily seasonality. As above, the model is fit to the data in the `BE_train_df` data frame, but here the `make_future_dataframe()` function creates a data frame with the same structure as `BE_train_df` but with the `ds` column extended by `NF` periods.
 ```{r}
 #| message: FALSE
 #| warning: FALSE
@@ -165,7 +165,7 @@ prophet_fcst <- predict(prophet_fit, future)
 ```
 
 
-### Plotting
+## Final Plot and Discussion
 
 Before plotting, Let's have a look at the wide data frame that holds the forecasts.
 ```{r}
@@ -190,16 +190,16 @@ q
 
 I don't think that there are any big surprises here. Because the Nixtla folks chose the electricity data set to show off their transformer, I was expecting a pretty good fit. However, it is curious that except for one point the TimeGPT forecast is lower than the actual data. It is also interesting that the forecasts that are farther out are a better match to the actual data.
 
-The "no thought" prophet model does a pretty good job, but it does seem to have overacted to the downward trends at the beginnning and end of the forecast period. My guess is that with a little thought prophet could do better. 
+The "no thought" prophet model does a pretty good job, but it does seem to have overacted to the downward trends at the beginning and end of the forecast period. My guess is that with a little thought prophet could do better. 
 
-The ARIMA model is a bit of a disappointment. I would have expected it to follow some of the twists and turns. It is as if the exponential smoothing and ARIMA models flipped a coin at the beginning of the forecast to decide who takes the high road and who gets the low road, but then tracked each other all the way through. However, to my way of thinking the exponential smoothing forecast is outstanding. It tracks the actual data closely for six forecast points. Thereafter, it looks like it is doing exactly what it is supposed to do. 
+The ARIMA model is a bit of a disappointment. I would have expected it to follow some of the twists and turns. It is as if the exponential smoothing and ARIMA models flipped a coin at the beginning of the forecast to decide who takes the high road and who gets the low road, but then tracked each other all the way through. However, to my way of thinking the exponential smoothing forecast is outstanding. It tracks the actual data closely for six forecast points. If I could find a model that does this regularly six out of ten times I could make some money. Thereafter, it looks like the exponential model does exactly what it is supposed to do. 
 
 
-### Conclusion
+## Some Final Thoughts
 
 It is clear that the TimeGPT model has upped the game for black box time series forecasting. It looks like it will be a powerful tool for doing exploratory work with large time series and comparing and contrasting multiple time series. Moreover, I expect that time series experts who can fine tune prophet and more traditional time series models will assess its behavior in relation to these models and develop a better intuition as to how to deploy TimeGPT.
 
-For a more sophisticated analysis of these series see the [Electricity Load Forecast Tutorial](https://nixtlaverse.nixtla.io/statsforecast/docs/tutorials/electricityloadforecasting.html).
+For a more sophisticated analysis of these series that deals with their multiseasonality aspects see the [Electricity Load Forecast Tutorial](https://nixtlaverse.nixtla.io/statsforecast/docs/tutorials/electricityloadforecasting.html).
 
 
 
