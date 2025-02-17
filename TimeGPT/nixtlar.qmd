@@ -60,6 +60,13 @@ nixtla_client_fcst <- nixtla_client_forecast(df, h = 8, level = c(80,95))
 head(nixtla_client_fcst)
 ```
 
+```{r}
+saveRDS(nixtla_client_fcst, "nixtla_client_fcst.rds")
+nixtla_client_fcst <- readRDS("nixtla_client_fcst.rds")
+```
+
+
+
 Plot
 
 ```{r}

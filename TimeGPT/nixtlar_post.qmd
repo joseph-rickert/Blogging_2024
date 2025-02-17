@@ -124,17 +124,25 @@ head(fcst_df)
 
 ## Some Comparative Forecasts
 
+This next section of code reformats the training data into a format that is suitable for the `auto.arima()` and `auto.ets()` functions. Both of these functions require that the data be expressed as a `ts()` object. The original version of this post expressed the data as an `xts()` object: a major error. Many thanks to Professor Rob Hyndman for flagging this error. Note that any errors still remaining in this post are all mine.
 
 ### ARIMA Forecast with `auto.arima()`
 
-The `auto.arima()` function form the `forecast` package fits an ARIMA(2,1,1) model. This means two autoregressive terms, one difference and one moving average term.
+
 ```{r}
 arima_train <- BE_train_df |> select(-unique_id) |>
                mutate( time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S"))
 arima_train <- arima_train |> select(-ds)
 
-elec_ts <- as.xts(arima_train)
+```
 
+```{r}
+elec_ts <- ts(arima_train$y, start = c(2016, 10, 22, 0), frequency = 24)
+```
+
+
+The `auto.arima()` function form the `forecast` package fits an ARIMA(2,1,1) model. This means two autoregressive terms, one difference and one moving average term.
+```{r}
 arima_fcst <- elec_ts |> 
   auto.arima() |>
   # number of periods to forecast
@@ -181,6 +189,8 @@ Then, shape the data into long format and plot.
 ```{r}
 fcst_dft2_long <- fcst_df2 %>%
   pivot_longer(!time, names_to = "method", values_to = "mean")
+
+f
 
 q <- fcst_dft2_long |> ggplot(aes(x = time, y = mean, group = method, color = method)) +
                         geom_line() +

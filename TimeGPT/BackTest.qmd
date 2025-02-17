@@ -47,6 +47,7 @@ head(df2)
 
 
 ```{r}
+
 p <- df2 |> ggplot(aes(x = time, y = y, color = unique_id)) +
            geom_line() + facet_wrap(~unique_id, scales = "free")
 p
