@@ -178,6 +178,30 @@ elec_ts <- ts(auto_train$y, start = 2016+295/365 , frequency = 24)
 
 ```
 
+### Test out Rob Hyndman suggestion
+
+```{r}
+#| include: FALSE
+#auto_train2 <- BE_train_df |> select(-unique_id) |>
+#mutate(time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S")) |> select(-ds)
+#elec_ts <- msts(auto_train2$y, seasonal.periods = c(24, 24*7, 24*365),  start = 2016+295/365)
+```
+
+```{r}
+#i include: FALSE
+#arima_fcst2 <- elec_ts |>
+#auto.arima() |>
+#forecast(h = NF , level = 95)
+
+```
+
+
+```{r}
+#|include: FALSE
+#arima_fcst$model$mean == arima_fcst2$model$mean
+```
+
+
 ### ARIMA Forecast with `auto.arima()`
 
 The `auto.arima()` function from the `forecast` package fits a fairly sophisticated ARIMA(2,1,1)(1.0.1)[24] model. The parameters in parentheses means two autoregressive terms, one difference, one moving average term, one seasonal autoregressive term, no seasonal differencing, and one seasonal moving average term. [24] indicates that the seasonal pattern repeats every 24 observations. (Note that because the ARIMA forecast takes several seconds to run, I am reading form a an rds file to expedite the blog process.)
@@ -307,3 +331,85 @@ Finally, for a more sophisticated analysis of these series that deals with their
 
 ## Acknowledgment
 Many thanks to Professor Rob Hyndman for flagging the ARIMA time series object error described above. Any errors still remaining in this post are all mine.
+
+
+### fable
+
+```{r}
+library(fable)
+library(tsibble)
+library(feasts)
+```
+
+```{r}
+auto_train <- BE_train_df |> select(-unique_id) |>
+mutate(time = as.POSIXct(ds, format = "%Y-%m-%d %H:%M:%S")) |> select(-ds)
+  
+elec_ts <- auto_train |> as_tsibble(index = time) |> fill_gaps(time, .full = start())
+  
+```
+
+
+```{r}
+elec_ts |> autoplot(y)
+```
+
+
+
+```{r}
+fit <- elec_ts %>%
+  model(
+    arima = ARIMA(y)
+  )
+fable_ARIMA_fcst <- fit |> forecast(h = 24)
+
+```
+
+```{r}
+ARIMA_fcst <- as.vector(fable_ARIMA_fcst$.mean)
+```
+
+
+```{r}
+fcst_df3 <- fcst_df2 |> mutate(ARIMA_fcst = ARIMA_fcst) |> select(-c(ets_fcst,prophet_fcst))
+fcst_df3
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| classes: preview-image
+fcst_dft3_long <- fcst_df3 %>%
+  pivot_longer(!time, names_to = "method", values_to = "mean")
+
+q2 <- fcst_dft3_long |>
+  ggplot(aes(
+    x = time,
+    y = mean,
+    group = method,
+    color = method
+  )) +
+  geom_line() +
+  geom_point() +
+  ggtitle("TimeGPT vs ARIMA vs arima vs actual data - 24 Point Forecast")
+
+q2
+```
+
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| warning: false
+RMSE <-  function(m, o){sqrt(mean((m - o)^2))}
+rms_names <- c("tgpt", "arima", "ARIMA")
+rms_fcst <- array(NA_real_,
+                          dim = 3,
+                          dimnames = list(rms_names))
+rms_fcst[1] <- RMSE(fcst_df3$tgpt_fcst, fcst_df2$elec_actual)
+rms_fcst[2] <- RMSE(fcst_df3$arima_fcst, fcst_df2$elec_actual)
+rms_fcst[3] <- RMSE(fcst_df3$ARIMA_fcst, fcst_df2$elec_actual)
+
+rms_fcst
+```
