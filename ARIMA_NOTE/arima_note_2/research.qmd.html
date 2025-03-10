@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Joseph Rickert">
+<meta name="dcterms.date" content="2025-02-17">
+<meta name="description" content=".">
+
+<title>ARIMA NOTE</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="research.qmd_files/libs/clipboard/clipboard.min.js"></script>
+<script src="research.qmd_files/libs/quarto-html/quarto.js"></script>
+<script src="research.qmd_files/libs/quarto-html/popper.min.js"></script>
+<script src="research.qmd_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="research.qmd_files/libs/quarto-html/anchor.min.js"></script>
+<link href="research.qmd_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="research.qmd_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="research.qmd_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="research.qmd_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="research.qmd_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">ARIMA NOTE</h1>
+</div>
+
+<div>
+  <div class="description">
+    .
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Joseph Rickert </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 17, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In my previous post <a href="https://rworks.dev/posts/revised_TimeGPT/">A First Look at TimeGPT using nixtlar</a>, I used the <code>auto.arima()</code> function from the <code>forecast</code> package to fit an ARIMA model to a time series of electricity usage data in order to compare and ARIMA forecast with the <code>TimeGPT</code> forecast. While working out the bugs in that post, I also fit an automatic ARIMA model using the newer and improved <code>fable</code> package and was very surprised, maybe even astonished, by the results. In this post I will show what surprised me, repeating some of the code from the earlier post for convenience.</p>
+<p>Here are the necessary libraries and the data that we will be working with.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fable)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibble)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nixtlar)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(feasts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>As in the <code>TimeGPT</code> post, I will use the BE electricity usage data set from the <code>nixtlar</code> package for fitting mmodels and makig forecasts. Let’s take a look at the data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> nixtlar<span class="sc">::</span>electricity</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(df)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">filter</span>(unique_id <span class="sc">==</span> <span class="st">"BE"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>unique_id, <span class="sc">-</span>ds)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> df2 <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color=</span><span class="st">'darkblue'</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">" BE Electricity Usage Data"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This next block of code splits the data into training and test data with the last 24 observations from the BE data set being held out for forecasting.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>NF <span class="ot">&lt;-</span> <span class="dv">24</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>BE_df_wide <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> unique_id, <span class="at">values_from =</span> y) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ds, BE) <span class="sc">|&gt;</span> <span class="fu">drop_na</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>BE_train_df <span class="ot">&lt;-</span> BE_df_wide <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">&lt;=</span> <span class="fu">n</span>() <span class="sc">-</span> NF)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>BE_test_df <span class="ot">&lt;-</span> <span class="fu">tail</span>(BE_df_wide, NF)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>BE_train_df <span class="ot">&lt;-</span> BE_train_df <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">y =</span> BE) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">unique_id =</span> <span class="st">"BE"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>BE_test_df <span class="ot">&lt;-</span> BE_test_df <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">y =</span> BE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This section of code reformats the training data into a format that is suitable for the <code>auto.arima()</code> which requires that the data be expressed as a <code>ts()</code> object.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> BE_train_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>unique_id) <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(ds))<span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>ds)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>elec_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(train<span class="sc">$</span>y, <span class="at">frequency =</span> <span class="dv">24</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>And now, the first AIRMA forecast using the <code>forecast</code> package. Notice that the plot title reports that the <code>forecast::arime()</code> function fitted an ARIMA(2,1,1)(1,0,1)[24] model to the data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#arima &lt;- elec_ts |&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  forecast::auto.arima() |&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  forecast(h = NF , level = 95)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#saveRDS(arima, "arima_forecast.rds")</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>arima<span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"arima_forecast.rds"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(arima, <span class="at">col=</span><span class="st">"darkblue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Here, I extract the forecast and set up a data frame to hold the comparative forecasts.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: FALSE</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: FALSE</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>arima_fcst_df <span class="ot">&lt;-</span> BE_test_df <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> ds,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">BE_actual =</span> y,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">arima =</span> <span class="fu">as.vector</span>(arima<span class="sc">$</span>mean)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ds,<span class="sc">-</span>y)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(arima_fcst_df,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  time                BE_actual arima
+  &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt;
+1 2016-12-30 00:00:00      44.3  46.2
+2 2016-12-30 01:00:00      44.3  45.0
+3 2016-12-30 02:00:00      41.3  44.1</code></pre>
+</div>
+</div>
+<section id="fable" class="level3">
+<h3 class="anchored" data-anchor-id="fable">fable</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>auto_train <span class="ot">&lt;-</span> BE_train_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>unique_id) <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.POSIXct</span>(ds, <span class="at">format =</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span>)) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>ds)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>elec_ts_2 <span class="ot">&lt;-</span> auto_train <span class="sc">|&gt;</span> <span class="fu">as_tsibble</span>(<span class="at">index =</span> time) <span class="sc">|&gt;</span> <span class="fu">fill_gaps</span>(time, <span class="at">.full =</span> <span class="fu">start</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here is the automatic ARIMA model fit using the <code>fable</code> package and the big surprise. <code>fable</code> fit an ARIMA(0,1,4)(0,0,2)[24] to the data which is quite different from the ARIMA(2,1,1)(1,0,1)[24] model that the <code>forecast</code> package fit.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> elec_ts_2 <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">arima_fable =</span> <span class="fu">ARIMA</span>(y)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>fable_ARIMA_fcst <span class="ot">&lt;-</span> fit <span class="sc">|&gt;</span> <span class="fu">forecast</span>(<span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A mable: 1 x 1
+                arima_fable
+                    &lt;model&gt;
+1 &lt;ARIMA(0,1,4)(0,0,2)[24]&gt;</code></pre>
+</div>
+</div>
+<p>Let’s work out the short hand notation for the two models and see what the math looks like.</p>
+</section>
+<section id="arima21110124-from-forecast-package" class="level2">
+<h2 class="anchored" data-anchor-id="arima21110124-from-forecast-package">ARIMA(2,1,1)(1,0,1)[24] from forecast package</h2>
+<p>This notation translates into: <span class="math display">\[(1−\phi_1B−\phi_2B^2)(1−\Phi_1B^24)(1−B)y_t=(1−\theta_1B)(1−\Theta_1B^24)\varepsilon_t\]</span></p>
+<p>which fully expands to:</p>
+<p><span class="math display">\[ y_t−y_{t−1}−\phi_1y_{t−1}+\phi_1y_{t−2}−\phi_2y_{t−2}+\phi_2y_{t−3}−\Phi_1y_{t−24}+\Phi_1y_{t−25}+\phi_1\Phi_1y_{t−25}−\phi_1\Phi_1y_{t−26}+\phi_2\Phi_1y_{t−26}−\phi_2\Phi_1y_{t−27}=\varepsilon_t−\theta_1ε_{t−1}−\Theta_1\varepsilon_{t−24}+\theta_1\Theta_1\varepsilon_{t−25}\]</span></p>
+</section>
+<section id="arima01400224-from-fable-package" class="level2">
+<h2 class="anchored" data-anchor-id="arima01400224-from-fable-package">ARIMA(0,1,4)(0,0,2)[24] from fable package</h2>
+<p>This notation translates into:</p>
+<p><span class="math display">\[(1 - B)y_t = (1 - \theta_1B - \theta_2 B^2 - \theta_3 B^3 - \theta_4 B^4)(1 - \Theta_1 B^{24} - \Theta_2 B^{48})\varepsilon_t\]</span> which expands into:</p>
+<p><span class="math display">\[y_t−y_{t−1}=\varepsilon_t−\theta_1\varepsilon_{t−1}−\theta_2\varepsilon_{t−2}−\theta_3\varepsilon_{t−3}−\theta_4\varepsilon_{t−4}−\Theta_1\varepsilon_{t−24}+\theta_1\Theta_1\varepsilon_{t−25}+\theta_2\Theta_1\varepsilon_{t−26}+\theta_3\Theta_1\varepsilon_{t−27}+\theta_4\Theta_1\varepsilon_{t−28}−\Theta_2\varepsilon_{t−48}+ \theta_1\Theta_2\varepsilon_{t−49} +\theta_2\Theta_2\varepsilon_{t−50}+\theta_3\Theta_2\varepsilon_{t−51}+\theta_4\Theta_2\varepsilon_{t−52}\]</span> These mathematical models don’t look anyting alik and I have no intuition why they should so let’s see how the forecasts compare</p>
+<p>Put the <code>fable</code> forecast upper case ARIMA into the data frame.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Show the code"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>arima_fcst_df <span class="ot">&lt;-</span> arima_fcst_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ARIMA =</span>  <span class="fu">as.vector</span>(fable_ARIMA_fcst<span class="sc">$</span>.mean) )</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(arima_fcst_df,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  time                BE_actual arima ARIMA
+  &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 2016-12-30 00:00:00      44.3  46.2  47.3
+2 2016-12-30 01:00:00      44.3  45.0  46.0
+3 2016-12-30 02:00:00      41.3  44.1  44.7</code></pre>
+</div>
+</div>
+<p>Plot and compare.</p>
+<div class="cell preview-image">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>compare_fore <span class="ot">&lt;-</span> <span class="cf">function</span>(file){</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  arima_fcst_long_df <span class="ot">&lt;-</span> file <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>time, <span class="at">names_to =</span> <span class="st">"method"</span>, <span class="at">values_to =</span> <span class="st">"mean"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> arima_fcst_long_df <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> time,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> mean,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> method,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> method</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>, <span class="at">hjust=</span><span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"forecast vs. fable auto ARIMA forecasts"</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>q</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_fore</span>(arima_fcst_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The two forecasts are almost on top of each other and the RMSE values are very close.</p>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>RMSE <span class="ot">&lt;-</span>  <span class="cf">function</span>(m, o){<span class="fu">sqrt</span>(<span class="fu">mean</span>((m <span class="sc">-</span> o)<span class="sc">^</span><span class="dv">2</span>))}</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>rms_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"arima"</span>, <span class="st">"ARIMA"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>rms_fcst <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA_real_</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">dim =</span> <span class="dv">2</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">dimnames =</span> <span class="fu">list</span>(rms_names))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>rms_fcst[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">RMSE</span>(arima_fcst_df<span class="sc">$</span>arima, arima_fcst_df<span class="sc">$</span>BE_actual)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>rms_fcst[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">RMSE</span>(arima_fcst_df<span class="sc">$</span>ARIMA, arima_fcst_df<span class="sc">$</span>BE_actual)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>rms_fcst</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   arima    ARIMA 
+4.966623 5.041250 </code></pre>
+</div>
+</div>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>So I was surprised, but should I have been? - Probably not, for example consider this observation from page 305 of the <a href="https://www.amazon.com/Time-Methods-Peter-J-Brockwell/dp/0387974296/ref=sr_1_2?crid=4TWM6D7KON4C&amp;dib=eyJ2IjoiMSJ9.SIT6jFJ5YUi-9PaH8JvHZBooCWMgCEiD9AA2iQVOB8SMX3Wolcpz_VoPIMa0pYNYJsuwQnoZ53JARNdPn7zPjFddlW7gcSOXPyge6j4eFs6hW_f4e6gHiKo-ZoVYFqXrhu2hlEe_68aqZCWSBVMUba3obaPT6wmLqRTlJbeEndS_BdvCrpvi97q7QvAZ79tm.KGA8Z3fIhqJlnqf4OiqpMpqux0whMxmexlp096Z991c&amp;dib_tag=se&amp;keywords=Brockwell+and+Davis&amp;qid=1741646294&amp;s=books&amp;sprefix=brockwell+and+davis%2Cstripbooks%2C145&amp;sr=1-2">classic textbook</a> by Brockwell and Davis.</p>
+<blockquote class="blockquote">
+<p>Of course in the modelling of real data there is rarely such a thing as the “true order”. For the process X, = L� o l/JjZr -j there may be many polynomials 8(z), ¢(z) such that the coefficients of zj in 8(z)j¢(z) closely approximate l/Jj for moderately small values of j. Correspondingly there may be many ARMA processes with properties similar to {X,}. This problem of identifiability becomes much more serious for multivariate processes.</p>
+</blockquote>
+</section>
+<section id="work-in-progress" class="level1">
+<h1>Work in Progress</h1>
+<section id="arima21110124-from-fable-package" class="level2">
+<h2 class="anchored" data-anchor-id="arima21110124-from-fable-package">ARIMA(2,1,1)(1,0,1)[24] from fable package</h2>
+<p>As a check on the stability of the apparent equivalence of the two models, I will use the <code>fable</code> package to fit the ARIMA(0,1,4)(0,0,2)[24] model discovered by the <code>forecast</code> package to the data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit_2 <span class="ot">&lt;-</span> elec_ts_2  <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tsibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">model</span>(<span class="at">ARIMA_2 =</span> <span class="fu">ARIMA</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">pdq</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">PDQ</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">report</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: y 
+Model: ARIMA(2,1,1)(1,0,1)[24] 
+
+Coefficients:
+         ar1     ar2      ma1    sar1    sma1
+      0.4310  0.0504  -0.9373  0.3290  0.1765
+s.e.  0.0328  0.0302   0.0204  0.0529  0.0560
+
+sigma^2 estimated as 711.8:  log likelihood=-7785.05
+AIC=15582.11   AICc=15582.16   BIC=15614.58</code></pre>
+</div>
+</div>
+<p>Make the forecast and add it to the plotting data frame.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fable_ARIMA_fcst_2 <span class="ot">&lt;-</span> fit_2 <span class="sc">|&gt;</span> <span class="fu">forecast</span>(<span class="at">h =</span> <span class="dv">24</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>arima_fcst_df <span class="ot">&lt;-</span> arima_fcst_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ARIMA_2 =</span>  <span class="fu">as.vector</span>(fable_ARIMA_fcst_2<span class="sc">$</span>.mean) )</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(arima_fcst_df,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+  time                BE_actual arima ARIMA ARIMA_2
+  &lt;chr&gt;                   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1 2016-12-30 00:00:00      44.3  46.2  47.3    46.1
+2 2016-12-30 01:00:00      44.3  45.0  46.0    44.9
+3 2016-12-30 02:00:00      41.3  44.1  44.7    44.0</code></pre>
+</div>
+</div>
+<p>And plot all three forecasts.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_fore</span>(arima_fcst_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>RMSE <span class="ot">&lt;-</span>  <span class="cf">function</span>(m, o){<span class="fu">sqrt</span>(<span class="fu">mean</span>((m <span class="sc">-</span> o)<span class="sc">^</span><span class="dv">2</span>))}</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>rms_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"arima"</span>, <span class="st">"ARIMA"</span>, <span class="st">"ARIMA_2"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>rms_fcst <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA_real_</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">dim =</span> <span class="dv">3</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">dimnames =</span> <span class="fu">list</span>(rms_names))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>rms_fcst[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">RMSE</span>(arima_fcst_df<span class="sc">$</span>arima, arima_fcst_df<span class="sc">$</span>BE_actual)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>rms_fcst[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">RMSE</span>(arima_fcst_df<span class="sc">$</span>ARIMA, arima_fcst_df<span class="sc">$</span>BE_actual)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>rms_fcst[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">RMSE</span>(arima_fcst_df<span class="sc">$</span>ARIMA_2, arima_fcst_df<span class="sc">$</span>BE_actual)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>rms_fcst</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   arima    ARIMA  ARIMA_2 
+4.966623 5.041250 4.954435 </code></pre>
+</div>
+</div>
+</section>
+<section id="autocorrelation-structure" class="level2">
+<h2 class="anchored" data-anchor-id="autocorrelation-structure">Autocorrelation Structure</h2>
+</section>
+<section id="arima01400224-from-fable-package-1" class="level2">
+<h2 class="anchored" data-anchor-id="arima01400224-from-fable-package-1">ARIMA(0,1,4)(0,0,2)[24] from fable package</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>residuals_fit <span class="ot">&lt;-</span> fit <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>() <span class="sc">%&gt;%</span>               <span class="co"># Get fitted values and residuals</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ACF</span>(.resid)                 <span class="co"># Compute ACF of residuals</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(residuals_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="arima21110124-from-fable-package-1" class="level2">
+<h2 class="anchored" data-anchor-id="arima21110124-from-fable-package-1">ARIMA(2,1,1)(1,0,1)[24] from fable package</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>residuals_fit_2 <span class="ot">&lt;-</span> fit_2 <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>() <span class="sc">%&gt;%</span>               <span class="co"># Get fitted values and residuals</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ACF</span>(.resid)                 <span class="co"># Compute ACF of residuals</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(residuals_fit_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>residuals_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 31 x 3 [1h]
+# Key:       .model [1]
+   .model           lag      acf
+   &lt;chr&gt;       &lt;cf_lag&gt;    &lt;dbl&gt;
+ 1 arima_fable       1h -0.0360 
+ 2 arima_fable       2h -0.0137 
+ 3 arima_fable       3h  0.00254
+ 4 arima_fable       4h  0.0528 
+ 5 arima_fable       5h -0.0109 
+ 6 arima_fable       6h -0.00159
+ 7 arima_fable       7h -0.0163 
+ 8 arima_fable       8h -0.0121 
+ 9 arima_fable       9h -0.0181 
+10 arima_fable      10h -0.0132 
+# ℹ 21 more rows</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>residuals_fit_2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 31 x 3 [1h]
+# Key:       .model [1]
+   .model       lag       acf
+   &lt;chr&gt;   &lt;cf_lag&gt;     &lt;dbl&gt;
+ 1 ARIMA_2       1h -0.0423  
+ 2 ARIMA_2       2h -0.0527  
+ 3 ARIMA_2       3h  0.0189  
+ 4 ARIMA_2       4h  0.0256  
+ 5 ARIMA_2       5h  0.00216 
+ 6 ARIMA_2       6h  0.0119  
+ 7 ARIMA_2       7h -0.00135 
+ 8 ARIMA_2       8h  0.000177
+ 9 ARIMA_2       9h -0.00464 
+10 ARIMA_2      10h  0.000659
+# ℹ 21 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(residuals_fit<span class="sc">$</span>acf, residuals_fit_2<span class="sc">$</span>acf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="research.qmd_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Note from page 305 from Brockwell and Davis</p>
+<blockquote class="blockquote">
+<p>Of course in the modelling of real data there is rarely such a thing as the “true order”. For the process X, = L� o l/JjZr -j there may be many polynomials 8(z), ¢(z) such that the coefficients of zj in 8(z)j¢(z) closely approximate l/Jj for moderately small values of j. Correspondingly there may be many ARMA processes with properties similar to {X,}. This problem of identifiability becomes much more serious for multivariate processes.</p>
+</blockquote>
+<p>Difference equation</p>
+<p><span class="math display">\[\[ \Phi(B^s) \phi(B) (1 - Bs)D (1 - B)^d y_t = \Theta(B^s) \theta(B) \varepsilon_t \]\]</span>]</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Brockwell, Peter J. and Richard A. Davis, Time Series: Theory and Methods, 2nd ed, Springer (2002)</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
