@@ -1,0 +1,350 @@
+title: "DT_A_MC"
+author: "Joseph Rickert"
+date: 2025-02-17
+code-fold: true
+code-summary: "Show the code"
+description: ""
+categories: ""
+editor: source
+---
+
+## Load the required packages
+```{r libraries}
+#| message: FALSE
+#| warning: FALSE
+#| code-fold: true
+#| code-summary: "Show the code"
+library('dplyr')
+library('ggplot2')
+library('stringr')
+library('tidyverse')
+library('matrixcalc')
+library('LaplacesDemon') # for Dirichlet distribution
+```
+
+
+
+## Helper functions
+```{r}
+
+# names for transition probabilities
+trans_names <- function(x) {
+  transitions <- paste(x, "-", 1:5, sep = "")
+  return(transitions)
+  
+}
+
+# Bayesian simulation using Dirichlet conjugate prior
+# matrix is the matrix of observed states
+# from_state is the row index of the initial state
+# n_sims is the number of simulations to run
+sim_res <- function(matrix,from_state, n_sims = 20000) {
+  priors <- matrix(rep(1, 20), nrow = 4) # Prior parameters for Dirichlet dist
+  dist <- matrix[from_state, ] + priors[from_state, ]
+  res <- rdirichlet(n_sims, dist)
+  colnames(res) <- paste(from_state, "-", 1:5, sep = "")
+  return(res)
+}
+
+smry <- function(res_matrix){
+  apply(res_matrix, 2, function(x) {
+  c(mean = mean(x), 
+    lower = quantile(x, probs = 0.025), 
+    upper = quantile(x, probs = 0.975))
+})
+}
+```
+
+## The Data
+
+The data used in this example originates from the randomized trial conducted by Kavuru et al. (2000) comparing the two treatments, Seretide and Fluticasone, for asthma management. The data is presented in the text and in the paper by Briggs et al. (2003) where state transitions were observed over a 12-week follow-up period. This data was also reported in the paper by Kavuru et al. (2000) and in Table 10.3 of the text.
+
+
+```{r transition_data}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
+states <- c(
+  'STW'='sucessfully treated week', 
+  'UTW'='unsucessfully treated week', 
+  'Hex'='hospital-managed exacerbation', 
+  'Pex'='primary care-managed exacerbation', 
+  'TF'='treatment failure'
+)
+
+treatments = c('Seretide', 'Fluticasone')
+
+s_state <- matrix( c(
+  210, 60, 0, 1, 1,
+   88,641, 0, 4,13,
+    0,   0, 0, 0, 0,
+    1,   0, 0, 0, 1), 
+   nrow=4, byrow=TRUE, 
+   dimnames=list(names(states)[1:4], names(states)))
+
+f_state <- matrix( c(
+  66, 32, 0, 0, 2,
+  42,752, 0, 5,20,
+   0,  0, 0, 0, 0,
+   0,  4, 0, 1, 0), 
+  nrow=4, byrow=TRUE, 
+  dimnames=list(names(states)[1:4], names(states)))
+
+
+```
+
+Look at Seretide Transitions
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
+s_state
+```
+
+Look at Flucticasone Transitions
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| 
+f_state
+```
+
+## Conjugate Prior Results
+
+In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts.
+
+
+### Seretide
+
+Seretide Simulations
+```{r}
+
+
+s_STW_sim <- sim_res(matrix = s_state, from_state = 1)
+s_STW_smry <- smry(s_STW_sim)
+
+s_UTW_sim <- sim_res(matrix = s_state, from_state = 2)
+s_UTW_smry <- smry(s_UTW_sim)
+
+s_Hex_sim <- sim_res(matrix = s_state, from_state = 3)
+s_Hex_smry <- smry(s_Hex_sim)
+
+s_Pex_sim <- sim_res(matrix = s_state, from_state = 4)
+s_Pex_smry <- smry(s_Pex_sim)
+
+```
+
+
+Plot the posterior distributions of the transition probabilities for Seretide starting in STW
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# code for histogram of rd_df data frame
+s_STW_sim_df <- s_STW_sim %>% 
+  as.data.frame() %>%
+  pivot_longer(cols=everything(), names_to="transitions", values_to="prob") 
+
+ggplot(s_STW_sim_df, aes(x = prob)) +
+  geom_histogram(aes(y = after_stat(density)),bins = 15, fill = "lightgrey", color = "black") + #histogram for each category
+  geom_density(aes(y = after_stat(density)), color = "red", linewidth = 0.5) + # density line
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) +
+  xlab("probability") +
+  facet_wrap(~ transitions, scales = "free") +  # facetting for each category
+  labs(
+    title = "Seretide: Posterior State Transition Probabilities for states starting in STW",
+    x = "Probability",
+    y = " "
+  ) 
+```
+
+`
+### Flucticasone
+
+## Theoretical Results
+
+### Transition Probabilities
+
+This section of code simulates the transition probabilities for all of the Seretide state stransitions
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+s_TP <- rbind(
+  s_STW_smry[1,],
+  s_UTW_smry[1],
+  s_Hex_smry[1,],
+  s_Pex_smry[1,]
+)
+colnames(s_TP) <- c("STW", "UTW", "Hex", "Pex", "TF")
+rownames(s_TP) <- c("STW", "UTW", "Hex", "Pex")
+s_TP
+```
+
+
+```{r}
+N_sims <- 10
+
+p_means <- matrix(rep(0,20),nrow=4)
+
+mat <- matrix(rep(0, N_sims*5), nrow = N_sims, ncol = 5)
+i <- 1
+mat[i,] <- sim_res(matrix = s_state, from_state = i, n_sims = N_sims)
+```
+
+
+
+
+smry_df <- smry |> as.data.frame()
+
+### Transition Probabilities for Seretide
+# Note the `|>` operator does not work in this section of code.
+mean_s_df<-smry_df %>%
+  filter(str_starts(rownames(.), "pi\\[1")) %>% select(mean)
+
+s_matrix <- tp_matrix(mean_s_df$mean, states)
+#s_matrix
+
+### Transition Probabilities for Fluticasone
+# Note the `|>` operator does not work in this section of code.
+mean_f_df<-smry_df %>%
+  filter(str_starts(rownames(.), "pi\\[2")) %>% select(mean)
+
+f_matrix <- tp_matrix(mean_f_df$mean, states)
+#f_matrix
+
+```
+
+
+
+## Fundamental Matrix
+
+For an absorbing Markov Chain, the fundamental matrix, $N$, gives the expected number of times the process is in each transient state before absorption occurs. $N$ is calculated by the formula $N = (I - Q)^{-1}$, where $I$ is the identity matrix and $Q$ is the sub-matrix of transition probabilities for non-absorbing states.
+
+The first step in computing $N$ is to partition the transition matrix into sub matrices of transient $Q_$, and absorbing $R$ transition probabilities.
+
+![](N.png)
+
+### Seretide
+
+Extract the Q matrix
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+Q_s <- s_matrix[1:4, 1:4] # Extract the sub-matrix of transition probabilities for non-absorbing states
+rownames(Q_s) <- names(states)[1:4]
+colnames(Q_s) <- names(states)[1:4]# Set the row and column names to the state names
+round(Q_s,3)
+```
+Extract the Fundamental Matrix, N. Each entry $n_ij$ of N gives the expected number of times that the process is in the transient state $s_j$ if it is started in the transient state $s_i$. For example, given that the process starts in state STW, the expected number of times the process is in each transient state before absorption occurs is given by the first row of $N$. 
+.
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+I <- diag(4) # Identity matrix of size 4
+N_s <- solve(I - Q_s) # Fundamental matrix for Seretide
+round(N_s,3)
+```
+### Fluticasone
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+Q_f <- f_matrix[1:4, 1:4] # Extract the sub-matrix of transition probabilities for non-absorbing states
+
+rownames(Q_f) <- names(states)[1:4]
+colnames(Q_f) <- names(states)[1:4]# Set the row and column names to the state names
+round(Q_f,3)
+```
+
+The entry $n_ij$ of N gives the expected number of times that the process is in the transient state $s_j$ if it is started in the transient state $s_i$.
+.
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+I <- diag(4) # Identity matrix of size 4
+N_f <- solve(I - Q_f) # Fundamental matrix for Flucticasone
+round(N_f,3)
+```
+
+### Expected time to Absorption
+
+The expected time to absorption from each transient state is given by the formula $t = Nc$, where $c$ is a vector of ones. This means that the expected time to absorption from each transient state is the sum of the expected number of times the process is in each transient state before absorption occurs.
+
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Calculation for Seretide
+c <- c(1,1,1,1)
+E_s <- N_s %*% c # Expected time to absorption for Seretide
+colnames(E_s) <- "Seretide"
+#round(E_s,2)
+
+#| code-fold: true
+#| code-summary: "Show the code"
+#Calculation for Fluticasone
+E_f <- N_f %*% c # Expected time to absorption for Flucticasone
+colnames(E_f) <- "Flucticasone"
+#round(E_f,2)
+
+# Combine the expected times to absorption for both treatments
+E <- cbind(E_s, E_f) %>% data.frame()
+round(E,2)
+```
+
+## Distribution at time t
+
+Probability of being in each state at time t starting from state STW as given by $P(s = i | time = t) = uP^t$ where $u$ is the initial state vector, and $P$ is the transition probability matrix. Following the text, we set t = 12 weeks..
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Seretide
+t <- 12
+u <- c(1,0,0,0,0) # Initial state vector, starting in STW
+spt <- prob_at_time(s_matrix, t, u)
+
+#Flucticasone
+t <- 12
+u <- c(1,0,0,0,0) # Initial state vector, starting in STW
+fpt <- prob_at_time(f_matrix, t, u)
+
+
+p_in_state <- rbind(spt,fpt)
+rownames(p_in_state) <- c("Seretide start STW", "Fluticasone start STW")
+p_in_state
+
+``` 
+
+## Expected time spent in selected state
+
+This section computes the expected time the markov chain will spend in state s, assuming that it begins in STW.
+
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Seretide
+t <- 12
+u <- c(1,0,0,0,0) # Initial state vector, starting in STW
+s_time <- time_in_state(tpm = s_matrix, n = t, s = u)
+
+# Flucticasone
+t <- 12
+u <- c(1,0,0,0,0) # Initial state vector, starting in STW
+f_time <- time_in_state(tpm = f_matrix, n = t, s = u)
+
+rbind(s_time, f_time) %>% 
+  data.frame(row.names=c("Seretide", "Fluticasone")) %>% 
+  setNames("STW") %>% 
+  round(2)
+```
+
+
