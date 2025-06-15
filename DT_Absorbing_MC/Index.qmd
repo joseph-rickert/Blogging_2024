@@ -21,7 +21,9 @@ library('stringr')
 library('tidyverse')
 library('matrixcalc')
 library('LaplacesDemon') # for Dirichlet distribution
+library('diagram')
 ```
+
 
 
 ```{r}
@@ -84,6 +86,43 @@ round(Total_state_time,2)
   
 }
 ```
+
+```{r}
+#| message: FALSE
+#| warning: FALSE
+#| echo: FALSE
+
+stateNames <- c("STW","UTW", "Hex", "Pex", "TF")
+TM <- matrix(nrow = 5, ncol = 5, byrow = TRUE, data =
+               c(0,12,13,14,15,
+                 21,0,23,24,25,
+                 31,32,0,34,35,
+                 41,42,43,0,45,
+                 0,0,0,0,0))
+row.names(TM) <- stateNames; colnames(TM) <- stateNames
+
+par(mar = c(2,4,4,2))
+pos <- c(1,1,2.,1)
+plotmat(t(TM), pos = pos,
+        lwd = 3, box.lwd = 2,
+        curve = .3,
+        cex.txt = 0.8,
+        box.size = 0.1,
+        box.type = "circle",
+        box.prop = 0.5,
+        box.col = "light grey",
+        arr.length =.1,
+        arr.type = "curved",
+        arr.width =.1,
+        arr.lwd = .2,
+        self.cex = .4,
+        self.shifty = -.01,
+        self.shiftx = .13,
+        prefix = "",
+        main = " Asthma Markov Model State Transition Diagram",)
+```
+
+
 
 ## The Data
 
@@ -451,14 +490,10 @@ The expected time to absorption from each transient state is given by the formul
 c <- c(1,1,1,1)
 E_s <- N_s %*% c # Expected time to absorption for Seretide
 colnames(E_s) <- "Seretide"
-#round(E_s,2)
 
-#| code-fold: true
-#| code-summary: "Show the code"
 #Calculation for Fluticasone
 E_f <- N_f %*% c # Expected time to absorption for Flucticasone
 colnames(E_f) <- "Flucticasone"
-#round(E_f,2)
 
 # Combine the expected times to absorption for both treatments
 E <- cbind(E_s, E_f) %>% data.frame()
@@ -468,6 +503,7 @@ round(E,2)
 ### Distribution at time t
 
 Probability of being in each state at time t starting from state STW as given by $P(s = i | time = t) = uP^t$ where $u$ is the initial state vector, and $P$ is the transition probability matrix. Following the text, we set t = 12 weeks..
+
 
 
 ```{r}
@@ -489,6 +525,46 @@ rownames(p_in_state) <- c("Seretide start STW", "Fluticasone start STW")
 p_in_state
 
 ``` 
+
+### Plot Survival Curves
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+N <- 35 #weeks
+s_surv_dat <- vector("numeric", length = N)
+f_surv_dat <- vector("numeric", length = N)
+
+u <- c(1,0,0,0,0) # Initial state vector, starting in STW
+for (t in 1: N) {
+     s_dist <- prob_at_time(s_TP, t, u)
+     s_surv_dat[t] <- sum(s_dist[1:4]) # Sum of probabilities of being in transient states)
+     f_dist <- prob_at_time(f_TP, t, u)
+     f_surv_dat[t] <- sum(f_dist[1:4]) # Sum of probabilities of being in transient states
+}
+
+survival_df <- data.frame(
+  time = 1:N,
+  s_prob = s_surv_dat,
+  f_prob = f_surv_dat
+)
+survival_df_l <- survival_df %>%
+  pivot_longer(cols = c(s_prob, f_prob), 
+               names_to = "treatment", values_to = "probability") %>%
+  mutate(treatment = recode(treatment, s_prob = "Seretide", f_prob = "Fluticasone"))
+
+ggplot(survival_df_l) + geom_line(aes(x = time, y = probability, group = treatment,
+                            color = treatment), linewidth = 1.5) +
+  labs(
+    title = "Probability of being in transient states over time",
+    x = "Time (weeks)",
+    y = "Probability"
+  ) +
+  scale_x_continuous(breaks = seq(0, N, by = 5)) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
+
 
 ### Expected time spent in selected state
 

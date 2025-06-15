@@ -120,7 +120,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'stringr'</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'tidyverse'</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'matrixcalc'</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'LaplacesDemon'</span>) <span class="co"># for Dirichlet distribution</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'LaplacesDemon'</span>) <span class="co"># for Dirichlet distribution</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'diagram'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -183,6 +184,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="Index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 </section>
 <section id="the-data" class="level2">
@@ -295,7 +301,7 @@ Pex   0   4   0   1  0</code></pre>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="Index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -339,7 +345,7 @@ Pex   0   4   0   1  0</code></pre>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="Index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="Index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -406,7 +412,7 @@ TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 STW 0.64 0.31 0.01 0.01 0.03
 UTW 0.05 0.05 0.05 0.05 0.05
 Hex 0.20 0.20 0.20 0.20 0.20
-Pex 0.29 0.14 0.14 0.14 0.29
+Pex 0.29 0.14 0.14 0.14 0.28
 TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 </div>
 </div>
@@ -493,9 +499,9 @@ Pex 0.29 0.14 0.14 0.14</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     STW  UTW  Hex  Pex
-STW 5.61 1.53 0.31 0.33
+STW 5.61 1.52 0.31 0.33
 UTW 1.41 1.60 0.30 0.30
-Hex 2.38 1.02 1.50 0.51
+Hex 2.37 1.02 1.50 0.51
 Pex 2.50 0.94 0.40 1.41</code></pre>
 </div>
 </div>
@@ -511,7 +517,7 @@ Pex 2.50 0.94 0.40 1.41</code></pre>
 <pre><code>     STW  UTW  Hex  Pex
 STW 3.09 1.07 0.13 0.13
 UTW 0.30 1.19 0.10 0.10
-Hex 1.17 0.74 1.38 0.38
+Hex 1.16 0.74 1.38 0.38
 Pex 1.28 0.68 0.29 1.29</code></pre>
 </div>
 </div>
@@ -529,25 +535,21 @@ Pex 1.28 0.68 0.29 1.29</code></pre>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>)</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>E_s <span class="ot">&lt;-</span> N_s <span class="sc">%*%</span> c <span class="co"># Expected time to absorption for Seretide</span></span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(E_s) <span class="ot">&lt;-</span> <span class="st">"Seretide"</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co">#round(E_s,2)</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-summary: "Show the code"</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculation for Fluticasone</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>E_f <span class="ot">&lt;-</span> N_f <span class="sc">%*%</span> c <span class="co"># Expected time to absorption for Flucticasone</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(E_f) <span class="ot">&lt;-</span> <span class="st">"Flucticasone"</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co">#round(E_f,2)</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the expected times to absorption for both treatments</span></span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">cbind</span>(E_s, E_f) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(E,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculation for Fluticasone</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>E_f <span class="ot">&lt;-</span> N_f <span class="sc">%*%</span> c <span class="co"># Expected time to absorption for Flucticasone</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(E_f) <span class="ot">&lt;-</span> <span class="st">"Flucticasone"</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the expected times to absorption for both treatments</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">cbind</span>(E_s, E_f) <span class="sc">%&gt;%</span> <span class="fu">data.frame</span>()</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(E,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Seretide Flucticasone
-STW     7.78         4.42
-UTW     3.62         1.70
-Hex     5.42         3.67
-Pex     5.27         3.54</code></pre>
+STW     7.77         4.42
+UTW     3.61         1.69
+Hex     5.40         3.66
+Pex     5.25         3.54</code></pre>
 </div>
 </div>
 </section>
@@ -579,26 +581,68 @@ Fluticasone start STW 0.01 0.01 0.00 0.00 0.20</code></pre>
 </div>
 </div>
 </section>
+<section id="plot-survival-curves" class="level3">
+<h3 class="anchored" data-anchor-id="plot-survival-curves">Plot Survival Curves</h3>
+<div class="cell">
+<details>
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">35</span> <span class="co">#weeks</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>s_surv_dat <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"numeric"</span>, <span class="at">length =</span> N)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>f_surv_dat <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"numeric"</span>, <span class="at">length =</span> N)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>) <span class="co"># Initial state vector, starting in STW</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span> N) {</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>     s_dist <span class="ot">&lt;-</span> <span class="fu">prob_at_time</span>(s_TP, t, u)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>     s_surv_dat[t] <span class="ot">&lt;-</span> <span class="fu">sum</span>(s_dist[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]) <span class="co"># Sum of probabilities of being in transient states)</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>     f_dist <span class="ot">&lt;-</span> <span class="fu">prob_at_time</span>(f_TP, t, u)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>     f_surv_dat[t] <span class="ot">&lt;-</span> <span class="fu">sum</span>(f_dist[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]) <span class="co"># Sum of probabilities of being in transient states</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>survival_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span>N,</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">s_prob =</span> s_surv_dat,</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">f_prob =</span> f_surv_dat</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>survival_df_l <span class="ot">&lt;-</span> survival_df <span class="sc">%&gt;%</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(s_prob, f_prob), </span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"treatment"</span>, <span class="at">values_to =</span> <span class="st">"probability"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">recode</span>(treatment, <span class="at">s_prob =</span> <span class="st">"Seretide"</span>, <span class="at">f_prob =</span> <span class="st">"Fluticasone"</span>))</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(survival_df_l) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> probability, <span class="at">group =</span> treatment,</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">color =</span> treatment), <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Probability of being in transient states over time"</span>,</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Time (weeks)"</span>,</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Probability"</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, N, <span class="at">by =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 <section id="expected-time-spent-in-selected-state" class="level3">
 <h3 class="anchored" data-anchor-id="expected-time-spent-in-selected-state">Expected time spent in selected state</h3>
 <p>This section computes the expected time the markov chain will spend in state s, assuming that it begins in STW.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Seretide</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">12</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>) <span class="co"># Initial state vector, starting in STW</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>s_time <span class="ot">&lt;-</span> <span class="fu">time_in_state</span>(<span class="at">tpm =</span> s_TP, <span class="at">n =</span> t, <span class="at">s =</span> u)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Flucticasone</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">12</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>) <span class="co"># Initial state vector, starting in STW</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>f_time <span class="ot">&lt;-</span> <span class="fu">time_in_state</span>(<span class="at">tpm =</span> f_TP, <span class="at">n =</span> t, <span class="at">s =</span> u)</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(s_time, f_time) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">row.names=</span><span class="fu">c</span>(<span class="st">"Seretide"</span>, <span class="st">"Fluticasone"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="st">"STW"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Seretide</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>) <span class="co"># Initial state vector, starting in STW</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>s_time <span class="ot">&lt;-</span> <span class="fu">time_in_state</span>(<span class="at">tpm =</span> s_TP, <span class="at">n =</span> t, <span class="at">s =</span> u)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Flucticasone</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>) <span class="co"># Initial state vector, starting in STW</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>f_time <span class="ot">&lt;-</span> <span class="fu">time_in_state</span>(<span class="at">tpm =</span> f_TP, <span class="at">n =</span> t, <span class="at">s =</span> u)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(s_time, f_time) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">row.names=</span><span class="fu">c</span>(<span class="st">"Seretide"</span>, <span class="st">"Fluticasone"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="st">"STW"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>             STW
