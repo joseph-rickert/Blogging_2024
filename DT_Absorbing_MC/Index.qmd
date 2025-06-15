@@ -202,9 +202,21 @@ f_state
 
 
 
-## Conjugate Prior Results
+## THe Bayesian Model
 
-In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts.
+In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution. 
+
+
+### The Dirichlet Distribution
+
+The [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) is a multivariate generalization of the beta distribution which is parameterized by a vector of positive real numbers, and is defined over a simplex a generalization of the concept of a triangle to higher dimensions. The probability density function (PDF) of the Dirichlet distribution is given by:
+
+$$ p(x) = \dfrac{\Gamma(\alpha_0)}{\Gamma(\alpha_1)...\Gamma(\alpha_n)} \prod_{i = 1}^{n}x_i^{\alpha_i - 1}I(x \in S)$$ 
+
+
+
+where $\alpha_0 = \sum_{i=1}^{n} \alpha_i$, $I(x)$ is the indicator function, $\Gamma$ is the gamma function, and the simplex $S = x \in \mathbb{R}^n: x_i > 0, \sum_{i=1}^{n} x_i = 1$ is the space of probability distributions. You can think of the Dirichlet distribution as a distribution on probability distributions. It models proportions or probabilities that sum to one, such as the transition probabilities in a Markov chain, and is often used as a prior distribution in Bayesian models since it is conjugate with the Multinomial distribution. (See Tufts in the references below.). The parameters of the Dirichlet posterior distrioution is the vector sum of the prior parameters and the observed counts. When the $\alpha_i$ parameters are all equal, the Dirichlet distribution is symmetric and uniform over the simplex. When the parameters are unequal, the distribution is skewed towards the larger parameters. In the code below the $\alpha_i$ parameters are set to 1.
+
 
 
 ### Seretide Simulations
@@ -372,7 +384,7 @@ round(f_TP,2)
 
 For an absorbing Markov Chain, the fundamental matrix, $N$, gives the expected number of times the process is in each transient state before absorption occurs. $N$ is calculated by the formula $N = (I - Q)^{-1}$, where $I$ is the identity matrix and $Q$ is the sub-matrix of transition probabilities for non-absorbing states.
 
-The first step in computing $N$ is to partition the transition matrix into sub matrices of transient $Q_$, and absorbing $R$ transition probabilities.
+The first step in computing $N$ is to partition the transition matrix into sub matrices of transient $Q$, and absorbing $R$ transition probabilities.
 
 ![](N.png)
 
@@ -590,4 +602,14 @@ rbind(s_time, f_time) %>%
   round(2)
 ```
 
+## References
 
+Atanasov, N [Chapter 11: Markov Chains](https://natanaso.github.io/ece276b/ref/Grinstead-Snell-Ch11.pdf)
+
+Briggs AH, Ades AE, Price MJ. [Probabilistic Sensitivity Analysis for Decision Trees with Multiple Branches: Use of the Dirichlet Distribution in a Bayesian Framework. Medical Decision Making](https://journals.sagepub.com/doi/abs/10.1177/0272989X03255922), 2003
+
+
+M Kavuru, J Melamed, G Gross, C Laforce, K House, B Prillaman, L Baitinger, A Woodring, T Shah, [Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial](https://pubmed.ncbi.nlm.nih.gov/10856143/)
+
+
+Tufts, C. [The Little Book of LDA](https://miningthedetails.com/LDA_Inference_Book/index.html)

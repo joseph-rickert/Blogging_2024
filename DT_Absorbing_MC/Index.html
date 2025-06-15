@@ -258,9 +258,15 @@ Pex   0   4   0   1  0</code></pre>
 </div>
 </div>
 </section>
-<section id="conjugate-prior-results" class="level2">
-<h2 class="anchored" data-anchor-id="conjugate-prior-results">Conjugate Prior Results</h2>
-<p>In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts.</p>
+<section id="the-bayesian-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-bayesian-model">THe Bayesian Model</h2>
+<p>In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution.</p>
+<section id="the-dirichlet-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="the-dirichlet-distribution">The Dirichlet Distribution</h3>
+<p>The <a href="https://en.wikipedia.org/wiki/Dirichlet_distribution">Dirichlet distribution</a> is a multivariate generalization of the beta distribution which is parameterized by a vector of positive real numbers, and is defined over a simplex a generalization of the concept of a triangle to higher dimensions. The probability density function (PDF) of the Dirichlet distribution is given by:</p>
+<p><span class="math display">\[ p(x) = \dfrac{\Gamma(\alpha_0)}{\Gamma(\alpha_1)...\Gamma(\alpha_n)} \prod_{i = 1}^{n}x_i^{\alpha_i - 1}I(x \in S)\]</span></p>
+<p>where <span class="math inline">\(\alpha_0 = \sum_{i=1}^{n} \alpha_i\)</span>, <span class="math inline">\(I(x)\)</span> is the indicator function, <span class="math inline">\(\Gamma\)</span> is the gamma function, and the simplex <span class="math inline">\(S = x \in \mathbb{R}^n: x_i &gt; 0, \sum_{i=1}^{n} x_i = 1\)</span> is the space of probability distributions. You can think of the Dirichlet distribution as a distribution on probability distributions. It models proportions or probabilities that sum to one, such as the transition probabilities in a Markov chain, and is often used as a prior distribution in Bayesian models since it is conjugate with the Multinomial distribution. (See Tufts in the references below.). The parameters of the Dirichlet posterior distrioution is the vector sum of the prior parameters and the observed counts. When the <span class="math inline">\(\alpha_i\)</span> parameters are all equal, the Dirichlet distribution is symmetric and uniform over the simplex. When the parameters are unequal, the distribution is skewed towards the larger parameters. In the code below the <span class="math inline">\(\alpha_i\)</span> parameters are set to 1.</p>
+</section>
 <section id="seretide-simulations" class="level3">
 <h3 class="anchored" data-anchor-id="seretide-simulations">Seretide Simulations</h3>
 <div class="cell">
@@ -412,7 +418,7 @@ TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 STW 0.64 0.31 0.01 0.01 0.03
 UTW 0.05 0.05 0.05 0.05 0.05
 Hex 0.20 0.20 0.20 0.20 0.20
-Pex 0.29 0.14 0.14 0.14 0.28
+Pex 0.29 0.14 0.14 0.14 0.29
 TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 </div>
 </div>
@@ -422,7 +428,7 @@ TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 <section id="fundamental-matrix" class="level3">
 <h3 class="anchored" data-anchor-id="fundamental-matrix">Fundamental Matrix</h3>
 <p>For an absorbing Markov Chain, the fundamental matrix, <span class="math inline">\(N\)</span>, gives the expected number of times the process is in each transient state before absorption occurs. <span class="math inline">\(N\)</span> is calculated by the formula <span class="math inline">\(N = (I - Q)^{-1}\)</span>, where <span class="math inline">\(I\)</span> is the identity matrix and <span class="math inline">\(Q\)</span> is the sub-matrix of transition probabilities for non-absorbing states.</p>
-<p>The first step in computing <span class="math inline">\(N\)</span> is to partition the transition matrix into sub matrices of transient <span class="math inline">\(Q_\)</span>, and absorbing <span class="math inline">\(R\)</span> transition probabilities.</p>
+<p>The first step in computing <span class="math inline">\(N\)</span> is to partition the transition matrix into sub matrices of transient <span class="math inline">\(Q\)</span>, and absorbing <span class="math inline">\(R\)</span> transition probabilities.</p>
 <p><img src="N.png" class="img-fluid"></p>
 <section id="extract-the-q-matrix" class="level4">
 <h4 class="anchored" data-anchor-id="extract-the-q-matrix">Extract the Q matrix</h4>
@@ -499,10 +505,10 @@ Pex 0.29 0.14 0.14 0.14</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     STW  UTW  Hex  Pex
-STW 5.61 1.52 0.31 0.33
+STW 5.62 1.53 0.31 0.33
 UTW 1.41 1.60 0.30 0.30
-Hex 2.37 1.02 1.50 0.51
-Pex 2.50 0.94 0.40 1.41</code></pre>
+Hex 2.39 1.02 1.50 0.51
+Pex 2.51 0.94 0.40 1.41</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:10%;">
@@ -517,7 +523,7 @@ Pex 2.50 0.94 0.40 1.41</code></pre>
 <pre><code>     STW  UTW  Hex  Pex
 STW 3.09 1.07 0.13 0.13
 UTW 0.30 1.19 0.10 0.10
-Hex 1.16 0.74 1.38 0.38
+Hex 1.17 0.74 1.38 0.38
 Pex 1.28 0.68 0.29 1.29</code></pre>
 </div>
 </div>
@@ -546,10 +552,10 @@ Pex 1.28 0.68 0.29 1.29</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Seretide Flucticasone
-STW     7.77         4.42
-UTW     3.61         1.69
-Hex     5.40         3.66
-Pex     5.25         3.54</code></pre>
+STW     7.79         4.42
+UTW     3.62         1.70
+Hex     5.42         3.66
+Pex     5.27         3.53</code></pre>
 </div>
 </div>
 </section>
@@ -651,6 +657,13 @@ Fluticasone 2.05</code></pre>
 </div>
 </div>
 </section>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Atanasov, N <a href="https://natanaso.github.io/ece276b/ref/Grinstead-Snell-Ch11.pdf">Chapter 11: Markov Chains</a></p>
+<p>Briggs AH, Ades AE, Price MJ. <a href="https://journals.sagepub.com/doi/abs/10.1177/0272989X03255922">Probabilistic Sensitivity Analysis for Decision Trees with Multiple Branches: Use of the Dirichlet Distribution in a Bayesian Framework. Medical Decision Making</a>, 2003</p>
+<p>M Kavuru, J Melamed, G Gross, C Laforce, K House, B Prillaman, L Baitinger, A Woodring, T Shah, <a href="https://pubmed.ncbi.nlm.nih.gov/10856143/">Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial</a></p>
+<p>Tufts, C. <a href="https://miningthedetails.com/LDA_Inference_Book/index.html">The Little Book of LDA</a></p>
 </section>
 
 </main>
