@@ -9,7 +9,7 @@
 <meta name="author" content="Joseph Rickert">
 <meta name="dcterms.date" content="2025-02-17">
 
-<title>DT_A_MC</title>
+<title>A Simple Bayesian Multi-state Survival Model for a Clinical Trial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">DT_A_MC</h1>
+<h1 class="title">A Simple Bayesian Multi-state Survival Model for a Clinical Trial</h1>
 </div>
 
 
@@ -110,6 +110,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<p>This post shows how to use a simple Bayesian model to estimate the transition probabilities of patients progressing through various health states in a randomized clinical trial comparing different treatments for asthma management. These probabilities are used to construct a discrete time Markov chain model. The post goes on to show how the basic theory of discrete time Markov chains can be to compare the effectiveness of two different treatments by estimating fundamental health metrics including the expected time spent in each health state, survival curves, and the expected time to treatment failure for each of the two treatments.</p>
+<p>Althougth the theory is basic and the calculations are simple, variations of this model should be applicable to a wide range of problems in health economics and decision analysis.</p>
 <section id="required-packages-and-helper-functions" class="level2">
 <h2 class="anchored" data-anchor-id="required-packages-and-helper-functions">Required Packages and Helper Functions</h2>
 <div class="cell">
@@ -185,15 +187,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="Index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
 </section>
 <section id="the-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-data">The Data</h2>
-<p>The data used in this example originates from the randomized trial conducted by Kavuru et al.&nbsp;(2000) comparing the two treatments, Seretide and Fluticasone, for asthma management. The data is presented in the text and in the paper by Briggs et al.&nbsp;(2003) where state transitions were observed over a 12-week follow-up period. This data was also reported in the paper by Kavuru et al.&nbsp;(2000) and in Table 10.3 of the text.</p>
+<p>The data used in this post originates from a four arm randomized trial comparing treatments for asthma management, including Seretide and Fluticasone, conducted by Kavuru et al.&nbsp;(2000). I report the data is presented in the text by Welton et al.&nbsp;(2012) and the paper by Briggs et al.&nbsp;(2003). The data comprise the number of patients in each of five health state at the end of each week for a 12-week follow-up period. The states are defined as follows: <code>STW</code>= sucessfully treated week, <code>UTW</code>= unsucessfully treated week, <code>Hex</code>= hospital-managed exacerbation ,<code>Pex</code>= primary care-managed exacerbation, and <code>TF</code>= treatment failure.</p>
+<p>State tables such as these are a common way to summarize the results of a clinical study.</p>
 <div class="cell">
 <details>
 <summary>Load the Data</summary>
@@ -258,9 +256,18 @@ Pex   0   4   0   1  0</code></pre>
 </div>
 </div>
 </section>
+<section id="the-markov-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-markov-model">The Markov Model</h2>
+<p>The state diagram, which shows directed arcs between the states, is a useful way to visualize the Markov model. The arcs represent the possible transitions between states, and the numbers on the arcs represent the <em>from-to</em> state transitions. Since there are no arcs eminating from <em>TF</em> it is clear that this state is being modeled as an absorbing state, similar to <em>death</em> in a survival model.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="Index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 <section id="the-bayesian-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-bayesian-model">THe Bayesian Model</h2>
-<p>In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution.</p>
+<p>The Bayesian is a simple <a href="https://en.wikipedia.org/wiki/Conjugate_prior">conjugate model</a> with a Multinomial likelihood function and Dirichlet prior distribution. Because these to distributions are congugate the posterior distribution will also be a Dirichlet.</p>
 <section id="the-dirichlet-distribution" class="level3">
 <h3 class="anchored" data-anchor-id="the-dirichlet-distribution">The Dirichlet Distribution</h3>
 <p>The <a href="https://en.wikipedia.org/wiki/Dirichlet_distribution">Dirichlet distribution</a> is a multivariate generalization of the beta distribution which is parameterized by a vector of positive real numbers, and is defined over a simplex a generalization of the concept of a triangle to higher dimensions. The probability density function (PDF) of the Dirichlet distribution is given by:</p>
@@ -269,6 +276,7 @@ Pex   0   4   0   1  0</code></pre>
 </section>
 <section id="seretide-simulations" class="level3">
 <h3 class="anchored" data-anchor-id="seretide-simulations">Seretide Simulations</h3>
+<p>This section of code uses the <code>sim_res</code> function to simulate the posterior distribution of the transition probabilities for Seretide, starting in each of the four transient states. The results are summarized using the <code>smry</code> function, which computes the mean and 95% credible intervals for each transition probability.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -285,7 +293,7 @@ Pex   0   4   0   1  0</code></pre>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>s_Pex_smry <span class="ot">&lt;-</span> <span class="fu">smry</span>(s_Pex_sim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Plot the posterior distributions of the transition probabilities for Seretide starting in STW</p>
+<p>This code plots the marginal posterior distributions of the transition probabilities for Seretide starting in STW.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -313,6 +321,7 @@ Pex   0   4   0   1  0</code></pre>
 </section>
 <section id="flucticasone-simulations" class="level3">
 <h3 class="anchored" data-anchor-id="flucticasone-simulations">Flucticasone Simulations</h3>
+<p>This section of code uses the <code>sim_res</code> function to simulate the posterior distribution of the transition probabilities for Flucticasone, starting in each of the four transient states. The results are summarized using the <code>smry</code> function, which computes the mean and 95% credible intervals for each transition probability.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -329,7 +338,7 @@ Pex   0   4   0   1  0</code></pre>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>f_Pex_smry <span class="ot">&lt;-</span> <span class="fu">smry</span>(f_Pex_sim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Plot the posterior distributions of the transition probabilities for Flucticasone starting in STW</p>
+<p>This code plots the marginal posterior distributions of the transition probabilities for Flucticasone starting in STW.</p>
 <div class="cell">
 <details>
 <summary>Show the code</summary>
@@ -401,7 +410,7 @@ Pex   0   4   0   1  0</code></pre>
 STW 0.76 0.22 0.00 0.01 0.01
 UTW 0.12 0.12 0.12 0.12 0.12
 Hex 0.20 0.20 0.20 0.20 0.20
-Pex 0.29 0.14 0.14 0.14 0.29
+Pex 0.29 0.14 0.14 0.14 0.28
 TF  0.00 0.00 0.00 0.00 1.00</code></pre>
 </div>
 </div>
@@ -507,8 +516,8 @@ Pex 0.29 0.14 0.14 0.14</code></pre>
 <pre><code>     STW  UTW  Hex  Pex
 STW 5.62 1.53 0.31 0.33
 UTW 1.41 1.60 0.30 0.30
-Hex 2.39 1.02 1.50 0.51
-Pex 2.51 0.94 0.40 1.41</code></pre>
+Hex 2.38 1.02 1.50 0.51
+Pex 2.51 0.95 0.40 1.41</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:10%;">
@@ -524,7 +533,7 @@ Pex 2.51 0.94 0.40 1.41</code></pre>
 STW 3.09 1.07 0.13 0.13
 UTW 0.30 1.19 0.10 0.10
 Hex 1.17 0.74 1.38 0.38
-Pex 1.28 0.68 0.29 1.29</code></pre>
+Pex 1.27 0.68 0.29 1.29</code></pre>
 </div>
 </div>
 </div>
@@ -552,10 +561,10 @@ Pex 1.28 0.68 0.29 1.29</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Seretide Flucticasone
-STW     7.79         4.42
-UTW     3.62         1.70
-Hex     5.42         3.66
-Pex     5.27         3.53</code></pre>
+STW     7.78         4.42
+UTW     3.62         1.69
+Hex     5.41         3.67
+Pex     5.28         3.53</code></pre>
 </div>
 </div>
 </section>
@@ -662,8 +671,9 @@ Fluticasone 2.05</code></pre>
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <p>Atanasov, N <a href="https://natanaso.github.io/ece276b/ref/Grinstead-Snell-Ch11.pdf">Chapter 11: Markov Chains</a></p>
 <p>Briggs AH, Ades AE, Price MJ. <a href="https://journals.sagepub.com/doi/abs/10.1177/0272989X03255922">Probabilistic Sensitivity Analysis for Decision Trees with Multiple Branches: Use of the Dirichlet Distribution in a Bayesian Framework. Medical Decision Making</a>, 2003</p>
-<p>M Kavuru, J Melamed, G Gross, C Laforce, K House, B Prillaman, L Baitinger, A Woodring, T Shah, <a href="https://pubmed.ncbi.nlm.nih.gov/10856143/">Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial</a></p>
+<p>Kavuru M, Melamed J, Gross G, Laforce C, House K, Prillaman B, Baitinger L, Woodring A, and Shah T, (2000) <a href="https://pubmed.ncbi.nlm.nih.gov/10856143/">Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial</a></p>
 <p>Tufts, C. <a href="https://miningthedetails.com/LDA_Inference_Book/index.html">The Little Book of LDA</a></p>
+<p>Welton NJ, Sutton AJ, Cooper NJ, Abrams KR, and Ades AE (2010) <a href="https://www.cambridge.org/core/books/evidence-synthesis-for-decision-making-in-healthcare/3A2F7B1C4D5E6F8B9A1B0D2E3C4F5A6B">Evidence Synthesis for Decision Making in Healthcare</a>. Cambridge University Press.</p>
 </section>
 
 </main>

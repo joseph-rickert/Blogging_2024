@@ -1,5 +1,5 @@
 ---
-title: "DT_A_MC"
+title: "A Simple Bayesian Multi-state Survival Model for a Clinical Trial"
 author: "Joseph Rickert"
 date: 2025-02-17
 code-fold: true
@@ -8,6 +8,11 @@ description: ""
 categories: ""
 editor: source
 ---
+
+This post shows how to use a simple Bayesian model to estimate the transition probabilities of patients progressing through various health states in a randomized clinical trial comparing different treatments for asthma management. These probabilities are used to construct a discrete time Markov chain model. The post goes on to show how the basic theory of discrete time Markov chains can be to compare the effectiveness of two different treatments by estimating fundamental health metrics including the expected time spent in each health state, survival curves, and the expected time to treatment failure for each of the two treatments. 
+
+Althougth the theory is basic and the calculations are simple, variations of this model should be applicable to a wide range of problems in health economics and decision analysis. 
+
 
 ## Required Packages and Helper Functions
 ```{r libraries}
@@ -87,46 +92,12 @@ round(Total_state_time,2)
 }
 ```
 
-```{r}
-#| message: FALSE
-#| warning: FALSE
-#| echo: FALSE
-
-stateNames <- c("STW","UTW", "Hex", "Pex", "TF")
-TM <- matrix(nrow = 5, ncol = 5, byrow = TRUE, data =
-               c(0,12,13,14,15,
-                 21,0,23,24,25,
-                 31,32,0,34,35,
-                 41,42,43,0,45,
-                 0,0,0,0,0))
-row.names(TM) <- stateNames; colnames(TM) <- stateNames
-
-par(mar = c(2,4,4,2))
-pos <- c(1,1,2.,1)
-plotmat(t(TM), pos = pos,
-        lwd = 3, box.lwd = 2,
-        curve = .3,
-        cex.txt = 0.8,
-        box.size = 0.1,
-        box.type = "circle",
-        box.prop = 0.5,
-        box.col = "light grey",
-        arr.length =.1,
-        arr.type = "curved",
-        arr.width =.1,
-        arr.lwd = .2,
-        self.cex = .4,
-        self.shifty = -.01,
-        self.shiftx = .13,
-        prefix = "",
-        main = " Asthma Markov Model State Transition Diagram",)
-```
-
-
 
 ## The Data
 
-The data used in this example originates from the randomized trial conducted by Kavuru et al. (2000) comparing the two treatments, Seretide and Fluticasone, for asthma management. The data is presented in the text and in the paper by Briggs et al. (2003) where state transitions were observed over a 12-week follow-up period. This data was also reported in the paper by Kavuru et al. (2000) and in Table 10.3 of the text.
+The data used in this post originates from a four arm randomized trial comparing treatments for asthma management, including Seretide and Fluticasone, conducted by Kavuru et al. (2000). I report the data is presented in the text by Welton et al. (2012) and the paper by Briggs et al. (2003). The data comprise the number of patients in each of five health state at the end of each week for a 12-week follow-up period. The states are defined as follows: `STW`= sucessfully treated week, `UTW`= unsucessfully treated week, `Hex`= hospital-managed exacerbation ,`Pex`= primary care-managed exacerbation, and `TF`= treatment failure.
+
+State tables such as these are a common way to summarize the results of a clinical study.
 
 
 ```{r transition_data}
@@ -200,14 +171,51 @@ f_state
 
 ::::
 
+## The Markov Model
 
+The state diagram, which shows directed arcs between the states, is a useful way to visualize the Markov model. The arcs represent the possible transitions between states, and the numbers on the arcs represent the *from-to* state transitions. Since there are no arcs eminating from *TF* it is clear that this state is being modeled as an absorbing state, similar to *death* in a survival model.
+
+```{r}
+#| message: FALSE
+#| warning: FALSE
+#| echo: FALSE
+
+stateNames <- c("STW","UTW", "Hex", "Pex", "TF")
+TM <- matrix(nrow = 5, ncol = 5, byrow = TRUE, data =
+               c(0,12,13,14,15,
+                 21,0,23,24,25,
+                 31,32,0,34,35,
+                 41,42,43,0,45,
+                 0,0,0,0,0))
+row.names(TM) <- stateNames; colnames(TM) <- stateNames
+
+par(mar = c(2,4,4,2))
+pos <- c(1,1,2.,1)
+plotmat(t(TM), pos = pos,
+        lwd = 3, box.lwd = 2,
+        curve = .3,
+        cex.txt = 0.8,
+        box.size = 0.1,
+        box.type = "circle",
+        box.prop = 0.5,
+        box.col = "light grey",
+        arr.length =.1,
+        arr.type = "curved",
+        arr.width =.1,
+        arr.lwd = .2,
+        self.cex = .4,
+        self.shifty = -.01,
+        self.shiftx = .13,
+        prefix = "",
+        main = " Asthma Markov Model State Transition Diagram",)
+```
 
 ## THe Bayesian Model
 
-In this section we compute the posterior distributions of the transition probabilities using the conjugate prior approach. The Dirichlet distribution is the conjugate prior for the multinomial distribution, so the posterior distribution is also a Dirichlet distribution. 
-
+The Bayesian is a simple [conjugate model](https://en.wikipedia.org/wiki/Conjugate_prior) with a Multinomial likelihood function and Dirichlet prior distribution. Because these to distributions are congugate the posterior distribution will also be a Dirichlet. 
 
 ### The Dirichlet Distribution
+
 
 The [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) is a multivariate generalization of the beta distribution which is parameterized by a vector of positive real numbers, and is defined over a simplex a generalization of the concept of a triangle to higher dimensions. The probability density function (PDF) of the Dirichlet distribution is given by:
 
@@ -221,7 +229,7 @@ where $\alpha_0 = \sum_{i=1}^{n} \alpha_i$, $I(x)$ is the indicator function, $\
 
 ### Seretide Simulations
 
-
+This section of code uses the `sim_res` function to simulate the posterior distribution of the transition probabilities for Seretide, starting in each of the four transient states. The results are summarized using the `smry` function, which computes the mean and 95% credible intervals for each transition probability.
 
 ```{r}
 #| code-fold: true
@@ -242,7 +250,7 @@ s_Pex_smry <- smry(s_Pex_sim)
 ```
 
 
-Plot the posterior distributions of the transition probabilities for Seretide starting in STW
+This code plots the marginal posterior distributions of the transition probabilities for Seretide starting in STW.
 
 ```{r}
 #| code-fold: true
@@ -268,6 +276,7 @@ ggplot(s_STW_sim_df, aes(x = prob)) +
 
 ### Flucticasone Simulations
 
+This section of code uses the `sim_res` function to simulate the posterior distribution of the transition probabilities for Flucticasone, starting in each of the four transient states. The results are summarized using the `smry` function, which computes the mean and 95% credible intervals for each transition probability.
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
@@ -285,7 +294,7 @@ f_Pex_smry <- smry(f_Pex_sim)
 ```
 
 
-Plot the posterior distributions of the transition probabilities for Flucticasone starting in STW
+This code plots the marginal posterior distributions of the transition probabilities for Flucticasone starting in STW.
 
 
 ```{r}
@@ -609,7 +618,9 @@ Atanasov, N [Chapter 11: Markov Chains](https://natanaso.github.io/ece276b/ref/G
 Briggs AH, Ades AE, Price MJ. [Probabilistic Sensitivity Analysis for Decision Trees with Multiple Branches: Use of the Dirichlet Distribution in a Bayesian Framework. Medical Decision Making](https://journals.sagepub.com/doi/abs/10.1177/0272989X03255922), 2003
 
 
-M Kavuru, J Melamed, G Gross, C Laforce, K House, B Prillaman, L Baitinger, A Woodring, T Shah, [Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial](https://pubmed.ncbi.nlm.nih.gov/10856143/)
+Kavuru M, Melamed J, Gross G, Laforce C, House K, Prillaman B, Baitinger L, Woodring A, and  Shah T, (2000) [Salmeterol and fluticasone propionate combined in a new powder inhalation device for the treatment of asthma: a randomized, double-blind, placebo-controlled trial](https://pubmed.ncbi.nlm.nih.gov/10856143/)
 
 
 Tufts, C. [The Little Book of LDA](https://miningthedetails.com/LDA_Inference_Book/index.html)
+
+Welton NJ, Sutton AJ, Cooper NJ, Abrams KR, and Ades AE (2010) [Evidence Synthesis for Decision Making in Healthcare](https://www.cambridge.org/core/books/evidence-synthesis-for-decision-making-in-healthcare/3A2F7B1C4D5E6F8B9A1B0D2E3C4F5A6B). Cambridge University Press.
