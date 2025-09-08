@@ -1,0 +1,199 @@
+---
+title: "Dirichlet"
+format: html
+---
+
+ of embedded code. You can embed code like this:
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(dplyr)
+library(magick)
+library(MCMCpack)  # for rdirichlet
+```
+
+You can add options to executable code like this 
+
+```{r}
+set.seed(42)
+
+# Parameters
+alpha1_values <- seq(5, 0.5, by = -0.2)  # starts high, ends low
+alpha2_values <- seq(0.5, 5, by = 0.2)   # starts low, ends high
+alpha3 <- 1.0                            # fixed
+
+n_samples <- 1000
+
+# Triangle vertices
+v1 <- c(1, 0)  # corresponds to (1,0,0)
+v2 <- c(0, 1)  # corresponds to (0,1,0)
+v3 <- c(0, 0)  # corresponds to (0,0,1)
+
+
+
+label_df <- data.frame(
+  x = c(v1[1], v2[1], v3[1]),
+  y = c(v1[2], v2[2], v3[2]),
+  label = c("(1,0,0)", "(0,1,0)", "(0,0,1)"),
+  nudge_x = c(-0.08, 0.1, 0),   # left, right, no horizontal shift
+  nudge_y = c(0, 0, 0.08)       # no vertical shift, no shift, upward
+)
+
+arrow_df <- data.frame(
+  x = c(1, 0),
+  y = c(0, 1)
+)
+
+
+# Function to project Dirichlet sample to triangle
+project_to_triangle <- function(x1, x2, x3) {
+  x <- x1 * v1[1] + x2 * v2[1] + x3 * v3[1]
+  y <- x1 * v1[2] + x2 * v2[2] + x3 * v3[2]
+  return(data.frame(x = x, y = y))
+}
+
+# Generate animation data
+animation_data <- data.frame()
+
+for (i in seq_along(alpha1_values)) {
+  alpha1 <- alpha1_values[i]
+  alpha2 <- alpha2_values[i]
+  
+  samples <- rdirichlet(n_samples, c(alpha1, alpha2, alpha3))
+  projected <- project_to_triangle(samples[,1], samples[,2], samples[,3])
+  
+  projected$alpha1 <- alpha1
+  projected$alpha2 <- alpha2
+  projected$frame <- i
+  
+  animation_data <- rbind(animation_data, projected)
+}
+
+
+# Triangle outline in 2D projection
+triangle_df <- data.frame(
+  x = c(v1[1], v2[1], v3[1], v1[1]),
+  y = c(v1[2], v2[2], v3[2], v1[2])
+)
+
+```
+
+```{r}
+ggplot(subset(animation_data, frame == 1), aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, color = "blue") +
+  ggtitle("Initial Frame: Prior concentrated at (1,0,0)")
+
+
+ggplot(subset(animation_data, frame == max(animation_data$frame)), aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, color = "red") +
+  ggtitle("Final Frame: Prior concentrated at (0,1,0)")
+
+```
+
+
+
+```{r}
+p <- ggplot(animation_data, aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, size = 0.8, color = "steelblue") +
+  geom_density_2d(color = "red", alpha = 0.7) +
+  geom_path(data = triangle_df, aes(x = x, y = y), color = "black", size = 1) +
+  annotate("segment", x = 1, y = 0, xend = 0, yend = 1,
+         arrow = arrow(length = unit(0.2, "cm")),
+         color = "darkgreen", size = 1.2) +
+  xlim(0, 1) + ylim(0, 1) +
+  geom_text(data = label_df,
+          aes(x = x, y = y, label = label),
+          nudge_x = label_df$nudge_x,
+          nudge_y = label_df$nudge_y,
+          size = 4, fontface = "bold", color = "black") +
+  labs(
+  title = "Dirichlet Prior Evolution in Markov Chain",
+  subtitle = "Dirichlet Prior: (α₁ → α₂): shifting belief from state 1 to state 2",
+  x = "Projected X",
+  y = "Projected Y",
+  caption = "Transitioning belief from state 1 → state 2"
+) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title = element_text(size = 12),
+    plot.caption = element_text(size = 10, hjust = 0.5)
+  ) +
+  transition_states(frame,
+                    transition_length = 1,
+                    state_length = 2) +
+  ease_aes('sine-in-out')
+
+p
+```
+
+
+### Entropy of Dirichlet Distribution
+
+Let $\boldsymbol{\alpha} = (\alpha_1, \alpha_2, \dots, \alpha_K)$ be the parameters of a Dirichlet distribution. The entropy $H(\boldsymbol{\alpha})$ is given by:$
+
+$$H(\boldsymbol{\alpha}) = \log B(\boldsymbol{\alpha}) + (\alpha_0 - K) \psi(\alpha_0) - \sum_{i=1}^{K} (\alpha_i - 1) \psi(\alpha_i)$$
+
+where:
+
+* $\alpha_0 = \sum_{i=1}^{K} \alpha_i$ is the total concentration
+* $B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma(\alpha_0)}$ is the multivariate Beta function
+
+* $\psi(\cdot)$ is the digamma function: $\psi(x) = \frac{d}{dx} \log \Gamma(x)$
+* $\Gamma(\cdot)$ is the Gamma function
+
+
+We'll compute entropy per frame and plot it as a secondary panel or overlay.
+```{r}
+library(extraDistr)
+library(ggplot2)
+
+# Revised prior shift
+alpha1_values <- seq(5, 0.5, by = -0.2)
+alpha2_values <- seq(0.5, 5, by = 0.2)
+alpha3 <- 1.0
+
+compute_entropy <- function(alpha) {
+  alpha0 <- sum(alpha)
+  K <- length(alpha)
+  term1 <- lgamma(alpha0) - sum(lgamma(alpha))
+  term2 <- (alpha0 - K) * digamma(alpha0)
+  term3 <- -sum((alpha - 1) * digamma(alpha))
+  return(term1 + term2 + term3)
+}
+
+entropy_values <- mapply(function(a1, a2) {
+  compute_entropy(c(a1, a2, alpha3))
+}, alpha1_values, alpha2_values)
+
+entropy_df <- data.frame(
+  frame = seq_along(alpha1_values),
+  alpha1 = alpha1_values,
+  alpha2 = alpha2_values,
+  entropy = entropy_values
+)
+
+
+```
+
+```{r}
+entropy_plot <- ggplot(entropy_df, aes(x = frame, y = entropy)) +
+  geom_line(color = "purple", size = 1.2) +
+  geom_point(color = "purple", size = 2) +
+  labs(
+    title = "Entropy of Dirichlet Prior During Belief Shift",
+    subtitle = "From α₁ = 5 → α₂ = 5 (state 1 → state 2)",
+    x = "Animation Frame",
+    y = "Entropy"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title = element_text(size = 12)
+  )
+entropy_plot
+```
+

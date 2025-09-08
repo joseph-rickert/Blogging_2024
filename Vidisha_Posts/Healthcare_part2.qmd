@@ -1,0 +1,231 @@
+---
+title: "Tidyverse with Copilot for healthcare analytics -- part 2"
+format: html
+editor: visual
+---
+
+## 1. Introduction and recap
+
+Healthcare analytics offers significant benefits to a wide range of stakeholders, including health administrators, organizations, and, most importantly, patients. In the first [part](https://rworks.dev/posts/healthcare-part1/) of this series, we introduced a complex dataset of diabetes patient encounters, comprising 100,000+ rows and over 50 columns. This dataset includes a rich array of variables, such as admission type and primary diagnosis. We demonstrated the process of cleaning, redefining, and preparing this data for analysis, highlighting the use of GitHub Copilot to navigate a particularly challenging variable.
+
+In this second installment, we will delve deeper into the dataset to evaluate the effectiveness of healthcare delivery through metrics such as hospital readmissions and patient care outcomes, including medication prescriptions.
+
+## 2. What affects patient care outcomes?
+
+What factors define patient outcomes? Building on our initial analysis, we conducted a series of smaller investigations to identify the primary covariate impacting outcomes: the *HbA1c test.* Initially categorized into four groups *HbA1c test* – "$>7$", "$>8$", $None$ and $Norm$ – we will simplify this variable into a binary indicator that reflects whether this critical assessment was performed. We will also explore the relationship between HbA1c testing and another vital patient measurement: the primary diagnosis (`diag_1`) recorded at admission. As we saw in our first post, `diag_1` data is the most complete among all diagnoses collected (primary, secondary, and additional secondary).
+
+Finally, we define the following 3 response variables to focus on in this post. The first two are derived from the original study, while the third extends this logic, providing new insights into care delivery.
+
+1.  *Early readmission –* binary indicator of whether patient readmitted in $<30$ days
+
+2.  *Change in medication -* binary indicator of whether a medication was changed or adjusted
+
+3.  *Medication prescription -* binary indicators of whether any diabetes medication was prescribed or not
+
+Let's read in the data and prepare the first 2 response variables, *HbA1c test* and *primary diagnosis*.
+
+```{r}
+#| label: Chunk1
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# --------------------------------------------- #
+# Load necessary libraries
+# --------------------------------------------- #
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(kableExtra)
+library(gridExtra)
+library(grid)
+library(lattice)
+
+# --------------------------------------------- #
+# Read in the data
+# --------------------------------------------- #
+D <- read.csv("diabetes_data.csv", sep=",")
+
+# -------------------------------------------------------- #
+# Clean and re-define HbA1c, primary diag & 2 covariates
+# -------------------------------------------------------- #
+
+D <- D %>%
+  mutate(a1c=ifelse(A1Cresult=="None", "not measured", "measured"), 
+         primary_diag = case_when(
+    diag_1 %in% c(390:459, 785) ~ "Circulatory",
+    diag_1 %in% c(460:519, 786) ~ "Respiratory",
+    diag_1 %in% c(520:579, 787) ~ "Digestive",
+    diag_1 %in% c(580:629, 788) ~ "Genitourinary",
+    diag_1 %in% c(630:679) ~ "Pregnancy",
+    diag_1 %in% c(680:709, 782) ~ "Skin",
+    diag_1 %in% c(710:739) ~ "Musculoskeletal",
+    diag_1 %in% c(740:759) ~ "Congenital",
+    diag_1 %in% c(800:999) ~ "Injury",
+    grepl("^250", diag_1) ~ "Diabetes",
+    is.na(diag_1) ~ "Missing",
+    TRUE ~ "Other"
+  ), reAdmit=ifelse(readmitted=="<30", "early readmit", "no/late readmit"))
+
+# Remove patients with a discharge disposition of "expired" or "hospice"
+D <- D %>% filter(!discharge_disposition_id %in% c('11','13','14','19','20','21'))
+```
+
+## 3. A closer look at diabetes medications
+
+Before examining the relationships outlined above, let’s take a closer look at the third patient outcome, which is also a binary variable. Specifically, we will analyze 23 medication outcomes, each defined by whether a particular medication was prescribed to the patient, including well-known drugs like insulin and metformin.
+
+Each of these 23 medication outcomes is originally categorized into four groups – $Down$, $Up$, $Steady$, $No$. We will visualize this data to assess variations across medications in relation to our two key covariates. To facilitate this, we will reshape the data using `gather`, allowing us to analyze all 23 medications simultaneously. We will then create a mosaic plot using `dplyr` and `ggplot2`, with assistance from Copilot for fine-tuning our visuals.
+
+### 3.1. Medication usage by primary diagnoses
+
+> ***Notes on Copilot:** As you view the charts from left to right, click on “Show the code” to see how we utilized Copilot and fine-tuned the visualization to enhance clarity and storytelling.*
+
+```{r fig.width=12, fig.height=10}
+#| label: Chunk2
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# ------------------------------------------------------------ #
+# Diver deeper into the 23 medications
+# 1) Plot against --
+# i) primary diagnosis 
+# ii) A1c
+# 2) Use Copilot to finetune hyperparameters for more insights
+# ------------------------------------------------------------ #
+
+# i) primary diagnosis
+
+# Re-define diagnoses to focus on the key ones
+D <- D %>% mutate(primary_diag = ifelse(primary_diag %in% c("Digestive", "Genitourinary", "Pregnancy", "Skin", "Musculoskeletal","Congenital","Injury","Other"), "Other", primary_diag))
+
+# Reshape data
+meds <- D %>%
+  select(metformin:metformin.pioglitazone, primary_diag) %>%
+  gather(key = "medication", value = "value", -primary_diag) %>%
+  group_by(primary_diag, medication, value) %>% summarise(n=n()) %>% mutate(freq = (n / sum(n))*100)
+
+# Use geom_tile and scale_fill_gradient
+p0 <- ggplot(meds, aes(x = value, y = medication, fill = freq)) +
+  geom_tile() +
+  theme_minimal() +
+  facet_wrap(~ primary_diag, nrow = 2, ncol = 2) +
+  scale_fill_gradient(low="red", high="green") +
+  geom_text(aes(label = round(freq, 1)), color = "gray", size = 2.5)
+
+# Fine-tune color parameters for clearer visualization using Copilot
+# Tweak initial Copilot output (see text)
+# Copilot also adds the titles without us specifying in the prompt
+p1 <- ggplot(meds, aes(x = value, y = medication, fill = freq)) +
+  geom_tile() +
+  facet_wrap(~ primary_diag, nrow = 2, ncol = 2) +
+  scale_fill_gradientn(colors = c("red", "orange", "yellow", "lightyellow", "green", "darkgreen"), 
+                       limits = c(0, 100), 
+                       name = "Frequency") +
+  labs(title = "Medication Usage by Primary Diagnosis",
+       x = "Medication Value",
+       y = "Medication Type") +
+  theme_minimal() +
+  geom_text(aes(label = round(freq, 1)), color = "gray", size = 2.5)
+
+# View together to see Copilot value add
+grid.arrange(p0, p1, nrow=1)
+
+```
+
+### 3.2. Medication usage by the A1c test
+
+> ***Notes on Copilot:*** *See screenshot below, notice how we need to closely examine the output to make sure its following all our prompt instructions, especially in the case of a longer prompt that is tuning hyperparameters.*
+
+> ![](images/mosaic_a1c-01.png){width="383"}
+
+```{r fig.width=12}
+#| label: Chunk3
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# ii) A1c
+
+# Re-shape data
+meds2 <- D %>%
+  select(metformin:metformin.pioglitazone, a1c) %>%
+  gather(key = "medication", value = "value", -a1c) %>%
+  group_by(a1c, medication, value) %>% summarise(n=n()) %>% mutate(freq = (n / sum(n))*100)
+
+# Visualize with regular and fine-tuned color parameters to compare the value of fine-tuning
+p2 <- ggplot(meds2, aes(x = value, y = medication, fill = freq)) +
+  geom_tile() +
+  theme_minimal() +
+  facet_wrap(~ a1c, nrow = 2, ncol = 2) +
+  scale_fill_gradient(low="red", high="green") +
+  geom_text(aes(label = round(freq, 1)), color = "gray", size = 2.5)
+
+p3 <- ggplot(meds2, aes(x = value, y = medication, fill = freq)) +
+  geom_tile() +
+  facet_grid(~ a1c) +
+  scale_fill_gradientn(colors = c("red", "orange", "yellow", "lightyellow", "green", "darkgreen"), 
+                       limits = c(0, 100), 
+                       name = "Frequency") +
+  labs(title = "Medication Usage by the A1c test",
+       x = "Medication Value",
+       y = "Medication Type") +
+  theme_minimal() +
+  geom_text(aes(label = round(freq, 1)), color = "gray", size = 2.5)
+
+grid.arrange(p2, p3, nrow=1)
+```
+
+> ***Notes on tuning:** Click on "Show the code" to notice the `figwidth` and `figheight` specifications for these plots for clearer rendering.*
+
+As we focus on the broader medication variables, the insights gained from examining the 23 individual medications are revealing. While most medications show no significant difference in prescription rates based on primary diagnosis or testing status, *specific medications do exhibit notable variations*. Additionally, we observe that many other medications are either rarely prescribed or not prescribed at all.
+
+The value of the mosaic plot lies in its ability to provide rapid insights into prescription patterns and how these rates vary based on critical factors influencing patient outcomes. With this in mind, let’s take a closer look at which medications are actually being prescribed.
+
+```{r}
+#| label: Chunk4
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Reshaping wide to get a better view of medications
+meds_wide <- D %>%
+  select(metformin:metformin.pioglitazone) %>%
+  gather(key = "medication", value = "value") %>%  
+  group_by(medication, value) %>%
+  summarise(No = sum(value == "No"),
+            Steady = sum(value == "Steady"),
+            Up = sum(value == "Up"),
+            Down = sum(value == "Down")) %>%
+  ungroup() -> D_transformed
+
+meds_notPresc <- meds_wide %>% mutate(not_presc = round(meds_wide$No/nrow(D), 3)) %>% subset(value=="No" & not_presc<1.000) %>% mutate(presc=1-not_presc) %>% select(medication, presc)
+
+
+knitr::kable(meds_notPresc,
+  caption = 'Medications that are prescribed {#tbl-val}',
+  booktabs = TRUE
+)
+```
+
+## 4. The impact of A1c on patient outcomes
+
+Now, let’s explore the three relationships defined in Section 1, starting with the one previously examined in the original paper: the impact of the *A1c test* on early readmission (\< 30 days) given the patient's primary diagnosis. To understand this interplay, we will utilize `geom_mosaic`, which will help clarify how the initial diagnosis may influence testing for A1c, which in turn affects whether the patient was readmitted within 30 days.
+
+```{r}
+#| label: Chunk5
+#| warning: false
+#| code-fold: true
+#| code-summary: "Show the code"
+
+library(ggmosaic)
+
+g <- ggplot(D) + geom_mosaic(aes(x = product(a1c), fill = readmitted), show.legend = FALSE) + facet_wrap(~primary_diag)
+plot(g)
+
+plot_data <- ggplot_build(g)$data[[1]]
+
+```
+
+We observe that patients diagnosed with diabetes have a significantly higher rate of HbA1c measurement compared to those with other initial diagnoses, despite the fact that the encounter was actually a diabetic one, i.e. the patient is eventually diagnosed with diabetes, although the original reason they came in was different. This distinction is particularly important for high-risk patients with circulatory diagnoses. As our analysis shows, the impact of measuring HbA1c on early readmission rates is less pronounced for these patients than for those diagnosed with diabetes.
