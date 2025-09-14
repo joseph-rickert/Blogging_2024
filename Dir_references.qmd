@@ -1,0 +1,60 @@
+---
+title: "Dirichlet_Ref"
+format: html
+---
+
+## Quarto
+
+
+[Andrew Heiss Post](https://www.andrewheiss.com/blog/2023/09/18/understanding-dirichlet-beta-intuition/#:~:text=The%20distribution%20is%20named%20after,in%20a%20French%2Dsounding%20way.)
+
+Rameshwar Gupta and Donald St. P. Richards, [The History of the Dirchet and Liouville Distributions](https://en.wikipedia.org/wiki/Peter_Gustav_Lejeune_Dirichlets) international Statistical Review (2001) 
+Bela A. Frigyik, Amol Kapila, and Maya R. Gupta, [Introduction to the Dirichlet Distribution and Related Processes](https://web.archive.org/web/20150219021331/https://www.ee.washington.edu/techsite/papers/documents/UWEETR-2010-0006.pdf)
+
+Jiayu Lin, [On the Dirichlet Distribution](https://qspace.library.queensu.ca/server/api/core/bitstreams/0a2eb9d4-145a-4e76-84eb-1aa16d6670aa/content)
+
+
+
+
+
+
+
+In 1839, [Peter Gustav Lejeune Dirichlet](https://en.wikipedia.org/wiki/Peter_Gustav_Lejeune_Dirichlet) was a mathematician attached to the Philosophy department at the University of Berlin working for less than full pay even though he had become a member of the Prussian Academy of Sciences in 1832. He apparently wasn't fluent enough in Latin to give the required "Habilitationsschrift" lecture. This seems pretty outrageous to me, but I expect it will resonate with many academics working today. Anyway, I digress. It was about that time that Dirichlet began to work on a problem in celestial mechanics which involved this integral:
+
+
+$$\quad I := \iiint_{S_s} \frac{dx\, dy\, dz}{\rho^p}$$
+
+Here $(x,y,z) \in R^3$ which is attracted to a point $(a,b,c)$ where $1/\rho^p$ is the force of attraction $(1 < p <3)$ and $\rho^2 := (x - a)^2 + (y - b)^2 + (z - c)^2$ is the Euclidean norm.
+
+After a supernaturally insightful series manipulations detailed by [Gupta and Richards](https://www.jstor.org/stable/1403524), Dirichlet arrived at the following integral 
+
+
+$$\int_{S_s} \left(1 - \sum_{i=1}^n x_i^2 \right)^{\alpha - 1} x_1^{v_1} x_2^{v_2} \cdots x_n^{v_n} \, dx_1 dx_2 \cdots dx_n = \frac{\Gamma(\alpha) \Gamma\left(\frac{1 + v_1}{2}\right) \cdots \Gamma\left(\frac{1 + v_n}{2}\right)}{\Gamma\left(\alpha + \frac{n + v_1 + \cdots + v_n}{2}\right)}$$
+which you will recognize as the normalizing constant for the Dirichlet distribution.
+
+$$f(x_1, \dots, x_K; \alpha_1, \dots, \alpha_K) = 
+\frac{1}{\mathrm{B}(\boldsymbol{\alpha})} 
+\prod_{i=1}^{K} x_i^{\alpha_i - 1}$$
+where
+
+$\mathrm{B}(\boldsymbol{\alpha}) = 
+\frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$ and $\alpha_0 = \sum_{i=1}^{K} \alpha_i$
+
+The Wikipedia article on the Dirichlet distribution is quite nice, a great place to begin studying the Dirichlet distribution itself and to begin appreciating how it brings together 17th century work in analysis as exemplified by the Gamma, Beta and digamma functions with early 20th ideas from geometry and topology (the simplex) and modern Bayesian statistics. The simplex idea is particularly interesting. A simplex is a generalization of the notion of a triangle to multiple dimensions. The support of a three dimensional Dirichlet distribution, the points on which the distribution is defined, is a (2)-simplex or triangle. In K dimensions, the Dirichlet distribution is defined over the (K-1)-simplex, which is the set of K-dimensional vectors that sum to 1 and have non-negative components. So, in addition to being the support of the Dirichlet distribution, the simplex is also a natural way to represent probabilities that sum to 1.
+
+
+
+As soon as he came to Berlin, Dirichlet applied to lecture at the University of Berlin, and the Education Minister approved the transfer and in 1831 assigned him to the faculty of philosophy. The faculty required him to undertake a renewed habilitation qualification, and although Dirichlet wrote a Habilitationsschrift as needed, he postponed giving the mandatory lecture in Latin for another 20 years, until 1851. As he had not completed this formal requirement, he remained attached to the faculty with less than full rights, including restricted emoluments, forcing him to keep in parallel his teaching position at the Military School. In 1832 Dirichlet became a member of the Prussian Academy of Sciences, the youngest member at only 27 years old.[3]
+
+
+Find a point on simplex
+Thinking An algorithm to determine the coordinates of a point within the simplex defined by the vertices \(v_{1}=(1,0,0)\), \(v_{2}=(0,1,0)\), and \(v_{3}=(0,0,1)\) involves using barycentric coordinates. A point in the simplex can be represented as a weighted average of its vertices, where the weights are non-negative and sum to 1 [1].
+
+Step 1: Define Barycentric Coordinates Let the barycentric coordinates of a point be 
+
+$\lambda _{1}$, $\lambda _{2}$, and $\lambda _{3}$. These coordinates must satisfy the following conditions: $\lambda _{1}\ge 0$, $\lambda _{2}\ge 0$, $\lambda _{3}\ge 0$ $\lambda _{1}+\lambda _{2}+\lambda _{3}=1$
+
+Step 2: Calculate the Point's Coordinates. The coordinates of a point P in the simplex are determined by the linear combination of the vertices using the barycentric coordinates as weights. The formula is: $P=\lambda _{1}v_{1}+\lambda _{2}v_{2}+\lambda _{3}v_{3}$ Substituting the vertex coordinates $v_{1}=(1,0,0)$, $v_{2}=(0,1,0)$, and $v_{3}=(0,0,1)$ into this equation gives: $P=\lambda _{1}(1,0,0)+\lambda _{2}(0,1,0)+\lambda _{3}(0,0,1)\)$ This simplifies to the coordinates of the point $P: P=(\lambda _{1},\lambda _{2},\lambda _{3})$
+[Google AI 9-8-25](https://www.google.com/search?q=find+an+algorithm+to+determine+the+coordinates+of+points+in+the+simplex+determined+by+%281%2C0%2C0%29%2C+%280%2C1%2C0%29+and+%280%2C0%2C1%29&sca_esv=5e583c358de1f317&ei=9l2_aMTJAYTy0PEP8rqY4Ao&ved=2ahUKEwiKpZzloMqPAxUuBzQIHbuyJ5kQ0NsOegQINBAA&uact=5&sclient=gws-wiz-serp&udm=50&fbs=AIIjpHxU7SXXniUZfeShr2fp4giZ1Y6MJ25_tmWITc7uy4KIeoJTKjrFjVxydQWqI2NcOhZVmrJB8DQUK5IzxA2fZbQFM2g50oYQ5zNZjjbKiQivEiZ5QtOyBm_qTFmJi3lA9w1VTmAUS5y1GCynW5o-GrtZY_KJ50sdSCcwch7OkF6PeAoi-34e-XMOWXXBwO78iRR6_h9AkVPMgHXCeXdAD3Ddkopu3g&aep=10&ntc=1&mstk=AUtExfAwsyKqUe05b7j-VkNkSucnEnzvrmQ0WTkJeHaHvGX0L48vXm410tf9LQUL0vuHLOZO40ClCTITznxE690-erO9FxMnEEmdWW5tJitdmqXPmfWOmEBLIKResNOz9aw7uPVRmi1MTGjNCFYgduO4CqSPzwF23LW8Xts&csuir=1)
+
+

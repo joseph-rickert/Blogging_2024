@@ -1,0 +1,337 @@
+---
+title: "Dirichlet"
+format: html
+---
+
+ of embedded code. You can embed code like this:
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(dplyr)
+library(magick)
+library(MCMCpack)  # for rdirichlet
+library(gtools)  # for ddirichlet
+library(patchwork)  # for combining plots
+
+```
+
+You can add options to executable code like this 
+
+```{r}
+set.seed(42)
+
+# Parameters
+alpha1_values <- seq(1, 0.1, by = -0.1)  # starts high, ends low
+alpha2_values <- seq(1, 0.1, by = -0.1)   # starts low, ends high
+alpha3_values <- seq(1, 0.1, by = -0.1)   # starts low, ends high
+#
+
+
+#alpha3 <- 1.0                            # fixed
+
+n_samples <- 1000
+
+# Triangle vertices
+v1 <- c(1, 0)  # corresponds to (1,0,0)
+v2 <- c(0, 1)  # corresponds to (0,1,0)
+v3 <- c(0, 0)  # corresponds to (0,0,1)
+
+
+
+label_df <- data.frame(
+  x = c(v1[1], v2[1], v3[1]),
+  y = c(v1[2], v2[2], v3[2]),
+  label = c("(1,0,0)", "(0,1,0)", "(0,0,1)"),
+  nudge_x = c(-0.08, 0.1, 0),   # left, right, no horizontal shift
+  nudge_y = c(0, 0, 0.08)       # no vertical shift, no shift, upward
+)
+
+arrow_df <- data.frame(
+  x = c(1, 0),
+  y = c(0, 1)
+)
+
+
+# Function to project Dirichlet sample to triangle
+project_to_triangle <- function(x1, x2, x3) {
+  x <- x1 * v1[1] + x2 * v2[1] + x3 * v3[1]
+  y <- x1 * v1[2] + x2 * v2[2] + x3 * v3[2]
+  return(data.frame(x = x, y = y))
+}
+
+# Generate animation data
+animation_data <- data.frame()
+
+for (i in seq_along(alpha1_values)) {
+  alpha1 <- alpha1_values[i]
+  alpha2 <- alpha2_values[i]
+  alpha3 <- alpha2_values[i]
+  samples <- rdirichlet(n_samples, c(alpha1, alpha2, alpha3))
+  projected <- project_to_triangle(samples[,1], samples[,2], samples[,3])
+  
+  projected$alpha1 <- alpha1
+  projected$alpha2 <- alpha2
+  projected$frame <- i
+  
+  animation_data <- rbind(animation_data, projected)
+}
+
+
+# Triangle outline in 2D projection
+triangle_df <- data.frame(
+  x = c(v1[1], v2[1], v3[1], v1[1]),
+  y = c(v1[2], v2[2], v3[2], v1[2])
+)
+
+```
+
+```{r}
+ggplot(subset(animation_data, frame == 1), aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, color = "blue") +
+  ggtitle("Initial Frame: Uniform Prior: alpha = (1,1,1)")
+
+
+ggplot(subset(animation_data, frame == max(animation_data$frame)), aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, color = "red") +
+  ggtitle("Final Frame: Cobcetrated Prior: alpha = (.1,.1,.1)")
+
+```
+
+
+
+```{r}
+p <- ggplot(animation_data, aes(x = x, y = y)) +
+  geom_point(alpha = 0.3, size = 0.8, color = "steelblue") +
+  geom_density_2d(color = "red", alpha = 0.7) +
+  geom_path(data = triangle_df, aes(x = x, y = y), color = "black", size = 1) +
+  annotate("segment", x = 1, y = 0, xend = 0, yend = 1,
+         arrow = arrow(length = unit(0.2, "cm")),
+         color = "darkgreen", size = 1.2) +
+  xlim(0, 1) + ylim(0, 1) +
+  geom_text(data = label_df,
+          aes(x = x, y = y, label = label),
+          nudge_x = label_df$nudge_x,
+          nudge_y = label_df$nudge_y,
+          size = 4, fontface = "bold", color = "black") +
+  labs(
+  title = "Dirichlet Prior Evolution in Markov Chain",
+  subtitle = "Dirichlet Prior: (α₁ → α₂): shifting belief from state 1 to state 2",
+  x = "Projected X",
+  y = "Projected Y",
+  caption = "Transitioning belief from state 1 → state 2"
+) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title = element_text(size = 12),
+    plot.caption = element_text(size = 10, hjust = 0.5)
+  ) +
+  transition_states(frame,
+                    transition_length = 1,
+                    state_length = 2) +
+  ease_aes('sine-in-out')
+
+p
+```
+
+The animation begins with $\alpha = (1,1,1)$, representing a uniform prior over the three states and maximum entropy. As the frames progress, the parameters $\alpha$ moves towards (0.1, 0.1, 0.1), concentrating the belief towards the corners of the simplex and reducing entropy.
+
+
+
+### Entropy of Dirichlet Distribution
+
+Let $\boldsymbol{\alpha} = (\alpha_1, \alpha_2, \dots, \alpha_K)$ be the parameters of a Dirichlet distribution. The entropy $H(\boldsymbol{\alpha})$ is given by:$
+
+$$H(\boldsymbol{\alpha}) = \log B(\boldsymbol{\alpha}) + (\alpha_0 - K) \psi(\alpha_0) - \sum_{i=1}^{K} (\alpha_i - 1) \psi(\alpha_i)$$
+
+
+where:
+
+* $\alpha_0 = \sum_{i=1}^{K} \alpha_i$ is the total concentration
+* $B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma(\alpha_0)}$ is the multivariate Beta function
+
+* $\psi(\cdot)$ is the digamma function: $\psi(x) = \frac{d}{dx} \log \Gamma(x)$
+* $\Gamma(\cdot)$ is the Gamma function
+
+
+Note that in the code below, we use the logarithm of the Beta function for numerical stability. $\text{term1} = \ln \Gamma(\alpha_0) - \sum_{i=1}^{K} \ln \Gamma(\alpha_i)$ is used to $\ln B(\boldsymbol{\alpha}) = \sum_{i=1}^{K} \ln \Gamma(\alpha_i) - \ln \Gamma(\alpha_0)$
+
+
+```{r}
+# Define alpha value sequences
+alpha1_values <- seq(1, 0.1, by = -0.1)
+alpha2_values <- seq(1, 0.1, by = -0.1)
+alpha3_values <- seq(1, 0.1, by = -0.1)
+
+# Entropy function for Dirichlet distribution
+compute_entropy <- function(alpha) {
+  alpha0 <- sum(alpha)
+  K <- length(alpha)
+  term1 <- lgamma(alpha0) - sum(lgamma(alpha))
+  term2 <- (alpha0 - K) * digamma(alpha0)
+  term3 <- -sum((alpha - 1) * digamma(alpha))
+  return(term1 + term2 + term3)
+}
+
+# Compute entropy across combinations
+entropy_values <- mapply(function(a1, a2, a3) {
+  compute_entropy(c(a1, a2, a3))
+}, alpha1_values, alpha2_values, alpha3_values)
+
+# Construct data frame (corrected column names)
+entropy_df <- data.frame(
+  frame = seq_along(alpha1_values),
+  alpha1 = alpha1_values,
+  alpha2 = alpha2_values,
+  alpha3 = alpha3_values,  # ✅ corrected from duplicate alpha2
+  entropy = entropy_values
+)
+
+```
+
+
+
+```{r}
+# # Load required libraries
+
+# Normalize entropy
+entropy_df$normalized_entropy <- entropy_df$entropy - min(entropy_df$entropy)
+
+# Prepare entropy line plot data (use base R subsetting)
+entropy_line <- data.frame(
+  step = seq_len(nrow(entropy_df)),
+  normalized_entropy = entropy_df$normalized_entropy
+)
+
+# Extract start and end alpha vectors
+alpha_start <- entropy_df[1, c("alpha1", "alpha2", "alpha3")]
+alpha_end <- entropy_df[nrow(entropy_df), c("alpha1", "alpha2", "alpha3")]
+
+# Create 2D simplex grid
+res <- 100
+x <- seq(0, 1, length.out = res)
+y <- seq(0, 1, length.out = res)
+grid <- expand.grid(x = x, y = y)
+grid <- subset(grid, x + y <= 1)
+grid$z <- 1 - grid$x - grid$y
+
+# Compute Dirichlet densities
+compute_density <- function(grid, alpha, label) {
+  dens <- ddirichlet(as.matrix(grid), alpha = as.numeric(alpha))
+  data.frame(grid, density = dens, label = label)
+}
+epsilon <- 1e-6  # small threshold to avoid log(0)
+grid_filtered <- grid %>%
+  filter(x > epsilon, y > epsilon, z > epsilon)
+
+density_end <- compute_density(grid_filtered, alpha_end, "End")
+density_start <- compute_density(grid_filtered, alpha_start, "Start")
+density_df <- rbind(density_start, density_end)
+
+# Create Dirichlet density surface plot
+density_plot <- ggplot(density_df, aes(x = x, y = y, fill = density)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  facet_wrap(~label) +
+  labs(
+    title = "Dirichlet Density Surfaces",
+    x = "x", y = "y", fill = "Density"
+  ) +
+  theme_minimal()
+
+# Create entropy trend line plot
+entropy_plot <- ggplot(entropy_line, aes(x = step, y = normalized_entropy)) +
+  geom_line(color = "red", size = 1.2) +
+  labs(
+    title = "Entropy Trend During Belief Shift",
+    x = "Frame",
+    y = "Normalized Entropy"
+  ) +
+  theme_minimal()
+
+# Combine plots side by side
+density_plot + entropy_plot + plot_layout(ncol = 2)
+
+```
+
+```{r}
+center_point <- c(1/3, 1/3, 1/3)
+
+entropy_df$density <- mapply(function(a1, a2, a3) {
+  ddirichlet(center_point, c(a1, a2, a3))
+}, entropy_df$alpha1, entropy_df$alpha2, entropy_df$alpha3)
+
+ggplot(entropy_df, aes(x = frame)) +
+  geom_line(aes(y = density, color = "Density"), size = 1.2) +
+  geom_line(aes(y = normalized_entropy, color = "Entropy"), size = 1.2, linetype = "dashed") +
+  scale_color_manual(values = c("Density" = "blue", "Entropy" = "red")) +
+  labs(
+    title = "Dirichlet Density at Center vs. Entropy During Belief Shift",
+    x = "Frame",
+    y = "Value",
+    color = "Metric"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    axis.title = element_text(size = 12),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+```
+
+```{r}
+# Load required libraries
+# library(ggplot2)
+# library(dplyr)
+# library(MCMCpack)   # for ddirichlet()
+# library(patchwork)  # for combining plots
+
+# Create 2D simplex grid
+res <- 100
+x <- seq(0, 1, length.out = res)
+y <- seq(0, 1, length.out = res)
+grid <- expand.grid(x = x, y = y)
+grid <- subset(grid, x + y <= 1)
+grid$z <- 1 - grid$x - grid$y
+
+# Function to compute Dirichlet PDF over grid
+compute_pdf_surface <- function(alpha, label) {
+  input_matrix <- as.matrix(grid[, c("x", "y", "z")])
+  dens <- ddirichlet(input_matrix, alpha = alpha)
+  data.frame(grid, density = dens, label = label)
+}
+
+# Compute start and end PDFs
+pdf_start <- compute_pdf_surface(c(1, 1, 1), "Start: α = (1, 1, 1)")
+pdf_end   <- compute_pdf_surface(c(0.1, 0.1, 0.1), "End: α = (0.1, 0.1, 0.1)")
+pdf_df <- rbind(pdf_start, pdf_end)
+
+# Plot Dirichlet PDFs
+pdf_plot <- ggplot(pdf_df, aes(x = x, y = y, fill = density)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  facet_wrap(~label) +
+  labs(
+    title = "Dirichlet PDF Over Simplex",
+    x = "x", y = "y", fill = "Density"
+  ) +
+  theme_minimal()
+
+# Assuming entropy_df already exists and includes normalized_entropy
+entropy_plot <- ggplot(entropy_df, aes(x = frame, y = normalized_entropy)) +
+  geom_line(color = "red", size = 1.2) +
+  labs(
+    title = "Entropy Trend During Belief Shift",
+    x = "Frame",
+    y = "Normalized Entropy"
+  ) +
+  theme_minimal()
+
+# Combine plots side by side
+pdf_plot + entropy_plot + plot_layout(ncol = 2
+```
+
